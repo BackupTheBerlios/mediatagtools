@@ -1,0 +1,13 @@
+Just run the following commands (without the #):
+
+# qmake
+# make
+
+and optionally if you want the program installed in /usr/local/bin:
+
+# INSTALL_ROOT=/usr/local/ make install
+
+Set INSTALL_ROOT to where you want to install the file. make install will then
+create a folder named bin and in there it will copy the program.
+Have fun! :-)
+Report bugs at the project page http://developer.berlios.de/projects/audiotagtools/ or send me an email at int.teo@gmail.com (I prefer the bug reports at berlios)
