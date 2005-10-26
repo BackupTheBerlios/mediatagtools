@@ -16,6 +16,7 @@
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qmenubar.h>
+#include <qprogressbar.h>
 
 #include "form1.h"
 
@@ -43,11 +44,14 @@ protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
+    virtual void slotAbout();
+    virtual void slotCorrectCase();
 
 private:
     QDir d;
     QStringList separators;
     QMenuBar *menu;
+    QProgressBar progress;
 
     void populateList( void );
 };

@@ -17,6 +17,11 @@
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
+#include <qtabbar.h>
+#include <qtabwidget.h>
+#include <qstatusbar.h>
+#include <qapplication.h>
+#include <qcursor.h>
 
 #include <tag.h>
 #include <tstring.h>
@@ -25,6 +30,7 @@
 #include "mttmainwin.h"
 #include "alistviewitem.h"
 #include "mttcfdialog.h"
+#include "mttaboutdialog.h"
 #include "revision.h"
 
 mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
@@ -33,31 +39,24 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     int i;
 
     d.setFilter( QDir::Files | QDir::Readable );
-    d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
+    d.setNameFilter( QString( "*.mp3" ) );
+    //d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
     }
     setCaption( caption() + " - " + RV_SNAPSHOT_VERSION );
-    /*
-    QPopupMenu *fileMenu = new QPopupMenu( this );
-    fileMenu->insertItem( "Open", this, SLOT( slotOpen() ),    CTRL+Key_O );
-    fileMenu->insertSeparator();
-    fileMenu->insertItem( "Exit", this, SLOT( close() ),    CTRL+Key_X );
 
-    QPopupMenu *editMenu = new QPopupMenu( this );
-    editMenu->insertItem( "Preferences", this, SLOT( preferences() ), CTRL+Key_P );
+    tabWidget->setTabEnabled( tabWidget->page( 1 ), false );
+    tabWidget->setTabEnabled( tabWidget->page( 2 ), false );
 
-    QPopupMenu *helpMenu = new QPopupMenu( this );
-    helpMenu->insertItem( "Help", this, SLOT( help() ) );
-    helpMenu->insertSeparator();
-    helpMenu->insertItem( "About", this, SLOT( about() ) );
-
-    menu = new QMenuBar( this );
-    menu->insertItem( "&File", fileMenu );
-    menu->insertItem( "&Edit", editMenu );
-    menu->insertItem( "&Help", helpMenu );
-    MainFormLayout->addWidget( menu );*/
+    progress.setPercentageVisible( true );
+    progress.setCenterIndicator( true );
+    progress.setMaximumWidth( 100 );
+    progress.setMaximumHeight( 20 );
+    progress.setProgress( 100, 100 );
+    statusBar()->addWidget( &progress, 0, TRUE );
+    statusBar()->message( QString( "Ready" ) );
 }
 
 mttMainWin::~mttMainWin()
@@ -70,7 +69,8 @@ void mttMainWin::slotOpen()
     bool done = false;
 
     fd.setMode( QFileDialog::Directory );
-    fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
+    fd.addFilter( "Mp3 Files (*.mp3)" );
+    //fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
     fd.setDir( d.path() );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
@@ -85,8 +85,10 @@ void mttMainWin::slotOpen()
             return;
     }
 
+    QApplication::setOverrideCursor( QCursor( Qt::BusyCursor ) );
     GenListView->clear();
     populateList();
+    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::populateList( void )
@@ -94,8 +96,13 @@ void mttMainWin::populateList( void )
     QStringList fnames;
     AListViewItem *li;
     TagLib::Tag *t;
+    int current, count;
 
     fnames = d.entryList();
+    count = d.count();
+    current = 1;
+    progress.setProgress( 0, count );
+    statusBar()->message( QString( "Reading tags..." ) );
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
         li = new AListViewItem( GenListView );
@@ -118,7 +125,10 @@ void mttMainWin::populateList( void )
         }
         else
             qDebug( "tag = NULL" );
+        progress.setProgress( current++, count );
     }
+
+    statusBar()->message( QString( "Done" ) );
 }
 
 void mttMainWin::slotClickOnItem( QListViewItem* item )
@@ -136,6 +146,7 @@ void mttMainWin::slotClickOnItem( QListViewItem* item )
     TagLib::Tag *t;
 
     if ( item ) {
+        // Show tag info
         t = (( AListViewItem *) item )->getTag();
         if ( t ) {
             GenTitleLE->setText( TStringToQString( t->title() ) );
@@ -146,13 +157,21 @@ void mttMainWin::slotClickOnItem( QListViewItem* item )
             GenCommentLE->setText( TStringToQString( t->comment() ) );
             GenTrackLE->setText( QString::number( t->track() ) );
         }
+
+        // Show media info
     }
 }
 
 void mttMainWin::slotSaveTags()
 {
     TagLib::Tag *t;
+    int current, count;
 
+    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+    statusBar()->message( QString( "Writing tags..." ) );
+    count = GenListView->childCount();
+    current = 1;
+    progress.setProgress( 0, count );
     TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
@@ -251,22 +270,36 @@ void mttMainWin::slotSaveTags()
 
         ( (AListViewItem *) it.current() )->saveTag();
         ++it;
+
+        progress.setProgress( current++, count );
     }
 
     GenListView->clear();
     populateList();
+    QApplication::restoreOverrideCursor();
+    statusBar()->message( QString( "Done" ) );
 }
 
 void mttMainWin::slotRemoveTags()
 {
+    int count, current;
+
+    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+    statusBar()->message( QString( "Removing tags..." ) );
+    count = GenListView->childCount();
+    current = 1;
+    progress.setProgress( 0, count );
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
         ( (AListViewItem *) it.current() )->removeTag();
         ++it;
+        progress.setProgress( current++, count );
     }
 
     GenListView->clear();
     populateList();
+    statusBar()->message( QString( "Done" ) );
+    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::slotCFormat()
@@ -346,6 +379,13 @@ void mttMainWin::slotDisableUsingFormat( bool cond )
 void mttMainWin::slotRenameFiles()
 {
     TagLib::Tag *t;
+    int count, current;
+
+    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+    statusBar()->message( QString( "Renaming Files..." ) );
+    count = GenListView->childCount();
+    current = 1;
+    progress.setProgress( 0, count );
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
@@ -393,12 +433,28 @@ void mttMainWin::slotRenameFiles()
             dir.rename( ( (AListViewItem *) it.current() )->getFName(), path + "/" + newfname + ext );
         }
         ++it;
+        progress.setProgress( current++, count );
     }
 
     GenListView->clear();
     d.refresh();
     populateList();
+
+    statusBar()->message( QString( "Done" ) );
+    QApplication::restoreOverrideCursor();
 }
+
+void mttMainWin::slotAbout()
+{
+    mttAboutDialog about;
+    about.exec();
+}
+
+void mttMainWin::slotCorrectCase()
+{
+}
+
+
 
 
 

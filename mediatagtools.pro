@@ -1,3 +1,3 @@
-system(cd src;../scripts/mkrevision.sh)
+system(scripts/config.sh)
 TEMPLATE=subdirs
 SUBDIRS=src

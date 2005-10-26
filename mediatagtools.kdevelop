@@ -2,7 +2,7 @@
 <kdevelop>
   <general>
     <author>Theofilos Intzoglou</author>
-    <email>oscar10@yifan.net</email>
+    <email>int.teo@gmail.com</email>
     <version>0.1</version>
     <projectmanagement>KDevTrollProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
@@ -78,7 +78,10 @@
       <prio>0</prio>
       <envvars/>
     </make>
-    <subclassing/>
+    <subclassing>
+      <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.cpp" />
+      <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.h" />
+    </subclassing>
   </kdevtrollproject>
   <kdevfilecreate>
     <filetypes/>
@@ -129,6 +132,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>false</used>
+      <version>3</version>
+      <root>/usr/qt/3</root>
+    </qt>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>

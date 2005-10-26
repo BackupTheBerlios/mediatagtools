@@ -11,12 +11,15 @@ FORMS += form1.ui \
 HEADERS += alistviewitem.h \
            mediafile.h \
            mttcfdialog.h \
-           mttmainwin.h 
+           mttmainwin.h \
+           mttaboutdialog.h \
+           config.h 
 SOURCES += alistviewitem.cpp \
            mediafile.cpp \
            mediatagtools.cpp \
            mttcfdialog.cpp \
-           mttmainwin.cpp 
+           mttmainwin.cpp \
+           mttaboutdialog.cpp 
 LANGUAGE = C++
 QMAKE_LFLAGS_DEBUG = `taglib-config \
 --libs`
