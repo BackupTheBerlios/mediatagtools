@@ -501,7 +501,7 @@
                                                     </widget>
                                                     <widget class="QPushButton">
                                                         <property name="name">
-                                                            <cstring>pushButton14_3</cstring>
+                                                            <cstring>EmptyFieldsButton</cstring>
                                                         </property>
                                                         <property name="text">
                                                             <string>E&amp;mpty Fields</string>
@@ -1185,6 +1185,12 @@
         <receiver>MainForm</receiver>
         <slot>slotCorrectCase()</slot>
     </connection>
+    <connection>
+        <sender>EmptyFieldsButton</sender>
+        <signal>clicked()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotEmptyFields()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1208,6 +1214,7 @@
     <slot access="protected">slotRenameFiles()</slot>
     <slot access="protected">slotAbout()</slot>
     <slot access="protected">slotCorrectCase()</slot>
+    <slot access="protected">slotEmptyFields()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

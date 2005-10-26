@@ -10,18 +10,19 @@
 //
 //
 
+#include <qapplication.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
+#include <qcursor.h>
 #include <qfiledialog.h>
-#include <qmessagebox.h>
+#include <qlayout.h>
 #include <qlistview.h>
 #include <qlineedit.h>
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qlayout.h>
+#include <qmessagebox.h>
+#include <qpopupmenu.h>
+#include <qstatusbar.h>
 #include <qtabbar.h>
 #include <qtabwidget.h>
-#include <qstatusbar.h>
-#include <qapplication.h>
-#include <qcursor.h>
 
 #include <tag.h>
 #include <tstring.h>
@@ -139,13 +140,7 @@ void mttMainWin::populateList( void )
 void mttMainWin::slotClickOnItem( QListViewItem* item )
 {
     // Clear the contents of the widgets
-    GenTitleLE->clear();
-    GenArtistLE->clear();
-    GenAlbumLE->clear();
-    GenYearLE->clear();
-    GenGenreCB->clearEdit();
-    GenCommentLE->clear();
-    GenTrackLE->clear();
+    slotEmptyFields();
 
     // Set the contents of the widgets according to the tag
     TagLib::Tag *t;
@@ -457,17 +452,65 @@ void mttMainWin::slotAbout()
 
 void mttMainWin::slotCorrectCase()
 {
+    QPopupMenu menu;
+    menu.insertItem( "First letter up", this, SLOT(slotFirstUp()) );
+    menu.insertItem( "All uppercase", this, SLOT(slotAllUpper()) );
+    menu.insertItem( "All lowercase", this, SLOT(slotAllLower()) );
+    menu.exec( QCursor::pos() );
 }
 
+void mttMainWin::slotAllUpper()
+{
+    GenTitleLE->setText( GenTitleLE->text().upper() );
+    GenArtistLE->setText( GenArtistLE->text().upper() );
+    GenAlbumLE->setText( GenAlbumLE->text().upper() );
+    GenGenreCB->setCurrentText( GenGenreCB->currentText().upper() );
+    GenCommentLE->setText( GenCommentLE->text().upper() );
+}
 
+void mttMainWin::slotAllLower()
+{
+    GenTitleLE->setText( GenTitleLE->text().lower() );
+    GenArtistLE->setText( GenArtistLE->text().lower() );
+    GenAlbumLE->setText( GenAlbumLE->text().lower() );
+    GenGenreCB->setCurrentText( GenGenreCB->currentText().lower() );
+    GenCommentLE->setText( GenCommentLE->text().lower() );
+}
 
+void mttMainWin::slotFirstUp()
+{
+    GenTitleLE->setText( firstUp( GenTitleLE->text().lower() ) );
+    GenArtistLE->setText( firstUp( GenArtistLE->text().lower() ) );
+    GenAlbumLE->setText( firstUp( GenAlbumLE->text().lower() ) );
+    GenGenreCB->setCurrentText( firstUp( GenGenreCB->currentText().lower() ) );
+    GenCommentLE->setText( firstUp( GenCommentLE->text().lower() ) );
+}
 
+void mttMainWin::slotEmptyFields()
+{
+    GenTitleLE->clear();
+    GenArtistLE->clear();
+    GenAlbumLE->clear();
+    GenYearLE->clear();
+    GenGenreCB->clearEdit();
+    GenCommentLE->clear();
+    GenTrackLE->clear();
+}
 
+QString mttMainWin::firstUp( QString str )
+{
+    unsigned int i;
 
+    i = 0;
+    while ( i < str.length() ) {
+        if ( i == 0 && str[i].isLetter() ) {
+            str[i] = str[i].upper();
+        }
+        if ( str[i].isSpace() && ( ( i + 1 ) < str.length() ) && str[i+1].isLetter() ) {
+            str[i+1] = str[i+1].upper();
+        }
+        i++;
+    }
 
-
-
-
-/*$SPECIALIZATION$*/
-
-
+    return str;
+}

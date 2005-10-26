@@ -39,6 +39,13 @@ public slots:
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
+    QDir d;
+    QStringList separators;
+    QMenuBar *menu;
+    QProgressBar progress;
+
+    void populateList( void );
+    QString firstUp( QString );
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
@@ -46,14 +53,11 @@ protected slots:
     virtual void slotRenameFiles();
     virtual void slotAbout();
     virtual void slotCorrectCase();
+    virtual void slotFirstUp();
+    virtual void slotAllUpper();
+    virtual void slotAllLower();
+    virtual void slotEmptyFields();
 
-private:
-    QDir d;
-    QStringList separators;
-    QMenuBar *menu;
-    QProgressBar progress;
-
-    void populateList( void );
 };
 
 #endif
