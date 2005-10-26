@@ -31,7 +31,10 @@
 #include "alistviewitem.h"
 #include "mttcfdialog.h"
 #include "mttaboutdialog.h"
+#include "config.h"
+#ifndef RELEASE
 #include "revision.h"
+#endif
 
 mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 : MainForm(parent,name,fl)
@@ -45,7 +48,9 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     for ( i=0; i<5; i++ ) {
         separators << " - ";
     }
+#ifndef RELEASE
     setCaption( caption() + " - " + RV_SNAPSHOT_VERSION );
+#endif
 
     tabWidget->setTabEnabled( tabWidget->page( 1 ), false );
     tabWidget->setTabEnabled( tabWidget->page( 2 ), false );
