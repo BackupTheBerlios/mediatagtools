@@ -14,6 +14,9 @@
 
 #include "mttaboutdialog.h"
 #include "config.h"
+#ifndef RELEASE
+#include "revision.h"
+#endif
 
 mttAboutDialog::mttAboutDialog(QWidget* parent, const char* name, bool modal, WFlags fl)
 : AboutDialog(parent,name, modal,fl)
