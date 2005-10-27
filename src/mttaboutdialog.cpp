@@ -23,7 +23,7 @@ mttAboutDialog::mttAboutDialog(QWidget* parent, const char* name, bool modal, WF
 {
     ProgNameLabel->setText( QString( "<p align=\"center\"><b><h3>Media Tag Tools v." ) + VERSION + "</h3></b></p>" );
 #ifndef RELEASE
-    ProgNameLabel->setText( "<p align=\"center\"><b><h3>Media Tag Tools v." + VERSION + RV_SNAPSHOT_VERSION + "</h3></b></p>" );
+    ProgNameLabel->setText( QString( "<p align=\"center\"><b><h3>Media Tag Tools v." ) + VERSION + RV_SNAPSHOT_VERSION + "</h3></b></p>" );
 #endif
 }
 
