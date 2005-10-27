@@ -3,8 +3,22 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/mediatagtools
 
+LANGUAGE = C++ 
 INSTALLS += target 
 target.path = bin 
+QMAKE_LFLAGS_RELEASE = `taglib-config \
+                     --libs` 
+QMAKE_LFLAGS_DEBUG = `taglib-config \
+                     --libs` 
+QMAKE_CXXFLAGS_RELEASE += `taglib-config \
+                          --cflags` 
+QMAKE_CXXFLAGS_DEBUG += `taglib-config \
+                        --cflags` \
+                        -static 
+TARGET = ../bin/mediatagtools 
+CONFIG += debug \
+          warn_on 
+TEMPLATE = app 
 FORMS += form1.ui \
          form2.ui \
          about.ui 
@@ -20,12 +34,3 @@ SOURCES += alistviewitem.cpp \
            mttcfdialog.cpp \
            mttmainwin.cpp \
            mttaboutdialog.cpp 
-LANGUAGE = C++
-QMAKE_LFLAGS_DEBUG = `taglib-config \
---libs`
-QMAKE_CXXFLAGS_DEBUG += `taglib-config \
---cflags`
-TARGET = ../bin/mediatagtools
-CONFIG += debug \
-warn_on
-TEMPLATE = app

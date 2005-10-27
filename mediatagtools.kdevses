@@ -3,7 +3,7 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="9" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.cpp" >
    <View0 line="0" Type="Source" />
@@ -24,7 +24,7 @@
    <View0 line="0" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttaboutdialog.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 line="17" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qchar.html#lower" >
    <View0 Type="Documentation" />
