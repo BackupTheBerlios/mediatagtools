@@ -27,6 +27,8 @@
 #include <tag.h>
 #include <tstring.h>
 #include <id3v2framefactory.h>
+#include <id3v2tag.h>
+#include <textidentificationframe.h>
 
 #include "mttmainwin.h"
 #include "alistviewitem.h"
@@ -61,7 +63,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     progress.setMaximumWidth( 100 );
     progress.setMaximumHeight( 20 );
     progress.setProgress( 100, 100 );
-    statusBar()->addWidget( &progress, 0, TRUE );
+    statusBar()->addWidget( &progress, 0, FALSE );
     statusBar()->message( QString( "Ready" ) );
 }
 
@@ -80,7 +82,7 @@ void mttMainWin::slotOpen()
     fd.setDir( d.path() );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
-            fprintf(stderr, "%s\n", fd.selectedFile().ascii() );
+            //qDebug( fd.selectedFile().utf8() );
             d.setPath( QString( fd.selectedFile() ) );
             if ( d.exists() )
                 done = true;
@@ -113,12 +115,12 @@ void mttMainWin::populateList( void )
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
         li = new AListViewItem( GenListView );
         li->setText( 0, *it );
-        qDebug( d.path() + "/" + *it );
-        if ( QFile::exists( d.path() + "/" + *it ) )
+        //qDebug( QString( d.path() + "/" + *it ).utf8() );
+        /*if ( QFile::exists( d.path() + "/" + *it ) )
             qDebug( "exists" );
         else
-            qDebug( "doesn't exist" );
-        li->FileRef( QStringToTString( QString( d.path() + "/" + *it ) ).to8Bit( true ) );
+            qDebug( "doesn't exist" );*/
+        li->FileRef( QString( d.path() + "/" + *it ) );
         t = li->getTag();
         if ( t ) {
             li->setText( 1, TStringToQString( t->title() ) );
@@ -253,14 +255,14 @@ void mttMainWin::slotSaveTags()
                         if ( formatstr.startsWith( QString( "<track>" ) ) )
                             t->setTrack( data.toInt() );
 
-                        qDebug( "filename:" + filename );
-                        qDebug( "formatstr:" + formatstr );
-                        qDebug( "data:" + data );
-                        qDebug( "mid:" + formatstr.mid( pos1 + 1, pos2 - pos1 - 1 ) );
+                        //qDebug( "filename:" + filename );
+                        //qDebug( "formatstr:" + formatstr );
+                        //qDebug( "data:" + data );
+                        //qDebug( "mid:" + formatstr.mid( pos1 + 1, pos2 - pos1 - 1 ) );
                         filename.remove( 0, pos + pos2 - pos1 - 1 );
                         formatstr.remove( 0, pos2 );
-                        qDebug( "filename:" + filename );
-                        qDebug( "formatstr:" + formatstr );
+                        //qDebug( "filename:" + filename );
+                        //qDebug( "formatstr:" + formatstr );
                     }
                     else
                         done = true;
@@ -378,7 +380,6 @@ void mttMainWin::slotDisableUsingFormat( bool cond )
 
 void mttMainWin::slotRenameFiles()
 {
-    TagLib::Tag *t;
     int count, current;
 
     QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
@@ -390,6 +391,7 @@ void mttMainWin::slotRenameFiles()
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
         QString newfname, path, ext, cformat;
+        TagLib::Tag *t;
 
         t = ( (AListViewItem *) it.current() )->getTag();
         path = ( (AListViewItem *) it.current() )->getFName();
@@ -513,4 +515,43 @@ QString mttMainWin::firstUp( QString str )
     }
 
     return str;
+}
+
+void mttMainWin::slotLVRightMenu()
+{
+    QPopupMenu menu;
+    menu.insertItem( "Open folder", this, SLOT(slotOpen()) );
+    menu.insertSeparator();
+    menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
+    menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
+    menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
+    menu.exec( QCursor::pos() );
+}
+
+void mttMainWin::slotFixTags()
+{
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        if ( ( (AListViewItem *) it.current() )->isMpeg() ) {
+            TagLib::ID3v2::Tag *tag = ( (AListViewItem *) it.current() )->getID3Tag();
+            TagLib::ID3v2::FrameList l = tag->frameListMap()["TIT2"];
+            TagLib::ID3v2::TextIdentificationFrame *f = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *> (l.front());
+
+            if ( f ) {
+                qDebug( QString::number( f->textEncoding() ) );
+                qDebug( f->toString().toCString( false ) );
+                TagLib::String fixed( f->toString().toCString(), TagLib::String::UTF8 );
+                if ( f->textEncoding() == TagLib::String::Latin1 ) { // latin1
+                    f->setTextEncoding( TagLib::String::UTF8 );
+                    f->setText( fixed );
+                    ( (AListViewItem *) it.current() )->saveTag();
+                    GenListView->clear();
+                    populateList();
+                }
+            }
+            else
+                qDebug( "fix = NULL" );
+        }
+        ++it;
+    }
 }

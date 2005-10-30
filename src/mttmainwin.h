@@ -57,6 +57,8 @@ protected slots:
     virtual void slotAllUpper();
     virtual void slotAllLower();
     virtual void slotEmptyFields();
+    virtual void slotLVRightMenu();
+    virtual void slotFixTags();
 
 };
 

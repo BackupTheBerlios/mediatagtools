@@ -286,13 +286,22 @@
                                             <property name="name">
                                                 <cstring>MoveUPButton</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="text">
                                                 <string>Move &amp;Up</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+U</string>
                                             </property>
                                         </widget>
                                         <widget class="QPushButton">
                                             <property name="name">
                                                 <cstring>MoveDownButton</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
                                             </property>
                                             <property name="text">
                                                 <string>Move Down</string>
@@ -301,6 +310,9 @@
                                         <widget class="QPushButton">
                                             <property name="name">
                                                 <cstring>RemoveAllButton</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
                                             </property>
                                             <property name="text">
                                                 <string>Remove All</string>
@@ -341,7 +353,7 @@
                                 </property>
                                 <widget class="QCheckBox">
                                     <property name="name">
-                                        <cstring>checkBox23</cstring>
+                                        <cstring>LeadingZerosChkB</cstring>
                                     </property>
                                     <property name="sizePolicy">
                                         <sizepolicy>
@@ -360,7 +372,10 @@
                                 </widget>
                                 <widget class="QCheckBox">
                                     <property name="name">
-                                        <cstring>checkBox24</cstring>
+                                        <cstring>AppendBitrateChkB</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
                                     </property>
                                     <property name="sizePolicy">
                                         <sizepolicy>
@@ -373,10 +388,16 @@
                                     <property name="text">
                                         <string>Append &amp;Bitrate to Filename</string>
                                     </property>
+                                    <property name="accel">
+                                        <string>Alt+B</string>
+                                    </property>
                                 </widget>
                                 <widget class="QCheckBox">
                                     <property name="name">
                                         <cstring>checkBox25</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
                                     </property>
                                     <property name="sizePolicy">
                                         <sizepolicy>
@@ -410,7 +431,7 @@
                                         </property>
                                         <widget class="QLineEdit">
                                             <property name="name">
-                                                <cstring>lineEdit22</cstring>
+                                                <cstring>LZ1LE</cstring>
                                             </property>
                                             <property name="enabled">
                                                 <bool>false</bool>
@@ -442,7 +463,7 @@
                                         </widget>
                                         <widget class="QLineEdit">
                                             <property name="name">
-                                                <cstring>lineEdit23</cstring>
+                                                <cstring>LZ2LE</cstring>
                                             </property>
                                             <property name="enabled">
                                                 <bool>false</bool>
@@ -598,9 +619,9 @@
 </widget>
 <connections>
     <connection>
-        <sender>checkBox23</sender>
+        <sender>LeadingZerosChkB</sender>
         <signal>toggled(bool)</signal>
-        <receiver>lineEdit22</receiver>
+        <receiver>LZ1LE</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
@@ -610,9 +631,9 @@
         <slot>close()</slot>
     </connection>
     <connection>
-        <sender>checkBox23</sender>
+        <sender>LeadingZerosChkB</sender>
         <signal>toggled(bool)</signal>
-        <receiver>lineEdit23</receiver>
+        <receiver>LZ2LE</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
@@ -687,6 +708,12 @@
         <receiver>CFormat</receiver>
         <slot>slotUpdateFormat()</slot>
     </connection>
+    <connection>
+        <sender>LeadingZerosChkB</sender>
+        <signal>stateChanged(int)</signal>
+        <receiver>CFormat</receiver>
+        <slot>slotLZChkB(int)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>Separator1</tabstop>
@@ -704,10 +731,10 @@
     <tabstop>MoveUPButton</tabstop>
     <tabstop>MoveDownButton</tabstop>
     <tabstop>RemoveAllButton</tabstop>
-    <tabstop>checkBox23</tabstop>
-    <tabstop>lineEdit22</tabstop>
-    <tabstop>lineEdit23</tabstop>
-    <tabstop>checkBox24</tabstop>
+    <tabstop>LeadingZerosChkB</tabstop>
+    <tabstop>LZ1LE</tabstop>
+    <tabstop>LZ2LE</tabstop>
+    <tabstop>AppendBitrateChkB</tabstop>
     <tabstop>checkBox25</tabstop>
     <tabstop>OKButton</tabstop>
     <tabstop>CancelButton</tabstop>
@@ -720,6 +747,7 @@
     <slot access="protected">slotCommentChkB( int )</slot>
     <slot access="protected">slotTrackChkB( int )</slot>
     <slot access="protected">slotUpdateFormat()</slot>
+    <slot access="protected">slotLZChkB( int )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

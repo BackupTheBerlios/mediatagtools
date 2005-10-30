@@ -176,3 +176,25 @@ void mttCFDialog::slotUpdateFormat()
     CFormatLE->setText( formatstr );
 }
 
+void mttCFDialog::slotLZChkB( int check )
+{
+    LZ = check;
+}
+
+bool mttCFDialog::isLZOn( void )
+{
+    if ( LZ == QButton::On )
+        return true;
+    else
+        return false;
+}
+
+QString mttCFDialog::getLZ1( void )
+{
+    return LZ1LE->text();
+}
+
+QString mttCFDialog::getLZ2( void )
+{
+    return LZ2LE->text();
+}

@@ -26,13 +26,18 @@ public:
     void setFormat( QString );
     QString getFormat( void );
     void setSeparators( QStringList );
-    QStringList getSeparators( void );
+    QStringList getSeparators( void ); // Returns the seperators used in custom format
+    bool isLZOn( void ); // Is "leading zeros" option on?
+     // I'm out of ideas for a good name for these two :-P
+    QString getLZ1( void ); // Returns the string from the first line edit of the LZ option
+    QString getLZ2( void ); // Returns the string from the second line edit of the LZ option
 
 public slots:
   /*$PUBLIC_SLOTS$*/
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
+    int LZ;
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
@@ -46,6 +51,7 @@ protected slots:
     virtual void slotTitleChkB( int );
     virtual void slotAlbumChkB( int );
     virtual void slotUpdateFormat();
+    virtual void slotLZChkB( int );
 
 public slots:
 

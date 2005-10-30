@@ -10,6 +10,8 @@
 //
 //
 
+#include <qfile.h>
+
 #include <mpegfile.h>
 #include <id3v1tag.h>
 #include <id3v2tag.h>
@@ -20,6 +22,9 @@ AListViewItem::AListViewItem( QListView * parent )
  : QListViewItem( parent )
 {
     fileref = NULL;
+    ismpeg = false;
+    isogg = false;
+    isflac = false;
 }
 
 AListViewItem::AListViewItem ( QListView * parent, QString label1, QString label2, QString label3, QString label4, QString label5, QString label6, QString label7, QString label8 )
@@ -36,9 +41,9 @@ AListViewItem::~AListViewItem()
 void AListViewItem::FileRef( QString filename )
 {
     fname = filename;
-    fileref = new TagLib::FileRef( filename );
+    fileref = new TagLib::FileRef( QFile::encodeName( filename ) );
     if ( filename.endsWith( ".mp3", false ) ) {
-        ismp3 = true;
+        ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         if ( f ) {
             if ( !f->ID3v2Tag() && f->ID3v1Tag() ) {
@@ -59,14 +64,18 @@ void AListViewItem::FileRef( QString filename )
             f->strip( TagLib::MPEG::File::ID3v1 );
         }
     }
-    else
-        ismp3 = false;
+    else if ( filename.endsWith( ".ogg", false ) ) {
+        isogg = true;
+    }
+    else if ( filename.endsWith( ".flac", false ) ) {
+        isflac = true;
+    }
 }
 
 TagLib::Tag *AListViewItem::getTag( void )
 {
     if ( fileref )
-        if ( !ismp3 )
+        if ( !ismpeg )
             return fileref->tag();
         else {
             TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -85,7 +94,7 @@ void AListViewItem::saveTag( void )
 
 void AListViewItem::removeTag( void )
 {
-    if ( ismp3 ) {
+    if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         f->strip();
     }
@@ -94,4 +103,29 @@ void AListViewItem::removeTag( void )
 QString AListViewItem::getFName( void )
 {
     return fname;
+}
+
+bool AListViewItem::isMpeg( void )
+{
+    return ismpeg;
+}
+
+bool AListViewItem::isOgg( void )
+{
+    return isogg;
+}
+
+bool AListViewItem::isFLAC( void )
+{
+    return isflac;
+}
+
+TagLib::ID3v2::Tag *AListViewItem::getID3Tag( bool create )
+{
+    if ( ismpeg ) {
+        TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+        return f->ID3v2Tag( create );
+    }
+    else
+        return NULL;
 }

@@ -31,10 +31,14 @@ public:
     TagLib::Tag *getTag( void );
     void saveTag( void );
     QString getFName( void );
+    bool isMpeg( void );
+    bool isOgg( void );
+    bool isFLAC( void );
+    TagLib::ID3v2::Tag *getID3Tag( bool create = false );
 
 private:
     TagLib::FileRef *fileref;
-    bool ismp3;
+    bool ismpeg, isogg, isflac;
     QString fname;
 };
 
