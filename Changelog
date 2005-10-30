@@ -1,0 +1,10 @@
+--- 0.1beta2 --- 30 Oct 2005
+* Added a menu on right click on the list view
+* You can now use "Leading Zeros" feature when renaming files
+* Progressbar now appears only when needed
+* Bug fixes...
+
+--- 0.1beta ---
+* The GUI changed a lot from the original mtt design
+* Some scripts were created to make package/tag packages easier
+* Most features work for mp3 files
