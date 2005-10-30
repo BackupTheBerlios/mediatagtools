@@ -189,12 +189,27 @@ bool mttCFDialog::isLZOn( void )
         return false;
 }
 
+void mttCFDialog::enableLZ( bool choice )
+{
+    LeadingZerosChkB->setChecked( choice );
+}
+
 QString mttCFDialog::getLZ1( void )
 {
     return LZ1LE->text();
 }
 
+void mttCFDialog::setLZ1( QString str )
+{
+    LZ1LE->setText( str );
+}
+
 QString mttCFDialog::getLZ2( void )
 {
     return LZ2LE->text();
+}
+
+void mttCFDialog::setLZ2( QString str )
+{
+    LZ2LE->setText( str );
 }

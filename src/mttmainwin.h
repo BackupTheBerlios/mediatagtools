@@ -43,6 +43,8 @@ protected:
     QStringList separators;
     QMenuBar *menu;
     QProgressBar progress;
+    QString LZ1, LZ2;
+    bool LZ;
 
     void populateList( void );
     QString firstUp( QString );

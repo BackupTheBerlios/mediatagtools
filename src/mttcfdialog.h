@@ -28,9 +28,12 @@ public:
     void setSeparators( QStringList );
     QStringList getSeparators( void ); // Returns the seperators used in custom format
     bool isLZOn( void ); // Is "leading zeros" option on?
-     // I'm out of ideas for a good name for these two :-P
+    void enableLZ( bool );
+     // I'm out of ideas for a good name for these four :-P
     QString getLZ1( void ); // Returns the string from the first line edit of the LZ option
+    void setLZ1( QString );
     QString getLZ2( void ); // Returns the string from the second line edit of the LZ option
+    void setLZ2( QString );
 
 public slots:
   /*$PUBLIC_SLOTS$*/

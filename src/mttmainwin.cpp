@@ -44,6 +44,10 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 {
     int i;
 
+    LZ = true;
+    LZ1 = "0";
+    LZ2 = "";
+
     d.setFilter( QDir::Files | QDir::Readable );
     d.setNameFilter( QString( "*.mp3" ) );
     //d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
@@ -63,8 +67,9 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     progress.setMaximumWidth( 100 );
     progress.setMaximumHeight( 20 );
     progress.setProgress( 100, 100 );
-    statusBar()->addWidget( &progress, 0, FALSE );
+    statusBar()->addWidget( &progress, 0, true );
     statusBar()->message( QString( "Ready" ) );
+    progress.hide();
 }
 
 mttMainWin::~mttMainWin()
@@ -109,6 +114,7 @@ void mttMainWin::populateList( void )
     fnames = d.entryList();
     count = d.count();
     current = 1;
+    progress.show();
     progress.setProgress( 0, count );
     statusBar()->message( QString( "Reading tags..." ) );
 
@@ -136,6 +142,7 @@ void mttMainWin::populateList( void )
         progress.setProgress( current++, count );
     }
 
+    progress.hide();
     statusBar()->message( QString( "Done" ) );
 }
 
@@ -173,6 +180,7 @@ void mttMainWin::slotSaveTags()
     statusBar()->message( QString( "Writing tags..." ) );
     count = GenListView->childCount();
     current = 1;
+    progress.show();
     progress.setProgress( 0, count );
     TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
@@ -279,6 +287,7 @@ void mttMainWin::slotSaveTags()
     GenListView->clear();
     populateList();
     QApplication::restoreOverrideCursor();
+    progress.hide();
     statusBar()->message( QString( "Done" ) );
 }
 
@@ -290,6 +299,7 @@ void mttMainWin::slotRemoveTags()
     statusBar()->message( QString( "Removing tags..." ) );
     count = GenListView->childCount();
     current = 1;
+    progress.show();
     progress.setProgress( 0, count );
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
@@ -300,6 +310,7 @@ void mttMainWin::slotRemoveTags()
 
     GenListView->clear();
     populateList();
+    progress.hide();
     statusBar()->message( QString( "Done" ) );
     QApplication::restoreOverrideCursor();
 }
@@ -310,9 +321,15 @@ void mttMainWin::slotCFormat()
 
     cfdialog.setFormat( MCFormatLE->text() );
     cfdialog.setSeparators( separators );
+    cfdialog.setLZ1( LZ1 );
+    cfdialog.setLZ2( LZ2 );
+    cfdialog.enableLZ( LZ );
     if ( cfdialog.exec() == QDialog::Accepted ) {
         MCFormatLE->setText( cfdialog.getFormat() );
         separators = cfdialog.getSeparators();
+        LZ1 = cfdialog.getLZ1();
+        LZ2 = cfdialog.getLZ2();
+        LZ = cfdialog.isLZOn();
     }
     if ( UseCFChkB->isChecked() ) {
         slotDisableUsingFormat( false ); // Reset state of fields
@@ -386,6 +403,7 @@ void mttMainWin::slotRenameFiles()
     statusBar()->message( QString( "Renaming Files..." ) );
     count = GenListView->childCount();
     current = 1;
+    progress.show();
     progress.setProgress( 0, count );
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
@@ -411,8 +429,14 @@ void mttMainWin::slotRenameFiles()
                     newfname += TStringToQString( t->album() );
                 if ( cformat.startsWith( "<title>" ) )
                     newfname += TStringToQString( t->title() );
-                if ( cformat.startsWith( "<track>" ) )
+                if ( cformat.startsWith( "<track>" ) ) {
+                    if ( LZ )
+                        if ( t->track() < 10 )
+                            newfname += LZ1;
+                        else
+                            newfname += LZ2;
                     newfname += QString::number( t->track() );
+                }
                 if ( cformat.startsWith( "<year>" ) )
                     newfname += QString::number( t->year() );
                 if ( cformat.startsWith( "<comment>" ) )
@@ -432,7 +456,7 @@ void mttMainWin::slotRenameFiles()
             qDebug( "ext:" + ext );
             qDebug( "new filename:" + path + "/" + newfname + ext );
             QDir dir;
-            dir.rename( ( (AListViewItem *) it.current() )->getFName(), path + "/" + newfname + ext );
+            dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext );
         }
         ++it;
         progress.setProgress( current++, count );
@@ -442,6 +466,7 @@ void mttMainWin::slotRenameFiles()
     d.refresh();
     populateList();
 
+    progress.hide();
     statusBar()->message( QString( "Done" ) );
     QApplication::restoreOverrideCursor();
 }
@@ -524,7 +549,7 @@ void mttMainWin::slotLVRightMenu()
     menu.insertSeparator();
     menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
     menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
-    menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
+    //menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
 }
 
