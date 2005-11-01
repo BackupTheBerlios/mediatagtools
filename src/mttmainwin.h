@@ -31,11 +31,6 @@ public:
 
 public slots:
   /*$PUBLIC_SLOTS$*/
-    virtual void slotOpen();
-    virtual void slotRemoveTags();
-    virtual void slotSaveTags();
-    virtual void slotClickOnItem( QListViewItem* item );
-    virtual void slotCFormat();
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
@@ -48,9 +43,15 @@ protected:
 
     void populateList( void );
     QString firstUp( QString );
+    bool isTextFrame( QString );
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
+    virtual void slotOpen();
+    virtual void slotRemoveTags();
+    virtual void slotSaveTags();
+    virtual void slotClickOnItem( QListViewItem* item );
+    virtual void slotCFormat();
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
     virtual void slotAbout();

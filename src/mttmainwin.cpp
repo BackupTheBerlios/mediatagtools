@@ -25,6 +25,7 @@
 #include <qtabwidget.h>
 
 #include <tag.h>
+#include <tlist.h>
 #include <tstring.h>
 #include <id3v2framefactory.h>
 #include <id3v2tag.h>
@@ -188,8 +189,17 @@ void mttMainWin::slotSaveTags()
         t = ( (AListViewItem *) it.current() )->getTag();
 
         // Save info from the various text fields
-        if ( GenTitleChkB->isEnabled() && GenTitleChkB->isChecked() )
+        if ( GenTitleChkB->isEnabled() && GenTitleChkB->isChecked() ) {
+            /*int i=0;
+            printf( "%d\n", GenTitleLE->text().length() );
+            QString tmp=GenTitleLE->text();
+            while( tmp[i] != 0 ) {
+                printf( "%x", tmp[i] );
+                i++;
+            }
+            printf("\n");*/
             t->setTitle( QStringToTString( GenTitleLE->text() ) );
+        }
         if ( GenArtistChkB->isEnabled() && GenArtistChkB->isChecked() )
             t->setArtist( QStringToTString( GenArtistLE->text() ) );
         if ( GenAlbumChkB->isEnabled() && GenAlbumChkB->isChecked() )
@@ -549,7 +559,7 @@ void mttMainWin::slotLVRightMenu()
     menu.insertSeparator();
     menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
     menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
-    //menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
+    menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
 }
 
@@ -559,24 +569,30 @@ void mttMainWin::slotFixTags()
     while ( it.current() ) {
         if ( ( (AListViewItem *) it.current() )->isMpeg() ) {
             TagLib::ID3v2::Tag *tag = ( (AListViewItem *) it.current() )->getID3Tag();
-            TagLib::ID3v2::FrameList l = tag->frameListMap()["TIT2"];
-            TagLib::ID3v2::TextIdentificationFrame *f = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *> (l.front());
+            TagLib::ID3v2::FrameList l = tag->frameList();
+            TagLib::List<TagLib::ID3v2::Frame *>::Iterator fit;
 
-            if ( f ) {
-                qDebug( QString::number( f->textEncoding() ) );
-                qDebug( f->toString().toCString( false ) );
-                TagLib::String fixed( f->toString().toCString(), TagLib::String::UTF8 );
-                if ( f->textEncoding() == TagLib::String::Latin1 ) { // latin1
-                    f->setTextEncoding( TagLib::String::UTF8 );
-                    f->setText( fixed );
-                    ( (AListViewItem *) it.current() )->saveTag();
-                    GenListView->clear();
-                    populateList();
-                }
-            }
-            else
-                qDebug( "fix = NULL" );
-        }
+            for ( fit=l.begin(); fit != l.end(); fit++ ) {
+                if ( *( (*fit)->frameID().data() ) == 'T' ) {
+                    TagLib::ID3v2::TextIdentificationFrame *f = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *> (*fit);
+
+                    if ( f ) {
+                        qDebug( QString::number( f->textEncoding() ) );
+                        qDebug( f->toString().toCString( false ) );
+                        TagLib::String fixed( f->toString().toCString(), TagLib::String::UTF8 );
+                        if ( f->textEncoding() == TagLib::String::Latin1 ) { // latin1
+                            f->setTextEncoding( TagLib::String::UTF8 );
+                            f->setText( fixed );
+                        }
+                    }
+                    else
+                       qDebug( "fix = NULL" );
+                } // end if frameID starts with T
+            } // for each text frame
+            ( (AListViewItem *) it.current() )->saveTag();
+        } // end if is Mpeg file
         ++it;
-    }
+    } // for each selected item
+    GenListView->clear();
+    populateList();
 }

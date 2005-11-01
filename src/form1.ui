@@ -1198,11 +1198,11 @@
     <tabstop>CleanFButton</tabstop>
 </tabstops>
 <slots>
-    <slot>slotOpen()</slot>
-    <slot>slotClickOnItem( QListViewItem * )</slot>
-    <slot>slotSaveTags()</slot>
-    <slot>slotRemoveTags()</slot>
-    <slot>slotCFormat()</slot>
+    <slot access="protected">slotOpen()</slot>
+    <slot access="protected">slotClickOnItem( QListViewItem * )</slot>
+    <slot access="protected">slotSaveTags()</slot>
+    <slot access="protected">slotRemoveTags()</slot>
+    <slot access="protected">slotCFormat()</slot>
     <slot access="protected">slotDisableUsingFormat( bool )</slot>
     <slot access="protected">slotRenameFiles()</slot>
     <slot access="protected">slotAbout()</slot>
