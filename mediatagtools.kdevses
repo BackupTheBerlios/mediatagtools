@@ -3,25 +3,25 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="7" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
-   <View0 line="36" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.cpp" >
-   <View0 line="98" Type="Source" />
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.h" >
-   <View0 line="30" Type="Source" />
+   <View0 Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.cpp" >
-   <View0 line="193" Type="Source" />
+   <View0 Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/classes.html" >
-   <View0 Type="Documentation" />
+  <Doc4 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
+   <View0 Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
-   <View0 line="46" Type="Source" />
+   <View0 Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 line="582" Type="Source" />
+  <Doc6 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qstring.html#contains-4" >
+   <View0 Type="Documentation" />
   </Doc6>
  </DocsAndViews>
  <pluginList>

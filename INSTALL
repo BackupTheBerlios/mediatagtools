@@ -1,4 +1,9 @@
-Just run the following commands (without the #):
+  You need the following packages to be able to compile mediatagtools: qt3 and taglib-1.4
+If you have installed precompiled packages of these two libs, be sure to check if you have
+also installed the -dev packages too.
+
+Now unpack the archive and then inside the directory that was created the following
+commands (without the #):
 
 # qmake
 # make
@@ -10,4 +15,4 @@ and optionally if you want the program installed in /usr/local/bin:
 Set INSTALL_ROOT to where you want to install the file. make install will then
 create a folder named bin and in there it will copy the program.
 Have fun! :-)
-Report bugs at the project page http://developer.berlios.de/projects/audiotagtools/ or send me an email at int.teo@gmail.com (I prefer the bug reports at berlios)
+Report bugs at the project page http://developer.berlios.de/projects/mediatagtools/ or send me an email at int.teo@gmail.com (I prefer the bug reports at berlios)
