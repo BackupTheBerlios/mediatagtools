@@ -15,6 +15,8 @@
 #include <mpegfile.h>
 #include <id3v1tag.h>
 #include <id3v2tag.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
 #include "alistviewitem.h"
 
@@ -89,6 +91,36 @@ TagLib::Tag *AListViewItem::getTag( void )
 
 void AListViewItem::saveTag( void )
 {
+    TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+
+    TagLib::ID3v2::FrameList l = f->ID3v2Tag()->frameListMap()["TALB"];
+    if ( !l.isEmpty() ) {
+        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+        if ( tf->textEncoding() != TagLib::String::UTF8 )
+            tf->setTextEncoding( TagLib::String::UTF8 );
+    }
+
+    l = f->ID3v2Tag()->frameListMap()["TIT2"];
+    if ( !l.isEmpty() ) {
+        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+        if ( tf->textEncoding() != TagLib::String::UTF8 )
+            tf->setTextEncoding( TagLib::String::UTF8 );
+    }
+
+    l = f->ID3v2Tag()->frameListMap()["TPE1"];
+    if ( !l.isEmpty() ) {
+        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+        if ( tf->textEncoding() != TagLib::String::UTF8 )
+            tf->setTextEncoding( TagLib::String::UTF8 );
+    }
+
+    l = f->ID3v2Tag()->frameListMap()["TCON"];
+    if ( !l.isEmpty() ) {
+        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+        if ( tf->textEncoding() != TagLib::String::UTF8 )
+            tf->setTextEncoding( TagLib::String::UTF8 );
+    }
+
     fileref->save();
 }
 
