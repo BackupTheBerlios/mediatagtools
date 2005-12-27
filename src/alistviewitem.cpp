@@ -91,34 +91,43 @@ TagLib::Tag *AListViewItem::getTag( void )
 
 void AListViewItem::saveTag( void )
 {
-    TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+    if ( isMpeg() ) {
+        TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
 
-    TagLib::ID3v2::FrameList l = f->ID3v2Tag()->frameListMap()["TALB"];
-    if ( !l.isEmpty() ) {
-        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-        if ( tf->textEncoding() != TagLib::String::UTF8 )
-            tf->setTextEncoding( TagLib::String::UTF8 );
-    }
+        TagLib::ID3v2::FrameList l = f->ID3v2Tag()->frameListMap()["TALB"];
+        if ( !l.isEmpty() ) {
+            TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+            if ( tf->textEncoding() != TagLib::String::UTF8 )
+                tf->setTextEncoding( TagLib::String::UTF8 );
+        }
 
-    l = f->ID3v2Tag()->frameListMap()["TIT2"];
-    if ( !l.isEmpty() ) {
-        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-        if ( tf->textEncoding() != TagLib::String::UTF8 )
-            tf->setTextEncoding( TagLib::String::UTF8 );
-    }
+        l = f->ID3v2Tag()->frameListMap()["TIT2"];
+        if ( !l.isEmpty() ) {
+            TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+            if ( tf->textEncoding() != TagLib::String::UTF8 )
+                tf->setTextEncoding( TagLib::String::UTF8 );
+        }
 
-    l = f->ID3v2Tag()->frameListMap()["TPE1"];
-    if ( !l.isEmpty() ) {
-        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-        if ( tf->textEncoding() != TagLib::String::UTF8 )
-            tf->setTextEncoding( TagLib::String::UTF8 );
-    }
+        l = f->ID3v2Tag()->frameListMap()["TPE1"];
+        if ( !l.isEmpty() ) {
+            TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+            if ( tf->textEncoding() != TagLib::String::UTF8 )
+                tf->setTextEncoding( TagLib::String::UTF8 );
+        }
 
-    l = f->ID3v2Tag()->frameListMap()["TCON"];
-    if ( !l.isEmpty() ) {
-        TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-        if ( tf->textEncoding() != TagLib::String::UTF8 )
-            tf->setTextEncoding( TagLib::String::UTF8 );
+        l = f->ID3v2Tag()->frameListMap()["TCON"];
+        if ( !l.isEmpty() ) {
+            TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+            if ( tf->textEncoding() != TagLib::String::UTF8 )
+                tf->setTextEncoding( TagLib::String::UTF8 );
+        }
+
+        l = f->ID3v2Tag()->frameListMap()["COMM"];
+        if ( !l.isEmpty() ) {
+            TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
+            if ( tf->textEncoding() != TagLib::String::UTF8 )
+                tf->setTextEncoding( TagLib::String::UTF8 );
+        }
     }
 
     fileref->save();
@@ -129,6 +138,18 @@ void AListViewItem::removeTag( void )
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         f->strip();
+    } // FIXME : Do something for ogg and flac files
+    else {
+        TagLib::Tag *tag = fileref->tag();
+
+        tag->setTitle( TagLib::String::null );
+        tag->setArtist( TagLib::String::null );
+        tag->setAlbum( TagLib::String::null );
+        tag->setComment( TagLib::String::null );
+        tag->setGenre( TagLib::String::null );
+        tag->setYear( 0 );
+        tag->setTrack( 0 );
+        fileref->save();
     }
 }
 

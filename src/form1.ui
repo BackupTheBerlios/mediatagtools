@@ -14,8 +14,8 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>747</width>
-            <height>435</height>
+            <width>793</width>
+            <height>448</height>
         </size>
     </property>
     <property name="caption">
@@ -194,7 +194,7 @@
                                 <cstring>TabPage</cstring>
                             </property>
                             <attribute name="title">
-                                <string>Generic Tag</string>
+                                <string>Gener&amp;ic Tag</string>
                             </attribute>
                             <vbox>
                                 <property name="name">
@@ -482,10 +482,10 @@
                                                                 <cstring>EmptyFieldsButton</cstring>
                                                             </property>
                                                             <property name="text">
-                                                                <string>E&amp;mpty Fields</string>
+                                                                <string>&amp;Empty Fields</string>
                                                             </property>
                                                             <property name="accel">
-                                                                <string>Alt+M</string>
+                                                                <string>Alt+E</string>
                                                             </property>
                                                         </widget>
                                                     </hbox>
@@ -536,7 +536,7 @@
                                 <cstring>tab3</cstring>
                             </property>
                             <attribute name="title">
-                                <string>Picture</string>
+                                <string>&amp;Picture</string>
                             </attribute>
                             <grid>
                                 <property name="name">
@@ -694,7 +694,7 @@
                                                             <cstring>UseCFChkB</cstring>
                                                         </property>
                                                         <property name="text">
-                                                            <string>&amp;Use Custom Format</string>
+                                                            <string>&amp;Use Filename Format</string>
                                                         </property>
                                                         <property name="accel">
                                                             <string>Alt+U</string>
@@ -757,10 +757,10 @@
                                                             <bool>false</bool>
                                                         </property>
                                                         <property name="text">
-                                                            <string>Use Director&amp;y Format</string>
+                                                            <string>U&amp;se Directory Format</string>
                                                         </property>
                                                         <property name="accel">
-                                                            <string>Alt+Y</string>
+                                                            <string>Alt+S</string>
                                                         </property>
                                                     </widget>
                                                     <widget class="QComboBox">
@@ -782,11 +782,6 @@
                                                         <item>
                                                             <property name="text">
                                                                 <string>../Genre</string>
-                                                            </property>
-                                                        </item>
-                                                        <item>
-                                                            <property name="text">
-                                                                <string>../</string>
                                                             </property>
                                                         </item>
                                                         <property name="name">
@@ -865,10 +860,10 @@
                                             <bool>false</bool>
                                         </property>
                                         <property name="text">
-                                            <string>Create Dir</string>
+                                            <string>Create &amp;Dir</string>
                                         </property>
                                         <property name="accel">
-                                            <string></string>
+                                            <string>Alt+D</string>
                                         </property>
                                     </widget>
                                     <widget class="QPushButton" row="1" column="2">

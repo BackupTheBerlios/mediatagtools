@@ -45,13 +45,13 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 {
     int i;
 
-    LZ = true;
+    LZ = true; // Leading Zeros
     LZ1 = "0";
     LZ2 = "";
 
     d.setFilter( QDir::Files | QDir::Readable );
-    d.setNameFilter( QString( "*.mp3" ) );
-    //d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
+    //d.setNameFilter( QString( "*.mp3" ) );
+    d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
@@ -83,8 +83,8 @@ void mttMainWin::slotOpen()
     bool done = false;
 
     fd.setMode( QFileDialog::Directory );
-    fd.addFilter( "Mp3 Files (*.mp3)" );
-    //fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
+    //fd.addFilter( "Mp3 Files (*.mp3)" );
+    fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
     fd.setDir( d.path() );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
