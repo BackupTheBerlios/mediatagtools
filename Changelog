@@ -1,6 +1,8 @@
---- 0.1beta3 ---
+--- 0.1beta3 --- 28 Dec 2005
 * Text fields' encoding should now be always set correctly to UTF8
 * The lib requirements are now mentioned in the INSTALL file
+* Fixed ogg and flac support (needs testing)
+* A couple of cosmetic fixes
 
 --- 0.1beta2 --- 30 Oct 2005
 * Added a menu on right click on the list view

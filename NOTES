@@ -1,17 +1,5 @@
-  If you have the previous beta version installed,
-upgrade immediately as it has some nasty bugs.
-
-  This is the second beta version of Media Tag Tools.
-For now it supports tagging mp3 files but soon
-every media file supported by taglib will be
-taggable by Media Tag Tools. Some options don't work
-for now and thus they appear grayed out all the time
-although most of the features work fine.
-  Media Tag Tools prefers writing UTF8 strings in the
-tags and that can only be possible with id3v2.4 tags.
-So if a id3v1 tag is found, its contents are copied to
-the appropriate id3v2 fields and then the v1 tag is
-removed from the file. So if you prefer v1 tags this
-program isn't for you! I won't add support for v1 tags
-are they cause more problems to people than they are
-useful.
+  This version fixes a couple of small bugs and adds support for ogg and flac files.
+Actually mediatagtools should be able to handle all file types that taglib support but for
+now I want to focus on mp3,ogg and flac files. All info is saved as utf8 in the tags so
+you shouldn't have any trouble reading it using any decent media program. If you find
+any bugs, or you have any suggestions, feel free to make a bug report on berlios or email me. Have fun! :-)
