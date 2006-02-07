@@ -988,7 +988,7 @@
 <customwidgets>
     <customwidget>
         <class>QCLineEdit</class>
-        <header location="global">/home/oscar/Projects/mediatagtools/src/qclineedit.h</header>
+        <header location="local">qclineedit.h</header>
         <sizehint>
             <width>-1</width>
             <height>12</height>
