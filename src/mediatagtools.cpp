@@ -10,9 +10,9 @@
 int main(int argc, char *argv[])
 {
   QApplication a( argc, argv );
-  MainForm *m = new mttMainWin();
-  a.setMainWidget( m );
-  m->show();
+  mttMainWin m;
+  a.setMainWidget( &m );
+  m.show();
   a.exec();
 
   return EXIT_SUCCESS;

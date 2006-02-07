@@ -31,6 +31,7 @@
 #include <id3v2tag.h>
 #include <textidentificationframe.h>
 
+#include "qclineedit.h"
 #include "mttmainwin.h"
 #include "alistviewitem.h"
 #include "mttcfdialog.h"
@@ -159,13 +160,13 @@ void mttMainWin::slotClickOnItem( QListViewItem* item )
         // Show tag info
         t = (( AListViewItem *) item )->getTag();
         if ( t ) {
-            GenTitleLE->setText( TStringToQString( t->title() ) );
-            GenArtistLE->setText( TStringToQString( t->artist() ) );
-            GenAlbumLE->setText( TStringToQString( t->album() ) );
-            GenYearLE->setText( QString::number( t->year() ) );
+            GenTitleCLE->setText( TStringToQString( t->title() ) );
+            GenArtistCLE->setText( TStringToQString( t->artist() ) );
+            GenAlbumCLE->setText( TStringToQString( t->album() ) );
+            GenYearCLE->setText( QString::number( t->year() ) );
             GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
-            GenCommentLE->setText( TStringToQString( t->comment() ) );
-            GenTrackLE->setText( QString::number( t->track() ) );
+            GenCommentCLE->setText( TStringToQString( t->comment() ) );
+            GenTrackCLE->setText( QString::number( t->track() ) );
         }
 
         // Show media info
@@ -187,7 +188,7 @@ void mttMainWin::slotSaveTags()
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
         t = ( (AListViewItem *) it.current() )->getTag();
-
+        ( (AListViewItem *) it.current() )->checkEncodings();
         // Save info from the various text fields
         if ( GenTitleChkB->isEnabled() && GenTitleChkB->isChecked() ) {
             /*int i=0;
@@ -198,20 +199,20 @@ void mttMainWin::slotSaveTags()
                 i++;
             }
             printf("\n");*/
-            t->setTitle( QStringToTString( GenTitleLE->text() ) );
+            t->setTitle( QStringToTString( GenTitleCLE->text() ) );
         }
         if ( GenArtistChkB->isEnabled() && GenArtistChkB->isChecked() )
-            t->setArtist( QStringToTString( GenArtistLE->text() ) );
+            t->setArtist( QStringToTString( GenArtistCLE->text() ) );
         if ( GenAlbumChkB->isEnabled() && GenAlbumChkB->isChecked() )
-            t->setAlbum( QStringToTString( GenAlbumLE->text() ) );
+            t->setAlbum( QStringToTString( GenAlbumCLE->text() ) );
         if ( GenYearChkB->isEnabled() && GenYearChkB->isChecked() )
-            t->setYear( GenYearLE->text().toInt() );
+            t->setYear( GenYearCLE->text().toInt() );
         if ( GenGenreChkB->isEnabled() && GenGenreChkB->isChecked() )
             t->setGenre( QStringToTString( GenGenreCB->currentText() ) );
         if ( GenCommentChkB->isEnabled() && GenCommentChkB->isChecked() )
-            t->setComment( QStringToTString( GenCommentLE->text() ) );
+            t->setComment( QStringToTString( GenCommentCLE->text() ) );
         if ( GenTrackChkB->isEnabled() && GenTrackChkB->isChecked() )
-            t->setTrack( GenTrackLE->text().toInt() );
+            t->setTrack( GenTrackCLE->text().toInt() );
 
         // Save info using the filename and the custom format string
         if ( UseCFChkB->isChecked() && ( MCFormatLE->text() != "" ) ) { // Custom format is enabled
@@ -289,13 +290,23 @@ void mttMainWin::slotSaveTags()
         }
 
         ( (AListViewItem *) it.current() )->saveTag();
+
+        // Update the ListView too
+        ( (AListViewItem *) it.current() )->setText( 1, TStringToQString( t->title() ) );
+        ( (AListViewItem *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
+        ( (AListViewItem *) it.current() )->setText( 3, TStringToQString( t->album() ) );
+        ( (AListViewItem *) it.current() )->setText( 4, QString::number( t->year() ) );
+        ( (AListViewItem *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
+        ( (AListViewItem *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
+        ( (AListViewItem *) it.current() )->setText( 7, QString::number( t->track() ) );
+
         ++it;
 
         progress.setProgress( current++, count );
     }
 
-    GenListView->clear();
-    populateList();
+    // GenListView->clear();
+    // populateList();
     QApplication::restoreOverrideCursor();
     progress.hide();
     statusBar()->message( QString( "Done" ) );
@@ -498,40 +509,40 @@ void mttMainWin::slotCorrectCase()
 
 void mttMainWin::slotAllUpper()
 {
-    GenTitleLE->setText( GenTitleLE->text().upper() );
-    GenArtistLE->setText( GenArtistLE->text().upper() );
-    GenAlbumLE->setText( GenAlbumLE->text().upper() );
+    GenTitleCLE->setText( GenTitleCLE->text().upper() );
+    GenArtistCLE->setText( GenArtistCLE->text().upper() );
+    GenAlbumCLE->setText( GenAlbumCLE->text().upper() );
     GenGenreCB->setCurrentText( GenGenreCB->currentText().upper() );
-    GenCommentLE->setText( GenCommentLE->text().upper() );
+    GenCommentCLE->setText( GenCommentCLE->text().upper() );
 }
 
 void mttMainWin::slotAllLower()
 {
-    GenTitleLE->setText( GenTitleLE->text().lower() );
-    GenArtistLE->setText( GenArtistLE->text().lower() );
-    GenAlbumLE->setText( GenAlbumLE->text().lower() );
+    GenTitleCLE->setText( GenTitleCLE->text().lower() );
+    GenArtistCLE->setText( GenArtistCLE->text().lower() );
+    GenAlbumCLE->setText( GenAlbumCLE->text().lower() );
     GenGenreCB->setCurrentText( GenGenreCB->currentText().lower() );
-    GenCommentLE->setText( GenCommentLE->text().lower() );
+    GenCommentCLE->setText( GenCommentCLE->text().lower() );
 }
 
 void mttMainWin::slotFirstUp()
 {
-    GenTitleLE->setText( firstUp( GenTitleLE->text().lower() ) );
-    GenArtistLE->setText( firstUp( GenArtistLE->text().lower() ) );
-    GenAlbumLE->setText( firstUp( GenAlbumLE->text().lower() ) );
+    GenTitleCLE->setText( firstUp( GenTitleCLE->text().lower() ) );
+    GenArtistCLE->setText( firstUp( GenArtistCLE->text().lower() ) );
+    GenAlbumCLE->setText( firstUp( GenAlbumCLE->text().lower() ) );
     GenGenreCB->setCurrentText( firstUp( GenGenreCB->currentText().lower() ) );
-    GenCommentLE->setText( firstUp( GenCommentLE->text().lower() ) );
+    GenCommentCLE->setText( firstUp( GenCommentCLE->text().lower() ) );
 }
 
 void mttMainWin::slotEmptyFields()
 {
-    GenTitleLE->clear();
-    GenArtistLE->clear();
-    GenAlbumLE->clear();
-    GenYearLE->clear();
+    GenTitleCLE->clear();
+    GenArtistCLE->clear();
+    GenAlbumCLE->clear();
+    GenYearCLE->clear();
     GenGenreCB->clearEdit();
-    GenCommentLE->clear();
-    GenTrackLE->clear();
+    GenCommentCLE->clear();
+    GenTrackCLE->clear();
 }
 
 QString mttMainWin::firstUp( QString str )
@@ -595,4 +606,124 @@ void mttMainWin::slotFixTags()
     } // for each selected item
     GenListView->clear();
     populateList();
+}
+
+void mttMainWin::slotTitleEnter()
+{
+    if ( GenArtistCLE->isEnabled() )
+        GenArtistCLE->setFocus();
+    else if ( GenAlbumCLE->isEnabled() )
+        GenAlbumCLE->setFocus();
+    else if ( GenYearCLE->isEnabled() )
+        GenYearCLE->setFocus();
+//    else if ( GenGenreCB->isEnabled() )
+//        GenGenreCB->setFocus();
+    else if ( GenCommentCLE->isEnabled() )
+        GenCommentCLE->setFocus();
+    else if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotArtistEnter()
+{
+    if ( GenAlbumCLE->isEnabled() )
+        GenAlbumCLE->setFocus();
+    else if ( GenYearCLE->isEnabled() )
+        GenYearCLE->setFocus();
+/*    else if ( GenGenreCB->isEnabled() )
+        GenGenreCB->setFocus();*/
+    else if ( GenCommentCLE->isEnabled() )
+        GenCommentCLE->setFocus();
+    else if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotAlbumEnter()
+{
+    if ( GenYearCLE->isEnabled() )
+        GenYearCLE->setFocus();
+/*    else if ( GenGenreCB->isEnabled() )
+        GenGenreCB->setFocus();*/
+    else if ( GenCommentCLE->isEnabled() )
+        GenCommentCLE->setFocus();
+    else if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotYearEnter()
+{
+/*    if ( GenGenreCB->isEnabled() )
+        GenGenreCB->setFocus();*/
+    if ( GenCommentCLE->isEnabled() )
+        GenCommentCLE->setFocus();
+    else if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotGenreEnter()
+{
+    if ( GenCommentCLE->isEnabled() )
+        GenCommentCLE->setFocus();
+    else if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotCommentEnter()
+{
+    if ( GenTrackCLE->isEnabled() )
+        GenTrackCLE->setFocus();
+    else
+        slotSaveTags();
+}
+
+void mttMainWin::slotNextEntry()
+{
+    QListViewItem *c;
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    c = it.current();
+    if ( c ) {
+        if ( c->itemBelow() ) {
+            GenListView->clearSelection();
+            GenListView->setSelected( c->itemBelow(), TRUE );
+            GenListView->ensureItemVisible( c->itemBelow() );
+        }
+    }
+    else
+        GenListView->setSelected( GenListView->firstChild(), TRUE );
+}
+
+void mttMainWin::slotPreviousEntry()
+{
+    QListViewItem *c;
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    c = it.current();
+    if ( c ) {
+        if ( c->itemAbove() ) {
+            GenListView->clearSelection();
+            GenListView->setSelected( c->itemAbove(), TRUE );
+            GenListView->ensureItemVisible( c->itemAbove() );
+        }
+    }
+    else
+        GenListView->setSelected( GenListView->firstChild(), TRUE );
+}
+
+void mttMainWin::slotPreviousPage()
+{
+}
+
+void mttMainWin::slotNextPage()
+{
 }

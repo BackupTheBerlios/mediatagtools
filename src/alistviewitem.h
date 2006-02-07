@@ -35,6 +35,7 @@ public:
     bool isOgg( void );
     bool isFLAC( void );
     TagLib::ID3v2::Tag *getID3Tag( bool create = false );
+    void checkEncodings( void );
 
 private:
     TagLib::FileRef *fileref;

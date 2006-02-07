@@ -13,6 +13,7 @@
 #ifndef ATTCFDIALOG_H
 #define ATTCFDIALOG_H
 
+#include <qobject.h>
 #include "form2.h"
 
 class mttCFDialog : public CFormat

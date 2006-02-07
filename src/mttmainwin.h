@@ -36,7 +36,7 @@ protected:
   /*$PROTECTED_FUNCTIONS$*/
     QDir d;
     QStringList separators;
-    QMenuBar *menu;
+    //QMenuBar *menu;
     QProgressBar progress;
     QString LZ1, LZ2;
     bool LZ;
@@ -62,8 +62,17 @@ protected slots:
     virtual void slotEmptyFields();
     virtual void slotLVRightMenu();
     virtual void slotFixTags();
+    virtual void slotCommentEnter();
+    virtual void slotGenreEnter();
+    virtual void slotYearEnter();
+    virtual void slotAlbumEnter();
+    virtual void slotArtistEnter();
+    virtual void slotTitleEnter();
+    virtual void slotNextEntry();
+    virtual void slotPreviousEntry();
+    virtual void slotPreviousPage();
+    virtual void slotNextPage();
 
 };
 
 #endif
-
