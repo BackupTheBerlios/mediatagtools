@@ -314,26 +314,30 @@ void mttMainWin::slotSaveTags()
 
 void mttMainWin::slotRemoveTags()
 {
-    int count, current;
+    int count, current, button;
 
-    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-    statusBar()->message( QString( "Removing tags..." ) );
-    count = GenListView->childCount();
-    current = 1;
-    progress.show();
-    progress.setProgress( 0, count );
-    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        ( (AListViewItem *) it.current() )->removeTag();
-        ++it;
-        progress.setProgress( current++, count );
+    button = QMessageBox::question( this, tr( "Remove tags? -- Mediatagtools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
+
+    if ( button == QMessageBox::Yes ) {
+        QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+        statusBar()->message( QString( "Removing tags..." ) );
+        count = GenListView->childCount();
+        current = 1;
+        progress.show();
+        progress.setProgress( 0, count );
+        QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+        while ( it.current() ) {
+            ( (AListViewItem *) it.current() )->removeTag();
+            ++it;
+            progress.setProgress( current++, count );
+        }
+
+        GenListView->clear();
+        populateList();
+        progress.hide();
+        statusBar()->message( QString( "Done" ) );
+        QApplication::restoreOverrideCursor();
     }
-
-    GenListView->clear();
-    populateList();
-    progress.hide();
-    statusBar()->message( QString( "Done" ) );
-    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::slotCFormat()
