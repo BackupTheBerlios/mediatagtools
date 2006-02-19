@@ -1,3 +1,7 @@
+--- 0.1 --- 19 Feb 2006
+* Some bug fixes and cosmetic changes
+* Added a confirmation dialog for removing tags from files
+
 --- 0.1beta3 --- 28 Dec 2005
 * Text fields' encoding should now be always set correctly to UTF8
 * The lib requirements are now mentioned in the INSTALL file
