@@ -316,27 +316,29 @@ void mttMainWin::slotRemoveTags()
 {
     int count, current, button;
 
-    button = QMessageBox::question( this, tr( "Remove tags? -- Mediatagtools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    if ( it.current() ) {
+        button = QMessageBox::question( this, tr( "Remove tags? -- Mediatagtools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
 
-    if ( button == QMessageBox::Yes ) {
-        QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-        statusBar()->message( QString( "Removing tags..." ) );
-        count = GenListView->childCount();
-        current = 1;
-        progress.show();
-        progress.setProgress( 0, count );
-        QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-        while ( it.current() ) {
-            ( (AListViewItem *) it.current() )->removeTag();
-            ++it;
-            progress.setProgress( current++, count );
+        if ( button == QMessageBox::Yes ) {
+            QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+            statusBar()->message( QString( "Removing tags..." ) );
+            count = GenListView->childCount();
+            current = 1;
+            progress.show();
+            progress.setProgress( 0, count );
+            while ( it.current() ) {
+                ( (AListViewItem *) it.current() )->removeTag();
+                ++it;
+                progress.setProgress( current++, count );
+            }
+    
+            GenListView->clear();
+            populateList();
+            progress.hide();
+            statusBar()->message( QString( "Done" ) );
+            QApplication::restoreOverrideCursor();
         }
-
-        GenListView->clear();
-        populateList();
-        progress.hide();
-        statusBar()->message( QString( "Done" ) );
-        QApplication::restoreOverrideCursor();
     }
 }
 
@@ -574,7 +576,7 @@ void mttMainWin::slotLVRightMenu()
     menu.insertSeparator();
     menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
     menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
-    menu.insertItem( "Fix tag", this, SLOT(slotFixTags()) );
+    menu.insertItem( "Fix tag(s) (iso->utf8)", this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
 }
 

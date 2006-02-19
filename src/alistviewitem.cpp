@@ -154,35 +154,35 @@ void AListViewItem::checkEncodings( void )
         TagLib::ID3v2::FrameList l = f->ID3v2Tag()->frameListMap()["TALB"];
         if ( !l.isEmpty() ) {
             TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-            if ( tf->textEncoding() != TagLib::String::UTF8 )
+            if ( tf && tf->textEncoding() != TagLib::String::UTF8 )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
 
         l = f->ID3v2Tag()->frameListMap()["TIT2"];
         if ( !l.isEmpty() ) {
             TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-            if ( tf->textEncoding() != TagLib::String::UTF8 )
+            if ( tf && tf->textEncoding() != TagLib::String::UTF8 )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
 
         l = f->ID3v2Tag()->frameListMap()["TPE1"];
         if ( !l.isEmpty() ) {
             TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-            if ( tf->textEncoding() != TagLib::String::UTF8 )
+            if ( tf && tf->textEncoding() != TagLib::String::UTF8 )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
 
         l = f->ID3v2Tag()->frameListMap()["TCON"];
         if ( !l.isEmpty() ) {
             TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-            if ( tf->textEncoding() != TagLib::String::UTF8 )
+            if ( tf && tf->textEncoding() != TagLib::String::UTF8 )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
 
         l = f->ID3v2Tag()->frameListMap()["COMM"];
         if ( !l.isEmpty() ) {
             TagLib::ID3v2::TextIdentificationFrame *tf = dynamic_cast<TagLib::ID3v2::TextIdentificationFrame *>(l.front());
-            if ( tf->textEncoding() != TagLib::String::UTF8 )
+            if ( tf && tf->textEncoding() != TagLib::String::UTF8 )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
     }
