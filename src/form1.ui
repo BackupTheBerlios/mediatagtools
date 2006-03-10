@@ -277,6 +277,9 @@
                                             <property name="accel">
                                                 <string>Alt+S</string>
                                             </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Not Implemented yet</string>
+                                            </property>
                                         </widget>
                                         <widget class="QComboBox">
                                             <item>
@@ -366,6 +369,9 @@
                             <property name="accel">
                                 <string>Alt+L</string>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not Implemented yet</string>
+                            </property>
                         </widget>
                         <widget class="QPushButton" row="1" column="3">
                             <property name="name">
@@ -379,6 +385,9 @@
                             </property>
                             <property name="accel">
                                 <string>Alt+D</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not Implemented yet</string>
                             </property>
                         </widget>
                         <widget class="QPushButton" row="1" column="2">
@@ -1006,6 +1015,8 @@
         <signal>nextPage()</signal>
         <signal>previousPage()</signal>
         <signal>returnPressed()</signal>
+        <signal>textChanged( const QString&amp; )</signal>
+        <slot access="public" specifier="">setEnabled(bool)</slot>
     </customwidget>
 </customwidgets>
 <actions>
@@ -1049,6 +1060,9 @@
         </property>
         <property name="menuText">
             <string>Preferences</string>
+        </property>
+        <property name="visible">
+            <bool>false</bool>
         </property>
     </action>
     <action>
@@ -1135,21 +1149,15 @@
     </connection>
     <connection>
         <sender>GenListView</sender>
-        <signal>clicked(QListViewItem*)</signal>
+        <signal>selectionChanged()</signal>
         <receiver>MainForm</receiver>
-        <slot>slotClickOnItem(QListViewItem*)</slot>
+        <slot>slotSelectionChange()</slot>
     </connection>
     <connection>
         <sender>GenListView</sender>
         <signal>rightButtonClicked(QListViewItem*,const QPoint&amp;,int)</signal>
         <receiver>MainForm</receiver>
         <slot>slotLVRightMenu()</slot>
-    </connection>
-    <connection>
-        <sender>helpAboutAction</sender>
-        <signal>activated()</signal>
-        <receiver>MainForm</receiver>
-        <slot>slotAbout()</slot>
     </connection>
     <connection>
         <sender>OpenButton</sender>
@@ -1313,6 +1321,54 @@
         <receiver>MainForm</receiver>
         <slot>slotSaveTags()</slot>
     </connection>
+    <connection>
+        <sender>GenTitleCLE</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotTitleChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>GenTitleChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenTitleCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>GenArtistChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenArtistCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>GenAlbumChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenAlbumCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>GenYearChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenYearCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>GenCommentChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenCommentCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>GenTrackChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>GenTrackCLE</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>helpAboutAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotAbout()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1328,13 +1384,12 @@
 </tabstops>
 <slots>
     <slot access="protected">slotOpen()</slot>
-    <slot access="protected">slotClickOnItem( QListViewItem * )</slot>
     <slot access="protected">slotSaveTags()</slot>
     <slot access="protected">slotRemoveTags()</slot>
     <slot access="protected">slotCFormat()</slot>
     <slot access="protected">slotDisableUsingFormat( bool )</slot>
     <slot access="protected">slotRenameFiles()</slot>
-    <slot access="protected">slotAbout()</slot>
+    <slot access="protected">slotTitleChanged( const QString &amp; )</slot>
     <slot access="protected">slotCorrectCase()</slot>
     <slot access="protected">slotEmptyFields()</slot>
     <slot access="protected">slotLVRightMenu()</slot>
@@ -1348,6 +1403,8 @@
     <slot access="protected">slotPreviousEntry()</slot>
     <slot access="protected">slotNextPage()</slot>
     <slot access="protected">slotPreviousPage()</slot>
+    <slot access="protected">slotSelectionChange()</slot>
+    <slot access="protected">slotAbout()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>

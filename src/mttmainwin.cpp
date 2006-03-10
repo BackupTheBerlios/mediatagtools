@@ -61,8 +61,10 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     setCaption( caption() + " - " + RV_SNAPSHOT_VERSION );
 #endif
 
-    tabWidget->setTabEnabled( tabWidget->page( 1 ), false );
-    tabWidget->setTabEnabled( tabWidget->page( 2 ), false );
+//     tabWidget->setTabEnabled( tabWidget->page( 1 ), false );
+//     tabWidget->setTabEnabled( tabWidget->page( 2 ), false );
+    tabWidget->removePage( tabWidget->page( 1 ) );
+    tabWidget->removePage( tabWidget->page( 1 ) );
 
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
@@ -100,7 +102,7 @@ void mttMainWin::slotOpen()
             return;
     }
 
-    QApplication::setOverrideCursor( QCursor( Qt::BusyCursor ) );
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
     GenListView->clear();
     populateList();
     QApplication::restoreOverrideCursor();
@@ -146,31 +148,6 @@ void mttMainWin::populateList( void )
 
     progress.hide();
     statusBar()->message( QString( "Done" ) );
-}
-
-void mttMainWin::slotClickOnItem( QListViewItem* item )
-{
-    // Clear the contents of the widgets
-    slotEmptyFields();
-
-    // Set the contents of the widgets according to the tag
-    TagLib::Tag *t;
-
-    if ( item ) {
-        // Show tag info
-        t = (( AListViewItem *) item )->getTag();
-        if ( t ) {
-            GenTitleCLE->setText( TStringToQString( t->title() ) );
-            GenArtistCLE->setText( TStringToQString( t->artist() ) );
-            GenAlbumCLE->setText( TStringToQString( t->album() ) );
-            GenYearCLE->setText( QString::number( t->year() ) );
-            GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
-            GenCommentCLE->setText( TStringToQString( t->comment() ) );
-            GenTrackCLE->setText( QString::number( t->track() ) );
-        }
-
-        // Show media info
-    }
 }
 
 void mttMainWin::slotSaveTags()
@@ -425,6 +402,7 @@ void mttMainWin::slotDisableUsingFormat( bool cond )
 void mttMainWin::slotRenameFiles()
 {
     int count, current;
+    int noall = false;
 
     QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
     statusBar()->message( QString( "Renaming Files..." ) );
@@ -483,7 +461,29 @@ void mttMainWin::slotRenameFiles()
             qDebug( "ext:" + ext );
             qDebug( "new filename:" + path + "/" + newfname + ext );
             QDir dir;
-            dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext );
+            QFile f( path + "/" + newfname + ext );
+            if ( !noall ) {
+                if ( f.exists() ) { // File with that name already exists
+                    switch( QMessageBox::question(
+                                this,
+                                tr("Overwrite File? -- Media Tag Tools"),
+                                tr("A file called %1 already exists."
+                                "Do you want to overwrite it?")
+                                .arg( f.name() ),
+                                tr("&Yes"), tr("&No"),
+                                tr("No to &All"), 0, 1 ) ) {
+                        case 0:
+                            dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext );
+                        case 1:
+                            break;
+                        case 2:
+                            noall = true;
+                            break;
+                    }
+                }
+                else
+                    dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext );
+            }
         }
         ++it;
         progress.setProgress( current++, count );
@@ -733,3 +733,51 @@ void mttMainWin::slotPreviousPage()
 void mttMainWin::slotNextPage()
 {
 }
+
+void mttMainWin::slotTitleChanged( const QString &title )
+{
+/*    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        it.current()->setText( 1, title );
+    it++;
+    }*/
+}
+
+void mttMainWin::slotSelectionChange()
+{
+    bool updateSelectedFname = false;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    if ( !selectedFname.isEmpty() ) {
+        QListViewItem *lvi = GenListView->findItem( selectedFname, 0 );
+        if ( lvi && !lvi->isSelected() )
+            updateSelectedFname = true;
+    }
+    if ( selectedFname.isEmpty() || updateSelectedFname ) {
+        // Clear the contents of the widgets
+        slotEmptyFields();
+
+        // Set the contents of the widgets according to the tag
+        TagLib::Tag *t;
+
+        if ( it.current() ) {
+            // Show tag info
+            t = (( AListViewItem *) it.current() )->getTag();
+            if ( t ) {
+                GenTitleCLE->setText( TStringToQString( t->title() ) );
+                GenArtistCLE->setText( TStringToQString( t->artist() ) );
+                GenAlbumCLE->setText( TStringToQString( t->album() ) );
+                GenYearCLE->setText( QString::number( t->year() ) );
+                GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
+                GenCommentCLE->setText( TStringToQString( t->comment() ) );
+                GenTrackCLE->setText( QString::number( t->track() ) );
+
+                selectedFname = (( AListViewItem *) it.current() )->getFName();
+                selectedFname = selectedFname.mid( selectedFname.findRev( "/" ) + 1 );
+            }
+            // Show media info
+        }
+    }
+}
+

@@ -1,4 +1,5 @@
 #!/bin/bash
 
 cd ..
-tar cvfj mediatagtools-`cat mediatagtools/VERSION`.tar.bz2 --exclude "*.svn" mediatagtools
+cp -r mediatagtools mediatagtools-`cat mediatagtools/VERSION`
+tar cvfj mediatagtools-`cat mediatagtools/VERSION`.tar.bz2 --exclude "*.svn" mediatagtools-`cat mediatagtools/VERSION`

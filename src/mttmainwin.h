@@ -36,10 +36,10 @@ protected:
   /*$PROTECTED_FUNCTIONS$*/
     QDir d;
     QStringList separators;
-    //QMenuBar *menu;
     QProgressBar progress;
     QString LZ1, LZ2;
     bool LZ;
+    QString selectedFname;
 
     void populateList( void );
     QString firstUp( QString );
@@ -50,7 +50,6 @@ protected slots:
     virtual void slotOpen();
     virtual void slotRemoveTags();
     virtual void slotSaveTags();
-    virtual void slotClickOnItem( QListViewItem* item );
     virtual void slotCFormat();
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
@@ -72,6 +71,8 @@ protected slots:
     virtual void slotPreviousEntry();
     virtual void slotPreviousPage();
     virtual void slotNextPage();
+    virtual void slotTitleChanged( const QString & );
+    virtual void slotSelectionChange();
 
 };
 

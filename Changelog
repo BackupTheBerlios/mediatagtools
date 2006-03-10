@@ -1,3 +1,7 @@
+--- 0.1.1 --- 10 Mar 2006
+* Some GUI cleanup
+* Add a warning when "Rename Files" tries to overwrite a file
+
 --- 0.1 --- 19 Feb 2006
 * Some bug fixes and cosmetic changes
 * Added a confirmation dialog for removing tags from files
