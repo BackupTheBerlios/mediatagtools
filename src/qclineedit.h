@@ -33,6 +33,7 @@ signals:
     void previousEntry( void );
     void nextPage( void );
     void previousPage( void );
+    void newText( QString );
 };
 
 #endif

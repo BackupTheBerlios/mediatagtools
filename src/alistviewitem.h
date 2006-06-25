@@ -12,6 +12,7 @@
 #ifndef ALISTVIEWITEM_H
 #define ALISTVIEWITEM_H
 
+#include <qpainter.h>
 #include <qlistview.h>
 #include <fileref.h>
 
@@ -36,11 +37,15 @@ public:
     bool isFLAC( void );
     TagLib::ID3v2::Tag *getID3Tag( bool create = false );
     void checkEncodings( void );
+    void setTagChanged( bool );
+    bool tagChanged( void );
+    void paintCell( QPainter *, const QColorGroup&, int, int, int );
 
 private:
     TagLib::FileRef *fileref;
     bool ismpeg, isogg, isflac;
     QString fname;
+    bool tagChange;
 };
 
 #endif

@@ -35,7 +35,17 @@ void QCLineEdit::keyReleaseEvent( QKeyEvent * e )
         case Qt::Key_Next: // PageDown
             emit nextPage();
             break;
+        case Qt::Key_Shift:
+        case Qt::Key_Control:
+        case Qt::Key_Alt:
+        case Qt::Key_Meta:
+        case Qt::Key_ScrollLock:
+        case Qt::Key_NumLock:
+        case Qt::Key_CapsLock:
+            e->ignore();
+            break;
         default:
+            emit newText( text() );
             e->ignore();
     }
 }

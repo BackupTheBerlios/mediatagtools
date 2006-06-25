@@ -41,6 +41,7 @@
 #include "revision.h"
 #endif
 
+
 mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 : MainForm(parent,name,fl)
 {
@@ -152,141 +153,12 @@ void mttMainWin::populateList( void )
 
 void mttMainWin::slotSaveTags()
 {
-    TagLib::Tag *t;
-    int current, count;
+    saveTags( false );
+}
 
-    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-    statusBar()->message( QString( "Writing tags..." ) );
-    count = GenListView->childCount();
-    current = 1;
-    progress.show();
-    progress.setProgress( 0, count );
-    TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
-    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag();
-        ( (AListViewItem *) it.current() )->checkEncodings();
-        // Save info from the various text fields
-        if ( GenTitleChkB->isEnabled() && GenTitleChkB->isChecked() ) {
-            /*int i=0;
-            printf( "%d\n", GenTitleLE->text().length() );
-            QString tmp=GenTitleLE->text();
-            while( tmp[i] != 0 ) {
-                printf( "%x", tmp[i] );
-                i++;
-            }
-            printf("\n");*/
-            t->setTitle( QStringToTString( GenTitleCLE->text() ) );
-        }
-        if ( GenArtistChkB->isEnabled() && GenArtistChkB->isChecked() )
-            t->setArtist( QStringToTString( GenArtistCLE->text() ) );
-        if ( GenAlbumChkB->isEnabled() && GenAlbumChkB->isChecked() )
-            t->setAlbum( QStringToTString( GenAlbumCLE->text() ) );
-        if ( GenYearChkB->isEnabled() && GenYearChkB->isChecked() )
-            t->setYear( GenYearCLE->text().toInt() );
-        if ( GenGenreChkB->isEnabled() && GenGenreChkB->isChecked() )
-            t->setGenre( QStringToTString( GenGenreCB->currentText() ) );
-        if ( GenCommentChkB->isEnabled() && GenCommentChkB->isChecked() )
-            t->setComment( QStringToTString( GenCommentCLE->text() ) );
-        if ( GenTrackChkB->isEnabled() && GenTrackChkB->isChecked() )
-            t->setTrack( GenTrackCLE->text().toInt() );
-
-        // Save info using the filename and the custom format string
-        if ( UseCFChkB->isChecked() && ( MCFormatLE->text() != "" ) ) { // Custom format is enabled
-            QString formatstr = MCFormatLE->text();
-            QStringList::Iterator slit = separators.begin();
-            QString filename = ( (AListViewItem *) it.current() )->getFName();
-            int curpos, pos1, pos2;
-            bool done;
-
-            // Remove path from filename
-            curpos = filename.findRev( "/" );
-            if ( curpos != -1 )
-                filename.remove( 0, curpos + 1 );
-            // Remove extension too
-            curpos = filename.findRev( "." );
-            if ( curpos != -1 )
-                filename.truncate( curpos );
-
-            done = false;
-            while ( !done ) {
-                pos1 = formatstr.find( ">" );
-                pos2 = formatstr.find( "<", 1 );
-                if ( pos1 == -1 ) // No more <> tags
-                    done = true;
-                else if ( pos2 == -1 ) { // Last <> tag
-                    if ( formatstr.startsWith( QString( "<artist>" ) ) )
-                        t->setArtist( QStringToTString( filename ) );
-                    if ( formatstr.startsWith( QString( "<album>" ) ) )
-                        t->setAlbum( QStringToTString( filename ) );
-                    if ( formatstr.startsWith( QString( "<year>" ) ) )
-                        t->setYear( filename.toInt() );
-                    if ( formatstr.startsWith( QString( "<title>" ) ) )
-                        t->setTitle( QStringToTString( filename ) );
-                    if ( formatstr.startsWith( QString( "<comment>" ) ) )
-                        t->setComment( QStringToTString( filename ) );
-                    if ( formatstr.startsWith( QString( "<genre>" ) ) )
-                        t->setGenre( QStringToTString( filename ) );
-                    if ( formatstr.startsWith( QString( "<track>" ) ) )
-                        t->setTrack( filename.toInt() );
-                    done = true;
-                }
-                else { // <> tag & separator exist
-                    int pos = filename.find( formatstr.mid( pos1 + 1, pos2 - pos1 -1 ) );
-                    if ( pos != -1 ) {
-                        QString data = filename.left( pos );
-
-                        if ( formatstr.startsWith( QString( "<artist>" ) ) )
-                            t->setArtist( QStringToTString( data ) );
-                        if ( formatstr.startsWith( QString( "<album>" ) ) )
-                            t->setAlbum( QStringToTString( data ) );
-                        if ( formatstr.startsWith( QString( "<year>" ) ) )
-                            t->setYear( data.toInt() );
-                        if ( formatstr.startsWith( QString( "<title>" ) ) )
-                            t->setTitle( QStringToTString( data ) );
-                        if ( formatstr.startsWith( QString( "<comment>" ) ) )
-                            t->setComment( QStringToTString( data ) );
-                        if ( formatstr.startsWith( QString( "<genre>" ) ) )
-                            t->setGenre( QStringToTString( data ) );
-                        if ( formatstr.startsWith( QString( "<track>" ) ) )
-                            t->setTrack( data.toInt() );
-
-                        //qDebug( "filename:" + filename );
-                        //qDebug( "formatstr:" + formatstr );
-                        //qDebug( "data:" + data );
-                        //qDebug( "mid:" + formatstr.mid( pos1 + 1, pos2 - pos1 - 1 ) );
-                        filename.remove( 0, pos + pos2 - pos1 - 1 );
-                        formatstr.remove( 0, pos2 );
-                        //qDebug( "filename:" + filename );
-                        //qDebug( "formatstr:" + formatstr );
-                    }
-                    else
-                        done = true;
-                }
-            }
-        }
-
-        ( (AListViewItem *) it.current() )->saveTag();
-
-        // Update the ListView too
-        ( (AListViewItem *) it.current() )->setText( 1, TStringToQString( t->title() ) );
-        ( (AListViewItem *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
-        ( (AListViewItem *) it.current() )->setText( 3, TStringToQString( t->album() ) );
-        ( (AListViewItem *) it.current() )->setText( 4, QString::number( t->year() ) );
-        ( (AListViewItem *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
-        ( (AListViewItem *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
-        ( (AListViewItem *) it.current() )->setText( 7, QString::number( t->track() ) );
-
-        ++it;
-
-        progress.setProgress( current++, count );
-    }
-
-    // GenListView->clear();
-    // populateList();
-    QApplication::restoreOverrideCursor();
-    progress.hide();
-    statusBar()->message( QString( "Done" ) );
+void mttMainWin::slotSaveSelectedTags()
+{
+    saveTags( true );
 }
 
 void mttMainWin::slotRemoveTags()
@@ -575,6 +447,7 @@ void mttMainWin::slotLVRightMenu()
     menu.insertItem( "Open folder", this, SLOT(slotOpen()) );
     menu.insertSeparator();
     menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
+    menu.insertItem( "Write selected tag(s) only", this, SLOT(slotSaveSelectedTags()) );
     menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
     menu.insertItem( "Fix tag(s) (iso->utf8)", this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
@@ -629,7 +502,7 @@ void mttMainWin::slotTitleEnter()
     else if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotArtistEnter()
@@ -645,7 +518,7 @@ void mttMainWin::slotArtistEnter()
     else if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotAlbumEnter()
@@ -659,7 +532,7 @@ void mttMainWin::slotAlbumEnter()
     else if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotYearEnter()
@@ -671,7 +544,7 @@ void mttMainWin::slotYearEnter()
     else if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotGenreEnter()
@@ -681,7 +554,7 @@ void mttMainWin::slotGenreEnter()
     else if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotCommentEnter()
@@ -689,7 +562,7 @@ void mttMainWin::slotCommentEnter()
     if ( GenTrackCLE->isEnabled() )
         GenTrackCLE->setFocus();
     else
-        slotSaveTags();
+        saveTags( true );
 }
 
 void mttMainWin::slotNextEntry()
@@ -734,13 +607,22 @@ void mttMainWin::slotNextPage()
 {
 }
 
-void mttMainWin::slotTitleChanged( const QString &title )
+void mttMainWin::slotTitleChanged( QString title )
 {
-/*    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     while ( it.current() ) {
-        it.current()->setText( 1, title );
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( TStringToQString( t->title() ) != title ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setTitle( QStringToTString( title ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 1, title );
+        }
     it++;
-    }*/
+    }
 }
 
 void mttMainWin::slotSelectionChange()
@@ -779,5 +661,274 @@ void mttMainWin::slotSelectionChange()
             // Show media info
         }
     }
+}
+
+void mttMainWin::slotTrackChanged( QString track )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if (  t->track() != track.toUInt() ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setTrack( track.toUInt() );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 7, track );
+        }
+    it++;
+    }
+}
+
+
+void mttMainWin::slotCommentChanged( QString comment )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( TStringToQString( t->comment() ) != comment ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setComment( QStringToTString( comment ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 6, comment );
+        }
+    it++;
+    }
+}
+
+
+void mttMainWin::slotYearChanged( QString year )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( t->year() != year.toUInt() ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setYear( year.toUInt() );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 4, year );
+        }
+    it++;
+    }
+}
+
+
+void mttMainWin::slotAlbumChanged( QString album )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( TStringToQString( t->album() ) != album ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setAlbum( QStringToTString( album ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 3, album );
+        }
+    it++;
+    }
+}
+
+
+void mttMainWin::slotArtistChanged( QString artist )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( TStringToQString( t->artist() ) != artist ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setArtist( QStringToTString( artist ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 2, artist );
+        }
+    it++;
+    }
+}
+
+void mttMainWin::slotGenreChanged( const QString &genre )
+{
+    TagLib::Tag *t;
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        if ( TStringToQString( t->genre() ) != genre ) { // A bit of a double check but just to be sure...
+            ( (AListViewItem *) it.current() )->checkEncodings();
+            // Save info from the various text fields
+            t->setGenre( QStringToTString( genre ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            it.current()->setText( 5, genre );
+        }
+    it++;
+    }
+}
+
+void mttMainWin::saveTags( bool selectedOnly )
+{
+    TagLib::Tag *t;
+    int current, count;
+
+    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+    statusBar()->message( QString( "Writing tags..." ) );
+    count = GenListView->childCount();
+    current = 1;
+    progress.show();
+    progress.setProgress( 0, count );
+    TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
+    QListViewItemIterator it;
+    if ( selectedOnly ) {
+        QListViewItemIterator tmp( GenListView, QListViewItemIterator::Selected );
+        it = tmp;
+        }
+    else {
+        QListViewItemIterator tmp( GenListView );
+        it = tmp;
+        }
+    while ( it.current() ) {
+        if ( selectedOnly || ( (AListViewItem *) it.current() )->tagChanged() ) {
+            t = ( (AListViewItem *) it.current() )->getTag();
+            ( (AListViewItem *) it.current() )->checkEncodings();
+
+            ( (AListViewItem *) it.current() )->saveTag();
+            ( (AListViewItem *) it.current() )->setTagChanged( false );
+
+            // Update the ListView too
+            ( (AListViewItem *) it.current() )->repaint();
+        }
+        ++it;
+
+        progress.setProgress( current++, count );
+    }
+
+    QApplication::restoreOverrideCursor();
+    progress.hide();
+    statusBar()->message( QString( "Done" ) );
+}
+
+void mttMainWin::slotCreateTags()
+{
+    TagLib::Tag *t;
+    int current, count;
+
+    QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
+    statusBar()->message( QString( "Writing tags..." ) );
+    count = GenListView->childCount();
+    current = 1;
+    progress.show();
+    progress.setProgress( 0, count );
+    TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
+    QListViewItemIterator it;
+    QListViewItemIterator tmp( GenListView, QListViewItemIterator::Selected );
+    it = tmp;
+    while ( it.current() ) {
+        t = ( (AListViewItem *) it.current() )->getTag();
+        ( (AListViewItem *) it.current() )->checkEncodings();
+
+        // Save info using the filename and the custom format string
+        if ( UseCFChkB->isChecked() && ( MCFormatLE->text() != "" ) ) { // Custom format is enabled
+            QString formatstr = MCFormatLE->text();
+            QStringList::Iterator slit = separators.begin();
+            QString filename = ( (AListViewItem *) it.current() )->getFName();
+            int curpos, pos1, pos2;
+            bool done;
+    
+            // Remove path from filename
+            curpos = filename.findRev( "/" );
+            if ( curpos != -1 )
+                filename.remove( 0, curpos + 1 );
+            // Remove extension too
+            curpos = filename.findRev( "." );
+            if ( curpos != -1 )
+                filename.truncate( curpos );
+    
+            done = false;
+            while ( !done ) {
+                pos1 = formatstr.find( ">" );
+                pos2 = formatstr.find( "<", 1 );
+                if ( pos1 == -1 ) // No more <> tags
+                    done = true;
+                else if ( pos2 == -1 ) { // Last <> tag
+                    if ( formatstr.startsWith( QString( "<artist>" ) ) )
+                        t->setArtist( QStringToTString( filename ) );
+                    if ( formatstr.startsWith( QString( "<album>" ) ) )
+                        t->setAlbum( QStringToTString( filename ) );
+                    if ( formatstr.startsWith( QString( "<year>" ) ) )
+                        t->setYear( filename.toInt() );
+                    if ( formatstr.startsWith( QString( "<title>" ) ) )
+                        t->setTitle( QStringToTString( filename ) );
+                    if ( formatstr.startsWith( QString( "<comment>" ) ) )
+                        t->setComment( QStringToTString( filename ) );
+                    if ( formatstr.startsWith( QString( "<genre>" ) ) )
+                        t->setGenre( QStringToTString( filename ) );
+                    if ( formatstr.startsWith( QString( "<track>" ) ) )
+                        t->setTrack( filename.toInt() );
+                    done = true;
+                }
+                else { // <> tag & separator exist
+                    int pos = filename.find( formatstr.mid( pos1 + 1, pos2 - pos1 -1 ) );
+                    if ( pos != -1 ) {
+                        QString data = filename.left( pos );
+
+                        if ( formatstr.startsWith( QString( "<artist>" ) ) )
+                            t->setArtist( QStringToTString( data ) );
+                        if ( formatstr.startsWith( QString( "<album>" ) ) )
+                            t->setAlbum( QStringToTString( data ) );
+                        if ( formatstr.startsWith( QString( "<year>" ) ) )
+                            t->setYear( data.toInt() );
+                        if ( formatstr.startsWith( QString( "<title>" ) ) )
+                            t->setTitle( QStringToTString( data ) );
+                        if ( formatstr.startsWith( QString( "<comment>" ) ) )
+                            t->setComment( QStringToTString( data ) );
+                        if ( formatstr.startsWith( QString( "<genre>" ) ) )
+                            t->setGenre( QStringToTString( data ) );
+                        if ( formatstr.startsWith( QString( "<track>" ) ) )
+                            t->setTrack( data.toInt() );
+
+                        //qDebug( "filename:" + filename );
+                        //qDebug( "formatstr:" + formatstr );
+                        //qDebug( "data:" + data );
+                        //qDebug( "mid:" + formatstr.mid( pos1 + 1, pos2 - pos1 - 1 ) );
+                        filename.remove( 0, pos + pos2 - pos1 - 1 );
+                        formatstr.remove( 0, pos2 );
+                        //qDebug( "filename:" + filename );
+                        //qDebug( "formatstr:" + formatstr );
+                    }
+                    else
+                         done = true;
+                }
+            }
+ 
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+
+            // Update the ListView too
+            ( (AListViewItem *) it.current() )->repaint();
+            ( (AListViewItem *) it.current() )->setText( 1, TStringToQString( t->title() ) );
+            ( (AListViewItem *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
+            ( (AListViewItem *) it.current() )->setText( 3, TStringToQString( t->album() ) );
+            ( (AListViewItem *) it.current() )->setText( 4, QString::number( t->year() ) );
+            ( (AListViewItem *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
+            ( (AListViewItem *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
+            ( (AListViewItem *) it.current() )->setText( 7, QString::number( t->track() ) );
+        }
+        ++it;
+
+        progress.setProgress( current++, count );
+    }
+
+    QApplication::restoreOverrideCursor();
+    progress.hide();
+    statusBar()->message( QString( "Done" ) );
 }
 

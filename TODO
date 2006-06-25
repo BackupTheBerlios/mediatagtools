@@ -1,3 +1,4 @@
 * Add id3v2 "Position in set" frame support
-* Keep changes and save tags later
+* Keep changes and save tags later (done)
 * Add Music Brainz support
+* Convert tags from any iso charset to utf8

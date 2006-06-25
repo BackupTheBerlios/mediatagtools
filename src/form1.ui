@@ -9,13 +9,13 @@
             <x>0</x>
             <y>0</y>
             <width>968</width>
-            <height>585</height>
+            <height>619</height>
         </rect>
     </property>
     <property name="minimumSize">
         <size>
-            <width>751</width>
-            <height>490</height>
+            <width>786</width>
+            <height>552</height>
         </size>
     </property>
     <property name="caption">
@@ -163,7 +163,7 @@
         </widget>
         <widget class="QLayoutWidget" row="1" column="1">
             <property name="name">
-                <cstring>layout23</cstring>
+                <cstring>layout15</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -182,13 +182,13 @@
                         </sizepolicy>
                     </property>
                     <property name="title">
-                        <string>Choose the Tag Format for Write Tags / Rename Files</string>
+                        <string>Choose the Tag Format for Create Tags / Rename Files</string>
                     </property>
-                    <grid>
+                    <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLayoutWidget" row="0" column="0">
+                        <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout6</cstring>
                             </property>
@@ -313,7 +313,42 @@
                                 </widget>
                             </vbox>
                         </widget>
-                    </grid>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout14</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>CreateTagsButton</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Create Tags from Filename</string>
+                                    </property>
+                                </widget>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>RenameFButton</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="text">
+                                        <string>Re&amp;name Files</string>
+                                    </property>
+                                    <property name="accel">
+                                        <string>Alt+N</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
                 </widget>
                 <widget class="QGroupBox">
                     <property name="name">
@@ -356,23 +391,6 @@
                                 <string>Alt+G</string>
                             </property>
                         </widget>
-                        <widget class="QPushButton" row="1" column="1">
-                            <property name="name">
-                                <cstring>CleanFButton</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>C&amp;lean Filenames</string>
-                            </property>
-                            <property name="accel">
-                                <string>Alt+L</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Not Implemented yet</string>
-                            </property>
-                        </widget>
                         <widget class="QPushButton" row="1" column="3">
                             <property name="name">
                                 <cstring>CreateDirButton</cstring>
@@ -388,20 +406,6 @@
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Not Implemented yet</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton" row="1" column="2">
-                            <property name="name">
-                                <cstring>RenameFButton</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Re&amp;name Files</string>
-                            </property>
-                            <property name="accel">
-                                <string>Alt+N</string>
                             </property>
                         </widget>
                         <widget class="QPushButton" row="0" column="2">
@@ -426,28 +430,45 @@
                                 <string>Alt+X</string>
                             </property>
                         </widget>
+                        <widget class="QPushButton" row="1" column="2">
+                            <property name="name">
+                                <cstring>CleanFButton</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>C&amp;lean Filenames</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+L</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Not Implemented yet</string>
+                            </property>
+                        </widget>
                     </grid>
                 </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer1</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Vertical</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Maximum</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>20</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
             </vbox>
         </widget>
-        <widget class="QTabWidget" row="1" column="0">
+        <spacer row="2" column="1">
+            <property name="name">
+                <cstring>spacer1</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Maximum</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QTabWidget" row="1" column="0" rowspan="2" colspan="1">
             <property name="name">
                 <cstring>tabWidget</cstring>
             </property>
@@ -1016,6 +1037,7 @@
         <signal>previousPage()</signal>
         <signal>returnPressed()</signal>
         <signal>textChanged( const QString&amp; )</signal>
+        <signal>newText( QString )</signal>
         <slot access="public" specifier="">setEnabled(bool)</slot>
     </customwidget>
 </customwidgets>
@@ -1323,9 +1345,9 @@
     </connection>
     <connection>
         <sender>GenTitleCLE</sender>
-        <signal>textChanged(const QString&amp;)</signal>
+        <signal>newText(QString)</signal>
         <receiver>MainForm</receiver>
-        <slot>slotTitleChanged(const QString&amp;)</slot>
+        <slot>slotTitleChanged(QString)</slot>
     </connection>
     <connection>
         <sender>GenTitleChkB</sender>
@@ -1369,6 +1391,54 @@
         <receiver>MainForm</receiver>
         <slot>slotAbout()</slot>
     </connection>
+    <connection>
+        <sender>GenAlbumCLE</sender>
+        <signal>newText(QString)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotAlbumChanged(QString)</slot>
+    </connection>
+    <connection>
+        <sender>GenCommentCLE</sender>
+        <signal>newText(QString)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotCommentChanged(QString)</slot>
+    </connection>
+    <connection>
+        <sender>GenArtistCLE</sender>
+        <signal>newText(QString)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotArtistChanged(QString)</slot>
+    </connection>
+    <connection>
+        <sender>GenTrackCLE</sender>
+        <signal>newText(QString)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotTrackChanged(QString)</slot>
+    </connection>
+    <connection>
+        <sender>GenYearCLE</sender>
+        <signal>newText(QString)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotYearChanged(QString)</slot>
+    </connection>
+    <connection>
+        <sender>GenGenreCB</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotGenreChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>UseCFChkB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>CreateTagsButton</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>CreateTagsButton</sender>
+        <signal>clicked()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotCreateTags()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1389,7 +1459,7 @@
     <slot access="protected">slotCFormat()</slot>
     <slot access="protected">slotDisableUsingFormat( bool )</slot>
     <slot access="protected">slotRenameFiles()</slot>
-    <slot access="protected">slotTitleChanged( const QString &amp; )</slot>
+    <slot access="protected">slotTitleChanged( QString )</slot>
     <slot access="protected">slotCorrectCase()</slot>
     <slot access="protected">slotEmptyFields()</slot>
     <slot access="protected">slotLVRightMenu()</slot>
@@ -1405,6 +1475,14 @@
     <slot access="protected">slotPreviousPage()</slot>
     <slot access="protected">slotSelectionChange()</slot>
     <slot access="protected">slotAbout()</slot>
+    <slot access="protected">slotArtistChanged( QString )</slot>
+    <slot access="protected">slotAlbumChanged( QString )</slot>
+    <slot access="protected">slotYearChanged( QString )</slot>
+    <slot access="protected">slotCommentChanged( QString )</slot>
+    <slot access="protected">slotTrackChanged( QString )</slot>
+    <slot access="protected">slotGenreChanged( const QString&amp; )</slot>
+    <slot access="protected">slotSaveSelectedTags()</slot>
+    <slot access="protected">slotCreateTags()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>

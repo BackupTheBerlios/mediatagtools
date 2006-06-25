@@ -27,12 +27,17 @@ AListViewItem::AListViewItem( QListView * parent )
     ismpeg = false;
     isogg = false;
     isflac = false;
+    tagChange = false;
 }
 
 AListViewItem::AListViewItem ( QListView * parent, QString label1, QString label2, QString label3, QString label4, QString label5, QString label6, QString label7, QString label8 )
  : QListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
 {
     fileref = NULL;
+    ismpeg = false;
+    isogg = false;
+    isflac = false;
+    tagChange = false;
 }
 
 
@@ -186,4 +191,55 @@ void AListViewItem::checkEncodings( void )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
     }
+}
+
+void AListViewItem::setTagChanged( bool ch )
+{
+    tagChange = ch;
+}
+
+bool AListViewItem::tagChanged( void )
+{
+    return tagChange;
+}
+
+void AListViewItem::paintCell ( QPainter * p, const QColorGroup & cg, int column, int width, int align )
+{
+    // A rip of the default paintCell function
+    // All I ever wanted was a way to have color text in a QListView...
+    // Change width() if you change this.
+
+    if ( !p )
+        return;
+
+    QListView *lv = listView();
+    if ( !lv )
+        return;
+
+//     const BackgroundMode bgmode = lv->viewport()->backgroundMode();
+//     const QColorGroup::ColorRole crole = QPalette::backgroundRoleFromMode( bgmode );
+//     if ( cg.brush( crole ) != lv->colorGroup().brush( crole ) )
+//         p->fillRect( 0, 0, width, height(), cg.brush( crole ) );
+//     else
+//         lv->paintEmptyArea( p, QRect( 0, 0, width, height() ) );
+
+//     bool parentControl = FALSE;
+//     if ( parent() && parent()->rtti() == 1  &&
+//          ((QCheckListItem*) parent())->type() == RadioButtonController )
+//         parentControl = TRUE;
+
+    QFontMetrics fm( lv->fontMetrics() );
+    int marg = lv->itemMargin();
+    int r = marg;
+
+    // Draw text ----------------------------------------------------
+    p->translate( r, 0 );
+    if ( tagChanged() ) {
+        QColorGroup cg2 = cg;
+        cg2.setColor( QColorGroup::Text, Qt::red );
+        cg2.setColor( QColorGroup::HighlightedText, Qt::red );
+        QListViewItem::paintCell( p, cg2, column, width - r, align );
+    }
+    else
+        QListViewItem::paintCell( p, cg, column, width - r, align );
 }

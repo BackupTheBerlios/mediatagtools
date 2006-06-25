@@ -44,12 +44,14 @@ protected:
     void populateList( void );
     QString firstUp( QString );
     bool isTextFrame( QString );
+    void saveTags( bool selectedOnly = false );
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotOpen();
     virtual void slotRemoveTags();
     virtual void slotSaveTags();
+    virtual void slotSaveSelectedTags();
     virtual void slotCFormat();
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
@@ -71,8 +73,15 @@ protected slots:
     virtual void slotPreviousEntry();
     virtual void slotPreviousPage();
     virtual void slotNextPage();
-    virtual void slotTitleChanged( const QString & );
+    virtual void slotTitleChanged( QString );
     virtual void slotSelectionChange();
+    virtual void slotGenreChanged( const QString& );
+    virtual void slotTrackChanged( QString );
+    virtual void slotCommentChanged( QString );
+    virtual void slotYearChanged( QString );
+    virtual void slotAlbumChanged( QString );
+    virtual void slotArtistChanged( QString );
+    virtual void slotCreateTags();
 
 };
 
