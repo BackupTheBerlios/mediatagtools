@@ -107,6 +107,7 @@ void mttMainWin::slotOpen()
     GenListView->clear();
     populateList();
     QApplication::restoreOverrideCursor();
+    selectedFname = "";
 }
 
 void mttMainWin::populateList( void )
