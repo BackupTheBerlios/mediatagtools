@@ -639,7 +639,7 @@ void mttMainWin::slotSelectionChange()
     }
     if ( selectedFname.isEmpty() || updateSelectedFname ) {
         // Clear the contents of the widgets
-        slotEmptyFields();
+        //slotEmptyFields(); // Probably unecessary
 
         // Set the contents of the widgets according to the tag
         TagLib::Tag *t;
