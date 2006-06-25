@@ -54,8 +54,11 @@ void AListViewItem::FileRef( QString filename )
     if ( filename.endsWith( ".mp3", false ) ) {
         ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+        qDebug( filename + "- f != NULL???" );
         if ( f ) {
+            qDebug( "Yes" );
             if ( !f->ID3v2Tag() && f->ID3v1Tag() ) {
+                qDebug( "ID3v1 and no ID3v2 detected!" );
                 // Copy id3v1 tag to id3v2 tag
                 TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
                 TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag( true );
@@ -64,13 +67,16 @@ void AListViewItem::FileRef( QString filename )
                 v2tag->setArtist( v1tag->artist() );
                 v2tag->setComment( v1tag->comment() );
                 v2tag->setGenre( v1tag->genre() );
+                qDebug( TStringToQString( v1tag->genre() ) );
+                qDebug( TStringToQString( v2tag->genre() ) );
                 v2tag->setTitle( v1tag->title() );
                 v2tag->setTrack( v1tag->track() );
                 v2tag->setYear( v1tag->year() );
+                setTagChanged( true );
             }
 
             // Remove id3v1 tag. Help put that hack into eternal rest :-)
-            f->strip( TagLib::MPEG::File::ID3v1 );
+            //f->strip( TagLib::MPEG::File::ID3v1 );
         }
     }
     else if ( filename.endsWith( ".ogg", false ) ) {
@@ -87,6 +93,7 @@ TagLib::Tag *AListViewItem::getTag( void )
         if ( !ismpeg )
             return fileref->tag();
         else {
+            qDebug( "ismpeg" );
             TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
             return dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) );
         }

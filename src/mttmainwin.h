@@ -81,6 +81,7 @@ protected slots:
     virtual void slotYearChanged( QString );
     virtual void slotAlbumChanged( QString );
     virtual void slotArtistChanged( QString );
+    virtual void slotOpenFiles();
     virtual void slotCreateTags();
 
 };

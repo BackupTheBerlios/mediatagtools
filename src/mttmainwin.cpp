@@ -110,6 +110,68 @@ void mttMainWin::slotOpen()
     selectedFname = "";
 }
 
+void mttMainWin::slotOpenFiles()
+{
+    QFileDialog fd;
+    QStringList files;
+    QString dirpath;
+    AListViewItem *li;
+    TagLib::Tag *t;
+    int count = 0, current = 1;
+    bool done = false;
+
+    fd.setMode( QFileDialog::ExistingFiles );
+    //fd.addFilter( "Mp3 Files (*.mp3)" );
+    fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
+    fd.setDir( d.path() );
+    if ( fd.exec() == QDialog::Accepted ) {
+        QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+        statusBar()->message( QString( "Reading tags..." ) );
+
+        files = fd.selectedFiles();
+        dirpath = fd.dirPath();
+
+        for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it ) {
+        count++;
+        }
+
+        progress.show();
+        progress.setProgress( 0, count );
+
+        for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it ) {
+            qDebug( *it );
+            li = new AListViewItem( GenListView );
+            li->setText( 0, (*it).right( (*it).length() - dirpath.length() - 1 ) );
+            //qDebug( QString( (*it).right( (*it).length() - dirpath.length() - 1 ).utf8() ) );
+            /*if ( QFile::exists( d.path() + "/" + *it ) )
+                qDebug( "exists" );
+            else
+                qDebug( "doesn't exist" );*/
+            li->FileRef( *it );
+            t = li->getTag();
+            if ( t ) {
+                li->setText( 1, TStringToQString( t->title() ) );
+                li->setText( 2, TStringToQString( t->artist() ) );
+                li->setText( 3, TStringToQString( t->album() ) );
+                li->setText( 4, QString::number( t->year() ) );
+                li->setText( 5, TStringToQString( t->genre() ) );
+                li->setText( 6, TStringToQString( t->comment() ) );
+                li->setText( 7, QString::number( t->track() ) );
+            }
+            else
+                qDebug( "tag = NULL" );
+            progress.setProgress( current++, count );
+        }
+        progress.hide();
+        statusBar()->message( QString( "Done" ) );
+        QApplication::restoreOverrideCursor();
+    }
+    else
+        return;
+
+    selectedFname = "";
+}
+
 void mttMainWin::populateList( void )
 {
     QStringList fnames;
@@ -446,6 +508,7 @@ void mttMainWin::slotLVRightMenu()
 {
     QPopupMenu menu;
     menu.insertItem( "Open folder", this, SLOT(slotOpen()) );
+    menu.insertItem( "Add file(s)", this, SLOT(slotOpenFiles()) );
     menu.insertSeparator();
     menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
     menu.insertItem( "Write selected tag(s) only", this, SLOT(slotSaveSelectedTags()) );
@@ -932,4 +995,6 @@ void mttMainWin::slotCreateTags()
     progress.hide();
     statusBar()->message( QString( "Done" ) );
 }
+
+
 
