@@ -1,3 +1,16 @@
+--- 0.2 --- 6 Jul 2006
+* Keep changes in memory and save tags later
+* Seperate automatic tag generation and tag saving
+* Fix to [ Bug #7247 ] "Entered tag information is not reset after the tag is
+saved"
+* Fixed a bug that made some times tags lose their genre type after being
+selected
+* Add i18n to the project
+* Fill ID3v2 tag fields from ID3v1 data if empty
+* Add File(s) was implemented
+* Menus are now populated with all the options that are available as buttons
+or via the right click menu
+
 --- 0.1.1 --- 10 Mar 2006
 * Some GUI cleanup
 * Add a warning when "Rename Files" tries to overwrite a file
