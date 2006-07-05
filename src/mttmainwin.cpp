@@ -73,7 +73,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     progress.setMaximumHeight( 20 );
     progress.setProgress( 100, 100 );
     statusBar()->addWidget( &progress, 0, true );
-    statusBar()->message( QString( "Ready" ) );
+    statusBar()->message( tr( QString( "Ready" ) ) );
     progress.hide();
 }
 
@@ -88,7 +88,7 @@ void mttMainWin::slotOpen()
 
     fd.setMode( QFileDialog::Directory );
     //fd.addFilter( "Mp3 Files (*.mp3)" );
-    fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
+    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac)" ) );
     fd.setDir( d.path() );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
@@ -97,7 +97,7 @@ void mttMainWin::slotOpen()
             if ( d.exists() )
                 done = true;
             else
-                QMessageBox::critical( this, "Error", "Dir "+QString( fd.selectedFile() )+" not found!", QMessageBox::Ok, QMessageBox::NoButton );
+                QMessageBox::critical( this, tr( "Error" ), tr( "Dir "+QString( fd.selectedFile() )+" not found!" ), QMessageBox::Ok, QMessageBox::NoButton );
         }
         else
             return;
@@ -122,11 +122,11 @@ void mttMainWin::slotOpenFiles()
 
     fd.setMode( QFileDialog::ExistingFiles );
     //fd.addFilter( "Mp3 Files (*.mp3)" );
-    fd.addFilter( "Audio Files (*.mp3 *.ogg *.flac)" );
+    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac)" ) );
     fd.setDir( d.path() );
     if ( fd.exec() == QDialog::Accepted ) {
         QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
-        statusBar()->message( QString( "Reading tags..." ) );
+        statusBar()->message( tr( QString( "Reading tags..." ) ) );
 
         files = fd.selectedFiles();
         dirpath = fd.dirPath();
@@ -163,7 +163,7 @@ void mttMainWin::slotOpenFiles()
             progress.setProgress( current++, count );
         }
         progress.hide();
-        statusBar()->message( QString( "Done" ) );
+        statusBar()->message( tr( QString( "Done" ) ) );
         QApplication::restoreOverrideCursor();
     }
     else
@@ -184,7 +184,7 @@ void mttMainWin::populateList( void )
     current = 1;
     progress.show();
     progress.setProgress( 0, count );
-    statusBar()->message( QString( "Reading tags..." ) );
+    statusBar()->message( tr( QString( "Reading tags..." ) ) );
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
         li = new AListViewItem( GenListView );
@@ -211,7 +211,7 @@ void mttMainWin::populateList( void )
     }
 
     progress.hide();
-    statusBar()->message( QString( "Done" ) );
+    statusBar()->message( tr( QString( "Done" ) ) );
 }
 
 void mttMainWin::slotSaveTags()
@@ -230,11 +230,11 @@ void mttMainWin::slotRemoveTags()
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
     if ( it.current() ) {
-        button = QMessageBox::question( this, tr( "Remove tags? -- Mediatagtools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
+        button = QMessageBox::question( this, tr( "Remove tags? -- Media Tag Tools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
 
         if ( button == QMessageBox::Yes ) {
             QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-            statusBar()->message( QString( "Removing tags..." ) );
+            statusBar()->message( tr( QString( "Removing tags..." ) ) );
             count = GenListView->childCount();
             current = 1;
             progress.show();
@@ -248,7 +248,7 @@ void mttMainWin::slotRemoveTags()
             GenListView->clear();
             populateList();
             progress.hide();
-            statusBar()->message( QString( "Done" ) );
+            statusBar()->message( tr( QString( "Done" ) ) );
             QApplication::restoreOverrideCursor();
         }
     }
@@ -340,7 +340,7 @@ void mttMainWin::slotRenameFiles()
     int noall = false;
 
     QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-    statusBar()->message( QString( "Renaming Files..." ) );
+    statusBar()->message( tr( QString( "Renaming Files..." ) ) );
     count = GenListView->childCount();
     current = 1;
     progress.show();
@@ -402,7 +402,7 @@ void mttMainWin::slotRenameFiles()
                     switch( QMessageBox::question(
                                 this,
                                 tr("Overwrite File? -- Media Tag Tools"),
-                                tr("A file called %1 already exists."
+                                tr("A file called %1 already exists. "
                                 "Do you want to overwrite it?")
                                 .arg( f.name() ),
                                 tr("&Yes"), tr("&No"),
@@ -429,7 +429,7 @@ void mttMainWin::slotRenameFiles()
     populateList();
 
     progress.hide();
-    statusBar()->message( QString( "Done" ) );
+    statusBar()->message( tr( QString( "Done" ) ) );
     QApplication::restoreOverrideCursor();
 }
 
@@ -442,9 +442,9 @@ void mttMainWin::slotAbout()
 void mttMainWin::slotCorrectCase()
 {
     QPopupMenu menu;
-    menu.insertItem( "First letter up", this, SLOT(slotFirstUp()) );
-    menu.insertItem( "All uppercase", this, SLOT(slotAllUpper()) );
-    menu.insertItem( "All lowercase", this, SLOT(slotAllLower()) );
+    menu.insertItem( tr( "First letter up" ), this, SLOT(slotFirstUp()) );
+    menu.insertItem( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
+    menu.insertItem( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
     menu.exec( QCursor::pos() );
 }
 
@@ -507,13 +507,13 @@ QString mttMainWin::firstUp( QString str )
 void mttMainWin::slotLVRightMenu()
 {
     QPopupMenu menu;
-    menu.insertItem( "Open folder", this, SLOT(slotOpen()) );
-    menu.insertItem( "Add file(s)", this, SLOT(slotOpenFiles()) );
+    menu.insertItem( tr( "Open folder" ), this, SLOT(slotOpen()) );
+    menu.insertItem( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
     menu.insertSeparator();
-    menu.insertItem( "Write tag(s)", this, SLOT(slotSaveTags()) );
-    menu.insertItem( "Write selected tag(s) only", this, SLOT(slotSaveSelectedTags()) );
-    menu.insertItem( "Remove tag(s)", this, SLOT(slotRemoveTags()) );
-    menu.insertItem( "Fix tag(s) (iso->utf8)", this, SLOT(slotFixTags()) );
+    menu.insertItem( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
+    menu.insertItem( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
+    menu.insertItem( tr( "Remove tag" ), this, SLOT(slotRemoveTags()) );
+    menu.insertItem( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
 }
 
@@ -845,7 +845,7 @@ void mttMainWin::saveTags( bool selectedOnly )
     int current, count;
 
     QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-    statusBar()->message( QString( "Writing tags..." ) );
+    statusBar()->message( tr( QString( "Writing tags..." ) ) );
     count = GenListView->childCount();
     current = 1;
     progress.show();
@@ -878,7 +878,7 @@ void mttMainWin::saveTags( bool selectedOnly )
 
     QApplication::restoreOverrideCursor();
     progress.hide();
-    statusBar()->message( QString( "Done" ) );
+    statusBar()->message( tr( QString( "Done" ) ) );
 }
 
 void mttMainWin::slotCreateTags()
@@ -887,7 +887,7 @@ void mttMainWin::slotCreateTags()
     int current, count;
 
     QApplication::setOverrideCursor( QCursor( Qt::busyCursor ) );
-    statusBar()->message( QString( "Writing tags..." ) );
+    statusBar()->message( tr( QString( "Writing tags..." ) ) );
     count = GenListView->childCount();
     current = 1;
     progress.show();
@@ -993,7 +993,7 @@ void mttMainWin::slotCreateTags()
 
     QApplication::restoreOverrideCursor();
     progress.hide();
-    statusBar()->message( QString( "Done" ) );
+    statusBar()->message( tr( QString( "Done" ) ) );
 }
 
 

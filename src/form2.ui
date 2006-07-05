@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>408</width>
-            <height>448</height>
+            <width>447</width>
+            <height>478</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -33,7 +33,7 @@
         </size>
     </property>
     <property name="caption">
-        <string>Custom Format</string>
+        <string>Custom format</string>
     </property>
     <grid>
         <property name="name">
@@ -52,7 +52,7 @@
                 </sizepolicy>
             </property>
             <property name="title">
-                <string>Custom Format</string>
+                <string>Custom format</string>
             </property>
             <vbox>
                 <property name="name">
@@ -71,7 +71,7 @@
                         </sizepolicy>
                     </property>
                     <property name="title">
-                        <string>Naming Rules</string>
+                        <string>Naming rules</string>
                     </property>
                     <vbox>
                         <property name="name">
@@ -218,7 +218,7 @@
                                                 <cstring>ArtistChkB</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>Artist</string>
+                                                <string>Arti&amp;st</string>
                                             </property>
                                         </widget>
                                         <widget class="QCheckBox">
@@ -226,7 +226,7 @@
                                                 <cstring>TitleChkB</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>Title</string>
+                                                <string>T&amp;itle</string>
                                             </property>
                                         </widget>
                                         <widget class="QCheckBox">
@@ -250,7 +250,7 @@
                                                 <cstring>CommentChkB</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>Comment</string>
+                                                <string>C&amp;omment</string>
                                             </property>
                                         </widget>
                                         <widget class="QCheckBox">
@@ -290,7 +290,7 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="text">
-                                                <string>Move &amp;Up</string>
+                                                <string>Move &amp;up</string>
                                             </property>
                                             <property name="accel">
                                                 <string>Alt+U</string>
@@ -304,7 +304,10 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="text">
-                                                <string>Move Down</string>
+                                                <string>Move do&amp;wn</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+W</string>
                                             </property>
                                         </widget>
                                         <widget class="QPushButton">
@@ -315,7 +318,10 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="text">
-                                                <string>Remove All</string>
+                                                <string>&amp;Remove all</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+R</string>
                                             </property>
                                         </widget>
                                     </vbox>
@@ -337,7 +343,7 @@
                         </sizepolicy>
                     </property>
                     <property name="title">
-                        <string>Additional Custom File Rename Options</string>
+                        <string>Additional custom file rename options</string>
                     </property>
                     <hbox>
                         <property name="name">
@@ -364,7 +370,7 @@
                                         </sizepolicy>
                                     </property>
                                     <property name="text">
-                                        <string>Use Leading &amp;Zeros For Tracks (1-9)</string>
+                                        <string>Use leading &amp;zeros for tracks (1-9)</string>
                                     </property>
                                     <property name="accel">
                                         <string>Alt+Z</string>
@@ -386,7 +392,7 @@
                                         </sizepolicy>
                                     </property>
                                     <property name="text">
-                                        <string>Append &amp;Bitrate to Filename</string>
+                                        <string>Append &amp;bitrate to filename</string>
                                     </property>
                                     <property name="accel">
                                         <string>Alt+B</string>
@@ -408,7 +414,10 @@
                                         </sizepolicy>
                                     </property>
                                     <property name="text">
-                                        <string>Append Mode to Filename</string>
+                                        <string>A&amp;ppend mode to filename</string>
+                                    </property>
+                                    <property name="accel">
+                                        <string>Alt+P</string>
                                     </property>
                                 </widget>
                             </vbox>
@@ -591,7 +600,7 @@
                                 </sizepolicy>
                             </property>
                             <property name="text">
-                                <string>Cancel</string>
+                                <string>Ca&amp;ncel</string>
                             </property>
                         </widget>
                         <spacer>

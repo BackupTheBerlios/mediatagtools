@@ -14,7 +14,7 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>786</width>
+            <width>782</width>
             <height>552</height>
         </size>
     </property>
@@ -182,7 +182,7 @@
                         </sizepolicy>
                     </property>
                     <property name="title">
-                        <string>Choose the Tag Format for Create Tags / Rename Files</string>
+                        <string>Choose the tag format for Create tags / Rename files</string>
                     </property>
                     <vbox>
                         <property name="name">
@@ -209,7 +209,7 @@
                                                 <cstring>UseCFChkB</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>&amp;Use Filename Format</string>
+                                                <string>&amp;Use filename format</string>
                                             </property>
                                             <property name="accel">
                                                 <string>Alt+U</string>
@@ -237,7 +237,7 @@
                                                 <cstring>FormatButton</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>Format &amp;Options</string>
+                                                <string>Format &amp;options</string>
                                             </property>
                                             <property name="accel">
                                                 <string>Alt+O</string>
@@ -272,7 +272,7 @@
                                                 <bool>false</bool>
                                             </property>
                                             <property name="text">
-                                                <string>U&amp;se Directory Format</string>
+                                                <string>U&amp;se directory format</string>
                                             </property>
                                             <property name="accel">
                                                 <string>Alt+S</string>
@@ -329,7 +329,10 @@
                                         <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>Create Tags from Filename</string>
+                                        <string>&amp;Create tags from filename</string>
+                                    </property>
+                                    <property name="accel">
+                                        <string>Alt+C</string>
                                     </property>
                                 </widget>
                                 <widget class="QPushButton">
@@ -340,7 +343,7 @@
                                         <bool>false</bool>
                                     </property>
                                     <property name="text">
-                                        <string>Re&amp;name Files</string>
+                                        <string>Re&amp;name files</string>
                                     </property>
                                     <property name="accel">
                                         <string>Alt+N</string>
@@ -385,7 +388,7 @@
                                 <cstring>WriteTButton</cstring>
                             </property>
                             <property name="text">
-                                <string>Write Ta&amp;gs</string>
+                                <string>Write ta&amp;g</string>
                             </property>
                             <property name="accel">
                                 <string>Alt+G</string>
@@ -399,7 +402,7 @@
                                 <bool>false</bool>
                             </property>
                             <property name="text">
-                                <string>Create &amp;Dir</string>
+                                <string>Create &amp;dir</string>
                             </property>
                             <property name="accel">
                                 <string>Alt+D</string>
@@ -413,7 +416,7 @@
                                 <cstring>RemoveButton</cstring>
                             </property>
                             <property name="text">
-                                <string>&amp;Remove Tags</string>
+                                <string>&amp;Remove tag</string>
                             </property>
                             <property name="accel">
                                 <string>Alt+R</string>
@@ -438,7 +441,7 @@
                                 <bool>false</bool>
                             </property>
                             <property name="text">
-                                <string>C&amp;lean Filenames</string>
+                                <string>C&amp;lean filenames</string>
                             </property>
                             <property name="accel">
                                 <string>Alt+L</string>
@@ -494,7 +497,7 @@
                     <cstring>TabPage</cstring>
                 </property>
                 <attribute name="title">
-                    <string>Gener&amp;ic Tag</string>
+                    <string>Gener&amp;ic tag</string>
                 </attribute>
                 <grid>
                     <property name="name">
@@ -836,7 +839,10 @@
                                             </sizepolicy>
                                         </property>
                                         <property name="text">
-                                            <string>Correc&amp;t Case</string>
+                                            <string>Correc&amp;t case</string>
+                                        </property>
+                                        <property name="accel">
+                                            <string>Alt+T</string>
                                         </property>
                                         <property name="flat">
                                             <bool>true</bool>
@@ -847,7 +853,7 @@
                                             <cstring>EmptyFieldsButton</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>&amp;Empty Fields</string>
+                                            <string>&amp;Empty fields</string>
                                         </property>
                                         <property name="accel">
                                             <string>Alt+E</string>
@@ -901,7 +907,7 @@
                                     <cstring>pushButton10</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Open Picture</string>
+                                    <string>Open picture</string>
                                 </property>
                             </widget>
                             <widget class="QPushButton">
@@ -909,7 +915,7 @@
                                     <cstring>pushButton11</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Load Picture</string>
+                                    <string>Load picture</string>
                                 </property>
                             </widget>
                             <widget class="QPushButton">
@@ -917,7 +923,7 @@
                                     <cstring>pushButton12</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Remove Picture</string>
+                                    <string>Remove picture</string>
                                 </property>
                             </widget>
                             <widget class="QLabel">
@@ -933,7 +939,7 @@
                                     </sizepolicy>
                                 </property>
                                 <property name="text">
-                                    <string>Picture Type</string>
+                                    <string>Picture type</string>
                                 </property>
                             </widget>
                             <widget class="QComboBox">
@@ -954,7 +960,7 @@
                                     </sizepolicy>
                                 </property>
                                 <property name="text">
-                                    <string>Picture Description</string>
+                                    <string>Picture description</string>
                                 </property>
                             </widget>
                             <widget class="QLineEdit">
@@ -1000,11 +1006,15 @@
     </property>
     <item text="File" name="File">
         <action name="fileOpenAction"/>
+        <action name="fileAdd_FilesAction_2"/>
         <separator/>
         <action name="fileExitAction"/>
     </item>
-    <item text="Edit" name="Edit">
-        <action name="editPreferencesAction"/>
+    <item text="Tag" name="Tag">
+        <action name="tagSave_all_tagsAction"/>
+        <action name="tagWrite_TagAction"/>
+        <separator/>
+        <action name="tagRemove_TagAction"/>
     </item>
     <item text="Help" name="Help">
         <action name="helpHelpAction"/>
@@ -1117,6 +1127,81 @@
             <string>Unnamed</string>
         </property>
     </action>
+    <action>
+        <property name="name">
+            <cstring>fileAdd_FilesAction</cstring>
+        </property>
+        <property name="text">
+            <string>Add File(s)</string>
+        </property>
+        <property name="menuText">
+            <string>Add File(s)</string>
+        </property>
+        <property name="accel">
+            <string>Shift+C</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileAdd_FilesAction_2</cstring>
+        </property>
+        <property name="text">
+            <string>Add File(s)</string>
+        </property>
+        <property name="menuText">
+            <string>Add File(s)</string>
+        </property>
+        <property name="accel">
+            <string>Alt+A</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>tagWrite_TagAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save selected tags</string>
+        </property>
+        <property name="menuText">
+            <string>Save selected tags</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+S</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>tagRemove_TagAction</cstring>
+        </property>
+        <property name="text">
+            <string>Remove tag</string>
+        </property>
+        <property name="menuText">
+            <string>Remove tag</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>tagSave_all_tagsAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save all changes</string>
+        </property>
+        <property name="menuText">
+            <string>Save all changes</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editPreferencesAction_2</cstring>
+        </property>
+        <property name="text">
+            <string>Preferences</string>
+        </property>
+        <property name="menuText">
+            <string>Preferences</string>
+        </property>
+    </action>
 </actions>
 <images>
     <image name="image0">
@@ -1170,18 +1255,6 @@
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
-        <sender>GenListView</sender>
-        <signal>selectionChanged()</signal>
-        <receiver>MainForm</receiver>
-        <slot>slotSelectionChange()</slot>
-    </connection>
-    <connection>
-        <sender>GenListView</sender>
-        <signal>rightButtonClicked(QListViewItem*,const QPoint&amp;,int)</signal>
-        <receiver>MainForm</receiver>
-        <slot>slotLVRightMenu()</slot>
-    </connection>
-    <connection>
         <sender>OpenButton</sender>
         <signal>clicked()</signal>
         <receiver>MainForm</receiver>
@@ -1233,7 +1306,7 @@
         <sender>WriteTButton</sender>
         <signal>clicked()</signal>
         <receiver>MainForm</receiver>
-        <slot>slotSaveTags()</slot>
+        <slot>slotSaveSelectedTags()</slot>
     </connection>
     <connection>
         <sender>GenTitleCLE</sender>
@@ -1439,6 +1512,42 @@
         <receiver>MainForm</receiver>
         <slot>slotCreateTags()</slot>
     </connection>
+    <connection>
+        <sender>GenListView</sender>
+        <signal>selectionChanged()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotSelectionChange()</slot>
+    </connection>
+    <connection>
+        <sender>GenListView</sender>
+        <signal>rightButtonClicked(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotLVRightMenu()</slot>
+    </connection>
+    <connection>
+        <sender>fileAdd_FilesAction_2</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotOpenFiles()</slot>
+    </connection>
+    <connection>
+        <sender>tagWrite_TagAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotSaveSelectedTags()</slot>
+    </connection>
+    <connection>
+        <sender>tagSave_all_tagsAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotSaveTags()</slot>
+    </connection>
+    <connection>
+        <sender>tagRemove_TagAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotRemoveTags()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1483,6 +1592,7 @@
     <slot access="protected">slotGenreChanged( const QString&amp; )</slot>
     <slot access="protected">slotSaveSelectedTags()</slot>
     <slot access="protected">slotCreateTags()</slot>
+    <slot access="protected">slotOpenFiles()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
