@@ -15,6 +15,7 @@
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qstringlist.h>
+#include <qlayout.h>
 
 #include "mttcfdialog.h"
 

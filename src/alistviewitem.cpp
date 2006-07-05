@@ -105,7 +105,7 @@ void AListViewItem::FileRef( QString filename )
             }
 
             // Remove id3v1 tag. Help put that hack into eternal rest :-)
-            //f->strip( TagLib::MPEG::File::ID3v1 );
+            f->strip( TagLib::MPEG::File::ID3v1 );
         }
     }
     else if ( filename.endsWith( ".ogg", false ) ) {

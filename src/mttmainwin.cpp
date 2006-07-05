@@ -20,6 +20,7 @@
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qpopupmenu.h>
+#include <qpushbutton.h>
 #include <qstatusbar.h>
 #include <qtabbar.h>
 #include <qtabwidget.h>
@@ -62,10 +63,12 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     setCaption( caption() + " - " + RV_SNAPSHOT_VERSION );
 #endif
 
-//     tabWidget->setTabEnabled( tabWidget->page( 1 ), false );
-//     tabWidget->setTabEnabled( tabWidget->page( 2 ), false );
     tabWidget->removePage( tabWidget->page( 1 ) );
     tabWidget->removePage( tabWidget->page( 1 ) );
+    UseDFChkBox->hide();
+    comboBox1->hide();
+    CleanFButton->hide();
+    CreateDirButton->hide();
 
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
@@ -118,7 +121,6 @@ void mttMainWin::slotOpenFiles()
     AListViewItem *li;
     TagLib::Tag *t;
     int count = 0, current = 1;
-    bool done = false;
 
     fd.setMode( QFileDialog::ExistingFiles );
     //fd.addFilter( "Mp3 Files (*.mp3)" );
