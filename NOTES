@@ -1,5 +1,13 @@
-  This version fixes a couple of small bugs and adds support for ogg and flac files.
-Actually mediatagtools should be able to handle all file types that taglib support but for
-now I want to focus on mp3,ogg and flac files. All info is saved as utf8 in the tags so
-you shouldn't have any trouble reading it using any decent media program. If you find
-any bugs, or you have any suggestions, feel free to make a bug report on berlios or email me. Have fun! :-)
+  This version of Media Tag Tools the way the tags are written has changed. Now all changes are kept in memory and are
+written to the disk when you want them to be written. Every tag that has changed is colored red and remains that way
+until it is saved. In case your genre field has a strange number when loading some audio files for the first time,
+please save the tags and reload the files. That is a know bug of taglib that has been fixed in the svn version and
+it will be included in the next release of taglib. I want to thank the developers of taglib for their immediate
+response to my bug report and of course for creating taglib!
+  Also the configuration and installation of the program changed. Now when you run qmake, you will be asked where you
+want to install the program and it will also check for some programs/libs that are necessary. To install the program
+you just need to run as root ./install.
+  One last thing that you might notice is that there is a folder named translations. Yes! Now the program can talk to
+you in your language (provided that some kind soul provides a translation of the messages :-P).
+  If you find any bugs, or you have any suggestions, feel free to make a bug report on berlios or email me.
+  Have fun! :-)
