@@ -53,8 +53,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     LZ2 = "";
 
     d.setFilter( QDir::Files | QDir::Readable );
-    //d.setNameFilter( QString( "*.mp3" ) );
-    d.setNameFilter( QString( "*.mp3;*.ogg;*.flac" ) );
+    d.setNameFilter( QString( "*.mp3;*.MP3;*.ogg;*.OGG;*.flac;*.FLAC" ) );
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
@@ -90,8 +89,7 @@ void mttMainWin::slotOpen()
     bool done = false;
 
     fd.setMode( QFileDialog::Directory );
-    //fd.addFilter( "Mp3 Files (*.mp3)" );
-    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac)" ) );
+    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac *.MP3 *.OGG *.FLAC)" ) );
     fd.setDir( d.path() );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
@@ -123,8 +121,7 @@ void mttMainWin::slotOpenFiles()
     int count = 0, current = 1;
 
     fd.setMode( QFileDialog::ExistingFiles );
-    //fd.addFilter( "Mp3 Files (*.mp3)" );
-    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac)" ) );
+    fd.addFilter( tr( "Audio Files (*.mp3 *.ogg *.flac *.MP3 *.OGG *.FLAC)" ) );
     fd.setDir( d.path() );
     if ( fd.exec() == QDialog::Accepted ) {
         QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
@@ -863,8 +860,8 @@ void mttMainWin::saveTags( bool selectedOnly )
         it = tmp;
         }
     while ( it.current() ) {
-        if ( selectedOnly || ( (AListViewItem *) it.current() )->tagChanged() ) {
-            t = ( (AListViewItem *) it.current() )->getTag();
+        if ( ( (AListViewItem *) it.current() )->tagChanged() ) {
+            //t = ( (AListViewItem *) it.current() )->getTag();
             ( (AListViewItem *) it.current() )->checkEncodings();
 
             ( (AListViewItem *) it.current() )->saveTag();
@@ -872,6 +869,7 @@ void mttMainWin::saveTags( bool selectedOnly )
 
             // Update the ListView too
             ( (AListViewItem *) it.current() )->repaint();
+            sleep(10);
         }
         ++it;
 

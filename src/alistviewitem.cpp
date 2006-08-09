@@ -55,57 +55,60 @@ void AListViewItem::FileRef( QString filename )
         ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         if ( f ) {
-            if ( !f->ID3v2Tag() && f->ID3v1Tag() ) {
-                // Copy id3v1 tag to id3v2 tag
-                TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
-                TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag( true );
-
-                v2tag->setAlbum( v1tag->album() );
-                v2tag->setArtist( v1tag->artist() );
-                v2tag->setComment( v1tag->comment() );
-                v2tag->setGenre( v1tag->genre() );
-                v2tag->setTitle( v1tag->title() );
-                v2tag->setTrack( v1tag->track() );
-                v2tag->setYear( v1tag->year() );
-                setTagChanged( true );
-            }
-            else if ( f->ID3v2Tag() && f->ID3v1Tag() ) {
-                // Fill gaps of ID3v2Tag from ID3v1Tag
-                TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
-                TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag( true );
-
-                if ( v2tag->album().isEmpty() ) {
+            if ( f->ID3v1Tag() ) {
+                if ( !(f->ID3v2Tag()) ) {
+                    // Copy id3v1 tag to id3v2 tag
+                    TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
+                    TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag( true );
+    
                     v2tag->setAlbum( v1tag->album() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->artist().isEmpty() ) {
                     v2tag->setArtist( v1tag->artist() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->comment().isEmpty() ) {
                     v2tag->setComment( v1tag->comment() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->genre().isEmpty() ) {
                     v2tag->setGenre( v1tag->genre() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->title().isEmpty() ) {
                     v2tag->setTitle( v1tag->title() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->track() == 0 ) {
                     v2tag->setTrack( v1tag->track() );
-                    setTagChanged( true );
-                }
-                if ( v2tag->year() == 0 ) {
                     v2tag->setYear( v1tag->year() );
                     setTagChanged( true );
                 }
-            }
+                else if ( f->ID3v2Tag() && f->ID3v1Tag() ) {
+                    // Fill gaps of ID3v2Tag from ID3v1Tag
+                    TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
+                    TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag();
+    
+                    if ( v2tag->album().isEmpty() ) {
+                        v2tag->setAlbum( v1tag->album() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->artist().isEmpty() ) {
+                        v2tag->setArtist( v1tag->artist() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->comment().isEmpty() ) {
+                        v2tag->setComment( v1tag->comment() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->genre().isEmpty() ) {
+                        v2tag->setGenre( v1tag->genre() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->title().isEmpty() ) {
+                        v2tag->setTitle( v1tag->title() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->track() == 0 ) {
+                        v2tag->setTrack( v1tag->track() );
+                        setTagChanged( true );
+                    }
+                    if ( v2tag->year() == 0 ) {
+                        v2tag->setYear( v1tag->year() );
+                        setTagChanged( true );
+                    }
+                }
 
-            // Remove id3v1 tag. Help put that hack into eternal rest :-)
-            f->strip( TagLib::MPEG::File::ID3v1 );
+                // Remove id3v1 tag. Help put that hack into eternal rest :-)
+                f->strip( TagLib::MPEG::File::ID3v1, true );
+                qDebug("ID3v1 tag stripped!");
+            }
         }
     }
     else if ( filename.endsWith( ".ogg", false ) ) {
@@ -122,7 +125,7 @@ TagLib::Tag *AListViewItem::getTag( void )
         if ( !ismpeg )
             return fileref->tag();
         else {
-            qDebug( "ismpeg" );
+            //qDebug( "ismpeg" );
             TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
             return dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) );
         }
@@ -134,7 +137,12 @@ TagLib::Tag *AListViewItem::getTag( void )
 
 void AListViewItem::saveTag( void )
 {
-    fileref->save();
+    if ( ismpeg ) {
+        TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+        f->save( TagLib::MPEG::File::ID3v2, true );
+    }
+    else
+        fileref->save();
 }
 
 void AListViewItem::removeTag( void )
@@ -264,18 +272,18 @@ void AListViewItem::paintCell ( QPainter * p, const QColorGroup & cg, int column
 //          ((QCheckListItem*) parent())->type() == RadioButtonController )
 //         parentControl = TRUE;
 
-    QFontMetrics fm( lv->fontMetrics() );
-    int marg = lv->itemMargin();
-    int r = marg;
+//     QFontMetrics fm( lv->fontMetrics() );
+//     int marg = lv->itemMargin();
+//     int r = marg;
 
     // Draw text ----------------------------------------------------
-    p->translate( r, 0 );
+/*    p->translate( r, 0 );*/
     if ( tagChanged() ) {
         QColorGroup cg2 = cg;
         cg2.setColor( QColorGroup::Text, Qt::red );
         cg2.setColor( QColorGroup::HighlightedText, Qt::red );
-        QListViewItem::paintCell( p, cg2, column, width - r, align );
+        QListViewItem::paintCell( p, cg2, column, width /*- r*/, align );
     }
     else
-        QListViewItem::paintCell( p, cg, column, width - r, align );
+        QListViewItem::paintCell( p, cg, column, width /*- r*/, align );
 }

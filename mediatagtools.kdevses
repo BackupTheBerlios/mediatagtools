@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="12" >
+ <DocsAndViews NumberOfDocuments="11" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
    <View0 Type="Source" />
   </Doc0>
@@ -14,30 +14,27 @@
   <Doc3 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
    <View0 Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qmake-manual-5.html" >
-   <View0 Type="Documentation" />
+  <Doc4 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.cpp" >
+   <View0 Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.cpp" >
+  <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.h" >
    <View0 Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.h" >
+  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.h" >
    <View0 Type="Source" />
   </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.h" >
+  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/TODO" >
    <View0 Type="Source" />
   </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/TODO" >
+  <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
    <View0 Type="Source" />
   </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
+  <Doc9 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.cpp" >
    <View0 Type="Source" />
   </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.cpp" >
-   <View0 line="29" Type="Source" />
+  <Doc10 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/index.html" >
+   <View0 Type="Documentation" />
   </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/form2.ui" >
-   <View0 Type="Other" />
-  </Doc11>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
@@ -48,7 +45,7 @@
   </kdevbookmarks>
   <kdevvalgrind>
    <executable path="" params="" />
-   <valgrind path="" params="" />
+   <valgrind path="/usr/bin/valgrind" params="--tool=memcheck  --leak-check=yes" />
    <calltree path="" params="" />
    <kcachegrind path="" />
   </kdevvalgrind>
