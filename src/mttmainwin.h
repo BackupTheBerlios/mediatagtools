@@ -34,14 +34,15 @@ public slots:
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
-    QDir d;
+//     QDir d;
+    QString curPath;
     QStringList separators;
     QProgressBar progress;
     QString LZ1, LZ2;
     bool LZ;
     QString selectedFname;
 
-    void populateList( void );
+    void populateList( QDir d );
     QString firstUp( QString );
     bool isTextFrame( QString );
     void saveTags( bool selectedOnly = false );

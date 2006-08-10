@@ -29,7 +29,7 @@ public:
 
     void FileRef( QString filename );
     void removeTag( void );
-    TagLib::Tag *getTag( void );
+    TagLib::Tag *getTag( bool create = false );
     void saveTag( void );
     QString getFName( void );
     bool isMpeg( void );

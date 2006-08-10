@@ -119,15 +119,14 @@ void AListViewItem::FileRef( QString filename )
     }
 }
 
-TagLib::Tag *AListViewItem::getTag( void )
+TagLib::Tag *AListViewItem::getTag( bool create )
 {
     if ( fileref )
         if ( !ismpeg )
             return fileref->tag();
         else {
-            //qDebug( "ismpeg" );
             TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
-            return dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) );
+            return dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( create ) );
         }
     else {
         qDebug( "fileref = NULL" );

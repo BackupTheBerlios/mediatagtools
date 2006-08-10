@@ -20,7 +20,8 @@ QMAKE_CXXFLAGS_DEBUG += `taglib-config \
                         -static \
                         -ansi \
                         -pedantic \
-                        -Wno-long-long 
+                        -Wno-long-long \
+                        -pg 
 TARGET = ../bin/mediatagtools 
 CONFIG += debug \
           warn_on 
