@@ -84,7 +84,7 @@ protected slots:
     virtual void slotArtistChanged( QString );
     virtual void slotOpenFiles();
     virtual void slotCreateTags();
-
+    virtual void slotAdvTagValueChanged( int );
 };
 
 #endif

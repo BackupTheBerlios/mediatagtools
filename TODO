@@ -1,3 +1,6 @@
 * Add id3v2 "Position in set" frame support
 * Add Music Brainz support
 * Convert tags from any iso charset to utf8
+* BUG: When renaming a file, the new name is not kept in memory for a possible new rename
+* BUG: First Letter Up doesn't update list view and file status
+* First Letter Up should be applicable to many tags at once

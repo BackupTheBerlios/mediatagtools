@@ -24,6 +24,7 @@
 #include <qstatusbar.h>
 #include <qtabbar.h>
 #include <qtabwidget.h>
+#include <qtable.h>
 
 #include <tag.h>
 #include <tlist.h>
@@ -42,12 +43,7 @@
 #include "revision.h"
 #endif
 
-
-mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
-: MainForm(parent,name,fl)
-{
-    int i;
-    static const char* genres[] = { "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk",
+static const char* genres[] = {     "Blues", "Classic Rock", "Country", "Dance", "Disco", "Funk",
                                     "Grunge", "Hip-Hop", "Jazz", "Metal", "New Age", "Oldies",
                                     "Other", "Pop", "R&B", "Rap", "Reggae", "Rock", "Techno",
                                     "Industrial", "Alternative", "Ska", "Death Metal", "Pranks",
@@ -64,11 +60,75 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
                                     "Acid Jazz", "Polka", "Retro", "Musical", "Rock & Roll",
                                     "Hard Rock", 0 };
 
+static const char* extraFrames[45][2] = {   { "TALB", "Album/Movie/Show title" },
+                                            { "TBPM", "BPM (beats per minute)" },
+                                            { "TCOM", "Composer" },
+                                            { "TCON", "Content type" },
+                                            { "TCOP", "Copyright message" },
+                                            { "TDEN", "Encoding time" },
+                                            { "TDLY", "Playlist delay" },
+                                            { "TDOR", "Original release time" },
+                                            { "TDRC", "Recording time" },
+                                            { "TDRL", "Release time" },
+                                            { "TDTG", "Tagging time" },
+                                            { "TENC", "Encoded by" },
+                                            { "TEXT", "Lyricist/Text writer" },
+                                            { "TFLT", "File type" },
+                                            { "TIPL", "Involved people list" },
+                                            { "TIT1", "Content group description" },
+                                            { "TIT2", "Title/songname/content description" },
+                                            { "TIT3", "Subtitle/Description refinement" },
+                                            { "TKEY", "Initial key" },
+                                            { "TLAN", "Language(s)" },
+                                            { "TLEN", "Length" },
+                                            { "TMCL", "Musician credits list" },
+                                            { "TMED", "Media type" },
+                                            { "TMOO", "Mood" },
+                                            { "TOAL", "Original album/movie/show title" },
+                                            { "TOFN", "Original filename" },
+                                            { "TOLY", "Original lyricist(s)/text writer(s)" },
+                                            { "TOPE", "Original artist(s)/performer(s)" },
+                                            { "TOWN", "File owner/licensee" },
+                                            { "TPE1", "Lead performer(s)/Soloist(s)" },
+                                            { "TPE2", "Band/orchestra/accompaniment" },
+                                            { "TPE3", "Conductor/performer refinement" },
+                                            { "TPE4", "Interpreted, remixed, or otherwise modified by" },
+                                            { "TPOS", "Part of a set" },
+                                            { "TPRO", "Produced notice" },
+                                            { "TPUB", "Publisher" },
+                                            { "TRCK", "Track number/Position in set" },
+                                            { "TRSN", "Internet radio station name" },
+                                            { "TRSO", "Internet radio station owner" },
+                                            { "TSOA", "Album sort order" },
+                                            { "TSOP", "Performer sort order" },
+                                            { "TSOT", "Title sort order" },
+                                            { "TSRC", "ISRC (international standard recording code)" },
+                                            { "TSSE", "Software/Hardware and settings used for encoding" },
+                                            { "TSST", "Set subtitle" } };
+
+
+mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
+: MainForm(parent,name,fl)
+{
+    int i;
+    QStringList strlst( "<Empty>" );
+    QComboBox *cb;
+
     LZ = true; // Leading Zeros
     LZ1 = "0";
     LZ2 = "";
 
     GenGenreCB->insertStrList( genres );
+    for ( i=0; i<45; i++ ) {
+        strlst.append( extraFrames[i][1] );
+    }
+    AdvTagTable->setCellWidget( 0, 1, new QComboBox( false, AdvTagTable ) );
+    cb = ( QComboBox * ) AdvTagTable->cellWidget( 0, 1 );
+    cb->insertStringList( strlst );
+    connect( cb, SIGNAL( activated ( int ) ), this, SLOT( slotAdvTagValueChanged( int ) ) );
+//     AdvTagTable->setItem( 0, 1, new QComboTableItem( AdvTagTable, strlst ) );
+    AdvTagTable->setColumnWidth( 1, 200 );
+//     AdvTagTable->setFocusStyle( QTable::FollowStyle );
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
@@ -77,12 +137,13 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     setCaption( caption() + " - " + RV_SNAPSHOT_VERSION );
 #endif
 
-    tabWidget->removePage( tabWidget->page( 1 ) );
-    tabWidget->removePage( tabWidget->page( 1 ) );
+    tabWidget->removePage( tabWidget->page( 2 ) );
+    tabWidget->removePage( tabWidget->page( 2 ) );
     UseDFChkBox->hide();
     comboBox1->hide();
     CleanFButton->hide();
     CreateDirButton->hide();
+    AdvTagTable->hideColumn( 0 );
 
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
@@ -1061,6 +1122,13 @@ void mttMainWin::slotCreateTags()
     progress.hide();
     statusBar()->message( tr( QString( "Done" ) ) );
 }
+
+void mttMainWin::slotAdvTagValueChanged( int t )
+{
+    //if ( ( column == 1 ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) )
+        AdvTagTable->insertRows( AdvTagTable->numRows() );
+}
+
 
 
 
