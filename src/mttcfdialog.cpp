@@ -16,6 +16,7 @@
 #include <qcheckbox.h>
 #include <qstringlist.h>
 #include <qlayout.h>
+#include <qregexp.h>
 
 #include "mttcfdialog.h"
 
@@ -100,18 +101,22 @@ void mttCFDialog::slotAlbumChkB( int state )
 void mttCFDialog::setFormat( QString formatstr )
 {
     CFormatLE->setText( formatstr );
-    if ( formatstr.find( "<artist>" ) != -1 )
-        ArtistChkB->setChecked( true );
-    if ( formatstr.find( "<album>" ) != -1 )
-        AlbumChkB->setChecked( true );
-    if ( formatstr.find( "<title>" ) != -1 )
-        TitleChkB->setChecked( true );
-    if ( formatstr.find( "<year>" ) != -1 )
-        YearChkB->setChecked( true );
-    if ( formatstr.find( "<comment>" ) != -1 )
-        CommentChkB->setChecked( true );
-    if ( formatstr.find( "<track>" ) != -1 )
-        TrackChkB->setChecked( true );
+
+    int idx = 0, offset = 0;
+    QRegExp rx("<(artist|album|title|track|comment)>");
+    QString str;
+
+    while ((idx = formatstr.find(rx, idx + offset)) != -1) {
+      str = rx.cap(1);
+      offset = str.length() + 2;
+      if (str == "artist") ArtistChkB->setChecked(true);
+      else if (str == "track") TrackChkB->setChecked(true);
+      else if (str == "title") TitleChkB->setChecked(true);
+      else if (str == "year") YearChkB->setChecked(true);
+      else if (str == "album") AlbumChkB->setChecked(true);
+      else if (str == "comment") CommentChkB->setChecked(true);
+      else qDebug( "Invalid format field: " + QString::number( idx ) +  " + " + QString::number( offset ) + ": " + str );
+    }
 }
 
 QString mttCFDialog::getFormat( void )
