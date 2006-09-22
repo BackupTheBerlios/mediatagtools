@@ -45,7 +45,8 @@ void QCLineEdit::keyReleaseEvent( QKeyEvent * e )
             e->ignore();
             break;
         default:
-            emit newText( text() );
+            emit textChanged( text() );
             e->ignore();
     }
+
 }

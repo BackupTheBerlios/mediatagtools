@@ -793,7 +793,7 @@ void mttMainWin::slotNextPage()
 {
 }
 
-void mttMainWin::slotTitleChanged( QString title )
+void mttMainWin::slotTitleChanged( const QString &title )
 {
     TagLib::Tag *t;
 
@@ -856,7 +856,7 @@ void mttMainWin::slotSelectionChange()
     }
 }
 
-void mttMainWin::slotTrackChanged( QString track )
+void mttMainWin::slotTrackChanged( const QString &track )
 {
     TagLib::Tag *t;
 
@@ -875,7 +875,7 @@ void mttMainWin::slotTrackChanged( QString track )
 }
 
 
-void mttMainWin::slotCommentChanged( QString comment )
+void mttMainWin::slotCommentChanged( const QString &comment )
 {
     TagLib::Tag *t;
 
@@ -894,7 +894,7 @@ void mttMainWin::slotCommentChanged( QString comment )
 }
 
 
-void mttMainWin::slotYearChanged( QString year )
+void mttMainWin::slotYearChanged( const QString &year )
 {
     TagLib::Tag *t;
 
@@ -913,7 +913,7 @@ void mttMainWin::slotYearChanged( QString year )
 }
 
 
-void mttMainWin::slotAlbumChanged( QString album )
+void mttMainWin::slotAlbumChanged( const QString &album )
 {
     TagLib::Tag *t;
 
@@ -932,7 +932,7 @@ void mttMainWin::slotAlbumChanged( QString album )
 }
 
 
-void mttMainWin::slotArtistChanged( QString artist )
+void mttMainWin::slotArtistChanged( const QString &artist )
 {
     TagLib::Tag *t;
 
