@@ -12,12 +12,6 @@
             <height>619</height>
         </rect>
     </property>
-    <property name="minimumSize">
-        <size>
-            <width>782</width>
-            <height>554</height>
-        </size>
-    </property>
     <property name="caption">
         <string>Media Tag Tools</string>
     </property>

@@ -104,10 +104,6 @@ void AListViewItem::FileRef( QString filename )
                         setTagChanged( true );
                     }
                 }
-
-                // Remove id3v1 tag. Help put that hack into eternal rest :-)
-                f->strip( TagLib::MPEG::File::ID3v1, true );
-                qDebug("ID3v1 tag stripped!");
             }
         }
     }
@@ -138,6 +134,11 @@ void AListViewItem::saveTag( void )
 {
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+
+        // Remove id3v1 tag. Help put that hack into eternal rest :-)
+        f->strip( TagLib::MPEG::File::ID3v1, true );
+        qDebug("ID3v1 tag stripped!");
+
         f->save( TagLib::MPEG::File::ID3v2, true );
     }
     else
