@@ -441,7 +441,7 @@ void mttMainWin::slotDisableUsingFormat( bool cond )
 void mttMainWin::slotRenameFiles()
 {
     int count, current;
-    int noall = false;
+    int noall = false, abort = false;
 
     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
     statusBar()->message( tr( QString( "Renaming Files..." ) ) );
@@ -451,7 +451,7 @@ void mttMainWin::slotRenameFiles()
     progress.setProgress( 0, count );
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
+    while ( !abort && it.current() ) {
         QString newfname, path, ext, cformat;
         TagLib::Tag *t;
 
@@ -514,6 +514,22 @@ void mttMainWin::slotRenameFiles()
                         case 0:
                             if ( dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext ) )
                                 it.current()->setText( 0, newfname + ext );
+                        else {
+                            QApplication::restoreOverrideCursor();
+
+                            switch( QMessageBox::warning(
+                                this,
+                                tr("Rename File"),
+                                tr("Rename failed for file %1!").arg( ( (AListViewItem *) it.current() )->getFName() ),
+                                QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
+                                case QMessageBox::Ok:
+                                    break;
+                                case QMessageBox::Abort:
+                                    abort = true;
+                            }
+
+                            QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+                        }
                         case 1:
                             break;
                         case 2:
@@ -522,8 +538,24 @@ void mttMainWin::slotRenameFiles()
                     }
                 }
                 else
-                    if (dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext ) )
+                    if ( dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext ) )
                         it.current()->setText( 0, newfname + ext );
+                    else {
+                        QApplication::restoreOverrideCursor();
+
+                        switch( QMessageBox::warning(
+                            this,
+                            tr("Rename File"),
+                            tr("Rename failed for file %1!").arg( ( (AListViewItem *) it.current() )->getFName() ),
+                            QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
+                            case QMessageBox::Ok:
+                                break;
+                            case QMessageBox::Abort:
+                                abort = true;
+                        }
+
+                        QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+                    }
             }
         }
         ++it;
