@@ -706,6 +706,7 @@ fi
 cat >Makefile.tmp <<EOT
 export QTDIR = $QTDIR
 export PATH = $QTDIR/bin:$PATH
+export INSTALL_ROOT = $PREFIX/
 EOT
 cat Makefile >> Makefile.tmp
 rm -f Makefile

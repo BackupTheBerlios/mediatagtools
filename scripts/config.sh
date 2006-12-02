@@ -30,11 +30,13 @@ else
 	cd src
 	../scripts/mkrevision.sh
 	VERSION="`cat ../VERSION`-`cat SNAPSHOT_VERSION`"
+	cd ..
 fi
+
+echo -e "\n#define PREFIX \"$PREFIX\"" >> src/config.h
 
 echo -e "\nConfig options"
 echo -e "--------------"
 echo -e "Taglib version	= $taglib_version"
-#echo -e "Prefix		= $INSTALL_ROOT\n"
 echo -e "Prefix		= $PREFIX\n"
 echo -e "MTT version	= $VERSION"
