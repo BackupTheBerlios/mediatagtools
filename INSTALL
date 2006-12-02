@@ -5,9 +5,9 @@ also installed the -dev packages too.
 Now unpack the archive and then inside the directory that was created the following
 commands (without the #):
 
-# qmake
+# ./configure
 # make
-# ./install
+# make install
 
 Have fun! :-)
 Report bugs at the project page http://developer.berlios.de/projects/mediatagtools/ or send me an email at int.teo@gmail.com (I prefer the bug reports at berlios)
