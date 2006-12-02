@@ -32,6 +32,7 @@ public:
     TagLib::Tag *getTag( bool create = false );
     void saveTag( void );
     QString getFName( void );
+    void setFName( QString );
     bool isMpeg( void );
     bool isOgg( void );
     bool isFLAC( void );

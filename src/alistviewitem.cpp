@@ -170,6 +170,11 @@ QString AListViewItem::getFName( void )
     return fname;
 }
 
+void AListViewItem::setFName( QString newname )
+{
+    fname = newname;
+}
+
 bool AListViewItem::isMpeg( void )
 {
     return ismpeg;
