@@ -3,36 +3,36 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="12" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 line="795" Type="Source" />
+   <View0 Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
-   <View0 line="76" Type="Source" />
+   <View0 Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.cpp" >
-   <View0 line="47" Type="Source" />
+   <View0 Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.h" >
-   <View0 line="34" Type="Source" />
+   <View0 Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.h" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/TODO" >
    <View0 line="0" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
-   <View0 line="25" Type="Source" />
+   <View0 Type="Source" />
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.cpp" >
-   <View0 line="128" Type="Source" />
+   <View0 Type="Source" />
   </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qscrollview.html#resizePolicy-prop" >
+  <Doc10 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qpopupmenu.html" >
    <View0 Type="Documentation" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/form1.ui" >

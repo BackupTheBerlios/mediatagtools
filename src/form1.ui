@@ -822,29 +822,15 @@
                                     </widget>
                                     <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>CorrectCaseButton</cstring>
+                                            <cstring>EmptyFieldsButton</cstring>
                                         </property>
                                         <property name="sizePolicy">
                                             <sizepolicy>
-                                                <hsizetype>1</hsizetype>
-                                                <vsizetype>1</vsizetype>
+                                                <hsizetype>7</hsizetype>
+                                                <vsizetype>0</vsizetype>
                                                 <horstretch>0</horstretch>
                                                 <verstretch>0</verstretch>
                                             </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>Correc&amp;t case</string>
-                                        </property>
-                                        <property name="accel">
-                                            <string>Alt+T</string>
-                                        </property>
-                                        <property name="flat">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>EmptyFieldsButton</cstring>
                                         </property>
                                         <property name="text">
                                             <string>&amp;Empty fields</string>
@@ -1254,12 +1240,6 @@
     </image>
 </images>
 <connections>
-    <connection>
-        <sender>CorrectCaseButton</sender>
-        <signal>clicked()</signal>
-        <receiver>MainForm</receiver>
-        <slot>slotCorrectCase()</slot>
-    </connection>
     <connection>
         <sender>EmptyFieldsButton</sender>
         <signal>clicked()</signal>

@@ -39,7 +39,7 @@ protected:
     QStringList separators;
     QProgressBar progress;
     QString LZ1, LZ2;
-    bool LZ;
+    bool LZ, ignoreChange;
     QString selectedFname;
 
     void populateList( QDir d );

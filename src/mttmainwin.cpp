@@ -114,6 +114,8 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     QStringList strlst( "<Empty>" );
     QComboBox *cb;
 
+    ignoreChange = false;
+
     LZ = true; // Leading Zeros
     LZ1 = "0";
     LZ2 = "";
@@ -582,38 +584,119 @@ void mttMainWin::slotAbout()
 
 void mttMainWin::slotCorrectCase()
 {
-    QPopupMenu menu;
-    menu.insertItem( tr( "First letter up" ), this, SLOT(slotFirstUp()) );
-    menu.insertItem( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
-    menu.insertItem( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
-    menu.exec( QCursor::pos() );
 }
 
 void mttMainWin::slotAllUpper()
 {
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
     GenTitleCLE->setText( GenTitleCLE->text().upper() );
     GenArtistCLE->setText( GenArtistCLE->text().upper() );
     GenAlbumCLE->setText( GenAlbumCLE->text().upper() );
     GenGenreCB->setCurrentText( GenGenreCB->currentText().upper() );
     GenCommentCLE->setText( GenCommentCLE->text().upper() );
+    ignoreChange = false;
+
+    while( it.current() ) {
+        TagLib::Tag *t;
+
+        // Show tag info
+        t = (( AListViewItem *) it.current() )->getTag();
+        if ( t ) {
+            t->setTitle( QStringToTString( TStringToQString( t->title() ).upper() ) );
+            it.current()->setText( 1, TStringToQString( t->title() ) );
+            t->setArtist( QStringToTString( TStringToQString( t->artist() ).upper() ) );
+            it.current()->setText( 2, TStringToQString( t->artist() ) );
+            t->setAlbum( QStringToTString( TStringToQString( t->album() ).upper() ) );
+            it.current()->setText( 3, TStringToQString( t->album() ) );
+            t->setGenre( QStringToTString( TStringToQString( t->genre() ).upper() ) );
+            it.current()->setText( 5, TStringToQString( t->genre() ) );
+            t->setComment( QStringToTString( TStringToQString( t->comment() ).upper() ) );
+            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+        }
+        ++it;
+    }
+
+    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::slotAllLower()
 {
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
     GenTitleCLE->setText( GenTitleCLE->text().lower() );
     GenArtistCLE->setText( GenArtistCLE->text().lower() );
     GenAlbumCLE->setText( GenAlbumCLE->text().lower() );
     GenGenreCB->setCurrentText( GenGenreCB->currentText().lower() );
     GenCommentCLE->setText( GenCommentCLE->text().lower() );
+    ignoreChange = false;
+
+    while( it.current() ) {
+        TagLib::Tag *t;
+
+        // Show tag info
+        t = (( AListViewItem *) it.current() )->getTag();
+        if ( t ) {
+            t->setTitle( QStringToTString( TStringToQString( t->title() ).lower() ) );
+            it.current()->setText( 1, TStringToQString( t->title() ) );
+            t->setArtist( QStringToTString( TStringToQString( t->artist() ).lower() ) );
+            it.current()->setText( 2, TStringToQString( t->artist() ) );
+            t->setAlbum( QStringToTString( TStringToQString( t->album() ).lower() ) );
+            it.current()->setText( 3, TStringToQString( t->album() ) );
+            t->setGenre( QStringToTString( TStringToQString( t->genre() ).lower() ) );
+            it.current()->setText( 5, TStringToQString( t->genre() ) );
+            t->setComment( QStringToTString( TStringToQString( t->comment() ).lower() ) );
+            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+        }
+        ++it;
+    }
+
+    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::slotFirstUp()
 {
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
     GenTitleCLE->setText( firstUp( GenTitleCLE->text().lower() ) );
     GenArtistCLE->setText( firstUp( GenArtistCLE->text().lower() ) );
     GenAlbumCLE->setText( firstUp( GenAlbumCLE->text().lower() ) );
     GenGenreCB->setCurrentText( firstUp( GenGenreCB->currentText().lower() ) );
     GenCommentCLE->setText( firstUp( GenCommentCLE->text().lower() ) );
+    ignoreChange = false;
+
+    QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+    while( it.current() ) {
+        TagLib::Tag *t;
+
+        // Show tag info
+        t = (( AListViewItem *) it.current() )->getTag();
+        if ( t ) {
+            t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
+            it.current()->setText( 1, TStringToQString( t->title() ) );
+            t->setArtist( QStringToTString( firstUp( TStringToQString( t->artist() ).lower() ) ) );
+            it.current()->setText( 2, TStringToQString( t->artist() ) );
+            t->setAlbum( QStringToTString( firstUp( TStringToQString( t->album() ).lower() ) ) );
+            it.current()->setText( 3, TStringToQString( t->album() ) );
+            t->setGenre( QStringToTString( firstUp( TStringToQString( t->genre() ).lower() ) ) );
+            it.current()->setText( 5, TStringToQString( t->genre() ) );
+            t->setComment( QStringToTString( firstUp( TStringToQString( t->comment() ).lower() ) ) );
+            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+        }
+        ++it;
+    }
+
+    QApplication::restoreOverrideCursor();
 }
 
 void mttMainWin::slotEmptyFields()
@@ -647,13 +730,20 @@ QString mttMainWin::firstUp( QString str )
 
 void mttMainWin::slotLVRightMenu()
 {
-    QPopupMenu menu;
+    QPopupMenu menu, corCaseMenu;
+
+    corCaseMenu.insertItem( tr( "First letter up" ), this, SLOT(slotFirstUp()) );
+    corCaseMenu.insertItem( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
+    corCaseMenu.insertItem( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
+
     menu.insertItem( tr( "Open folder" ), this, SLOT(slotOpen()) );
     menu.insertItem( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
     menu.insertSeparator();
     menu.insertItem( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
     menu.insertItem( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
     menu.insertItem( tr( "Remove tag" ), this, SLOT(slotRemoveTags()) );
+    menu.insertSeparator();
+    menu.insertItem( tr( "Correct Case" ), &corCaseMenu );
     menu.insertItem( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
     menu.exec( QCursor::pos() );
 }
@@ -834,16 +924,18 @@ void mttMainWin::slotTitleChanged( const QString &title )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( TStringToQString( t->title() ) != title ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setTitle( QStringToTString( title ) );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 1, title );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( TStringToQString( t->title() ) != title ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setTitle( QStringToTString( title ) );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 1, title );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -897,16 +989,18 @@ void mttMainWin::slotTrackChanged( const QString &track )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if (  t->track() != track.toUInt() ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setTrack( track.toUInt() );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 7, track );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if (  t->track() != track.toUInt() ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setTrack( track.toUInt() );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 7, track );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -916,16 +1010,18 @@ void mttMainWin::slotCommentChanged( const QString &comment )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( TStringToQString( t->comment() ) != comment ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setComment( QStringToTString( comment ) );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 6, comment );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( TStringToQString( t->comment() ) != comment ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setComment( QStringToTString( comment ) );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 6, comment );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -935,16 +1031,18 @@ void mttMainWin::slotYearChanged( const QString &year )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( t->year() != year.toUInt() ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setYear( year.toUInt() );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 4, year );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( t->year() != year.toUInt() ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setYear( year.toUInt() );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 4, year );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -954,16 +1052,18 @@ void mttMainWin::slotAlbumChanged( const QString &album )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( TStringToQString( t->album() ) != album ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setAlbum( QStringToTString( album ) );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 3, album );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( TStringToQString( t->album() ) != album ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setAlbum( QStringToTString( album ) );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 3, album );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -973,16 +1073,18 @@ void mttMainWin::slotArtistChanged( const QString &artist )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( TStringToQString( t->artist() ) != artist ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setArtist( QStringToTString( artist ) );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 2, artist );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( TStringToQString( t->artist() ) != artist ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setArtist( QStringToTString( artist ) );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 2, artist );
+            }
+        it++;
         }
-    it++;
     }
 }
 
@@ -991,16 +1093,18 @@ void mttMainWin::slotGenreChanged( const QString &genre )
     TagLib::Tag *t;
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        t = ( (AListViewItem *) it.current() )->getTag( true );
-        if ( TStringToQString( t->genre() ) != genre ) { // A bit of a double check but just to be sure...
-            ( (AListViewItem *) it.current() )->checkEncodings();
-            // Save info from the various text fields
-            t->setGenre( QStringToTString( genre ) );
-            ( (AListViewItem *) it.current() )->setTagChanged( true );
-            it.current()->setText( 5, genre );
+    if ( !ignoreChange ) {
+        while ( it.current() ) {
+            t = ( (AListViewItem *) it.current() )->getTag( true );
+            if ( TStringToQString( t->genre() ) != genre ) { // A bit of a double check but just to be sure...
+                ( (AListViewItem *) it.current() )->checkEncodings();
+                // Save info from the various text fields
+                t->setGenre( QStringToTString( genre ) );
+                ( (AListViewItem *) it.current() )->setTagChanged( true );
+                it.current()->setText( 5, genre );
+            }
+        it++;
         }
-    it++;
     }
 }
 
