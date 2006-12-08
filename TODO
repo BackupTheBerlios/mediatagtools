@@ -1,6 +1,5 @@
 * Add id3v2 "Position in set" frame support
 * Add Music Brainz support
 * Convert tags from any iso charset to utf8
-* BUG: Creating tags from filename should update the view below the list
 * Complete Format Dialog
 * Autonumbering

@@ -1252,6 +1252,23 @@ void mttMainWin::slotCreateTags()
             ( (AListViewItem *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
             ( (AListViewItem *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
             ( (AListViewItem *) it.current() )->setText( 7, QString::number( t->track() ) );
+
+            // TODO: Use path & filename instead of just the name for the check
+            filename = ( (AListViewItem *) it.current() )->getFName();
+            curpos = filename.findRev( "/" );
+            if ( curpos != -1 )
+                filename.remove( 0, curpos + 1 );
+
+            // Update current file info
+            if ( filename ==  selectedFname ) {
+                GenTitleCLE->setText( TStringToQString( t->title() ) );
+                GenArtistCLE->setText( TStringToQString( t->artist() ) );
+                GenAlbumCLE->setText( TStringToQString( t->album() ) );
+                GenYearCLE->setText( QString::number( t->year() ) );
+                GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
+                GenCommentCLE->setText( TStringToQString( t->comment() ) );
+                GenTrackCLE->setText( QString::number( t->track() ) );
+            }
         }
         ++it;
 
