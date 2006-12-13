@@ -17,6 +17,8 @@
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qregexp.h>
+#include <qpushbutton.h>
+#include <qgroupbox.h>
 
 #include "mttcfdialog.h"
 
@@ -47,6 +49,17 @@ void mttCFDialog::slotArtistChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<artist>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 void mttCFDialog::slotTrackChkB( int state )
@@ -56,6 +69,17 @@ void mttCFDialog::slotTrackChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<track>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 
@@ -66,6 +90,17 @@ void mttCFDialog::slotCommentChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<comment>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 
@@ -76,6 +111,17 @@ void mttCFDialog::slotYearChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<year>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 
@@ -86,6 +132,17 @@ void mttCFDialog::slotTitleChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<title>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 
@@ -96,6 +153,17 @@ void mttCFDialog::slotAlbumChkB( int state )
     else if ( state == QButton::Off )
         listBox->removeItem( listBox->index( listBox->findItem( "<album>" ) ) );
     slotUpdateFormat();
+
+    if ( listBox->count() ) {
+        MoveUpButton->setEnabled( true );
+        MoveDownButton->setEnabled( true );
+        RemoveAllButton->setEnabled( true );
+    }
+    else {
+        MoveUpButton->setEnabled( false );
+        MoveDownButton->setEnabled( false );
+        RemoveAllButton->setEnabled( false );
+    }
 }
 
 void mttCFDialog::setFormat( QString formatstr )
@@ -182,40 +250,42 @@ void mttCFDialog::slotUpdateFormat()
     CFormatLE->setText( formatstr );
 }
 
-void mttCFDialog::slotLZChkB( int check )
+void mttCFDialog::slotRemoveAllBtn()
 {
-    LZ = check;
+    ArtistChkB->setChecked( false );
+    AlbumChkB->setChecked( false );
+    TitleChkB->setChecked( false );
+    YearChkB->setChecked( false );
+    TrackChkB->setChecked( false );
+    CommentChkB->setChecked( false );
 }
 
-bool mttCFDialog::isLZOn( void )
+void mttCFDialog::slotMoveDownBtn()
 {
-    if ( LZ == QButton::On )
-        return true;
-    else
-        return false;
+    QString txt;
+
+    // If something is selected and it isn't the last item...
+    if ( ( listBox->currentItem() != -1 ) && ( ( ( unsigned int ) listBox->currentItem() ) != ( listBox->count() - 1 ) ) ) {
+        txt = listBox->text( listBox->currentItem() + 1 );
+        listBox->changeItem( listBox->currentText(), listBox->currentItem() + 1 );
+        listBox->changeItem( txt , listBox->currentItem() - 1 );
+        listBox->setCurrentItem( listBox->currentItem() + 1 );
+        slotUpdateFormat();
+    }
 }
 
-void mttCFDialog::enableLZ( bool choice )
+
+void mttCFDialog::slotMoveUpBtn()
 {
-    LeadingZerosChkB->setChecked( choice );
+    QString txt;
+
+    // If something is selected and it isn't the first item...
+    if ( ( listBox->currentItem() != -1 ) && ( listBox->currentItem() != 0 ) ) {
+        txt = listBox->text( listBox->currentItem() - 1 );
+        listBox->changeItem( listBox->currentText(), listBox->currentItem() - 1 );
+        listBox->changeItem( txt , listBox->currentItem() + 1 );
+        listBox->setCurrentItem( listBox->currentItem() - 1 );
+        slotUpdateFormat();
+    }
 }
 
-QString mttCFDialog::getLZ1( void )
-{
-    return LZ1LE->text();
-}
-
-void mttCFDialog::setLZ1( QString str )
-{
-    LZ1LE->setText( str );
-}
-
-QString mttCFDialog::getLZ2( void )
-{
-    return LZ2LE->text();
-}
-
-void mttCFDialog::setLZ2( QString str )
-{
-    LZ2LE->setText( str );
-}

@@ -116,10 +116,6 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
     ignoreChange = false;
 
-    LZ = true; // Leading Zeros
-    LZ1 = "0";
-    LZ2 = "";
-
     GenGenreCB->insertStrList( genres );
     for ( i=0; i<45; i++ ) {
         strlst.append( extraFrames[i][1] );
@@ -141,6 +137,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
     tabWidget->removePage( tabWidget->page( 2 ) );
     tabWidget->removePage( tabWidget->page( 2 ) );
+    tabWidget->removePage( tabWidget->page( 1 ) );
     UseDFChkBox->hide();
     comboBox1->hide();
     CleanFButton->hide();
@@ -366,15 +363,9 @@ void mttMainWin::slotCFormat()
 
     cfdialog.setFormat( MCFormatLE->text() );
     cfdialog.setSeparators( separators );
-    cfdialog.setLZ1( LZ1 );
-    cfdialog.setLZ2( LZ2 );
-    cfdialog.enableLZ( LZ );
     if ( cfdialog.exec() == QDialog::Accepted ) {
         MCFormatLE->setText( cfdialog.getFormat() );
         separators = cfdialog.getSeparators();
-        LZ1 = cfdialog.getLZ1();
-        LZ2 = cfdialog.getLZ2();
-        LZ = cfdialog.isLZOn();
     }
     if ( UseCFChkB->isChecked() ) {
         slotDisableUsingFormat( false ); // Reset state of fields

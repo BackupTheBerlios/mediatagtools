@@ -9,13 +9,13 @@
             <x>0</x>
             <y>0</y>
             <width>447</width>
-            <height>478</height>
+            <height>365</height>
         </rect>
     </property>
     <property name="sizePolicy">
         <sizepolicy>
-            <hsizetype>7</hsizetype>
-            <vsizetype>7</vsizetype>
+            <hsizetype>3</hsizetype>
+            <vsizetype>1</vsizetype>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
@@ -220,6 +220,9 @@
                                             <property name="text">
                                                 <string>Arti&amp;st</string>
                                             </property>
+                                            <property name="accel">
+                                                <string>Alt+S</string>
+                                            </property>
                                         </widget>
                                         <widget class="QCheckBox">
                                             <property name="name">
@@ -234,7 +237,7 @@
                                                 <cstring>AlbumChkB</cstring>
                                             </property>
                                             <property name="text">
-                                                <string>Album</string>
+                                                <string>&amp;Album</string>
                                             </property>
                                         </widget>
                                         <widget class="QCheckBox">
@@ -270,9 +273,6 @@
                                     <property name="enabled">
                                         <bool>true</bool>
                                     </property>
-                                    <property name="selectionMode">
-                                        <enum>Extended</enum>
-                                    </property>
                                 </widget>
                                 <widget class="QLayoutWidget">
                                     <property name="name">
@@ -284,7 +284,7 @@
                                         </property>
                                         <widget class="QPushButton">
                                             <property name="name">
-                                                <cstring>MoveUPButton</cstring>
+                                                <cstring>MoveUpButton</cstring>
                                             </property>
                                             <property name="enabled">
                                                 <bool>false</bool>
@@ -329,202 +329,6 @@
                             </hbox>
                         </widget>
                     </vbox>
-                </widget>
-                <widget class="QGroupBox">
-                    <property name="name">
-                        <cstring>groupBox6</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>7</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="title">
-                        <string>Additional custom file rename options</string>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout52</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QCheckBox">
-                                    <property name="name">
-                                        <cstring>LeadingZerosChkB</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>1</hsizetype>
-                                            <vsizetype>1</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Use leading &amp;zeros for tracks (1-9)</string>
-                                    </property>
-                                    <property name="accel">
-                                        <string>Alt+Z</string>
-                                    </property>
-                                </widget>
-                                <widget class="QCheckBox">
-                                    <property name="name">
-                                        <cstring>AppendBitrateChkB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>1</hsizetype>
-                                            <vsizetype>1</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Append &amp;bitrate to filename</string>
-                                    </property>
-                                    <property name="accel">
-                                        <string>Alt+B</string>
-                                    </property>
-                                </widget>
-                                <widget class="QCheckBox">
-                                    <property name="name">
-                                        <cstring>checkBox25</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>1</hsizetype>
-                                            <vsizetype>1</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>A&amp;ppend mode to filename</string>
-                                    </property>
-                                    <property name="accel">
-                                        <string>Alt+P</string>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout54</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <widget class="QLayoutWidget">
-                                    <property name="name">
-                                        <cstring>layout53</cstring>
-                                    </property>
-                                    <hbox>
-                                        <property name="name">
-                                            <cstring>unnamed</cstring>
-                                        </property>
-                                        <widget class="QLineEdit">
-                                            <property name="name">
-                                                <cstring>LZ1LE</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="sizePolicy">
-                                                <sizepolicy>
-                                                    <hsizetype>7</hsizetype>
-                                                    <vsizetype>1</vsizetype>
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLabel">
-                                            <property name="name">
-                                                <cstring>textLabel10</cstring>
-                                            </property>
-                                            <property name="sizePolicy">
-                                                <sizepolicy>
-                                                    <hsizetype>1</hsizetype>
-                                                    <vsizetype>1</vsizetype>
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                            <property name="text">
-                                                <string>(10-99)</string>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLineEdit">
-                                            <property name="name">
-                                                <cstring>LZ2LE</cstring>
-                                            </property>
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="sizePolicy">
-                                                <sizepolicy>
-                                                    <hsizetype>7</hsizetype>
-                                                    <vsizetype>0</vsizetype>
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                        </widget>
-                                    </hbox>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer9</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>40</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer10</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>40</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </vbox>
-                        </widget>
-                    </hbox>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
@@ -628,22 +432,10 @@
 </widget>
 <connections>
     <connection>
-        <sender>LeadingZerosChkB</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>LZ1LE</receiver>
-        <slot>setEnabled(bool)</slot>
-    </connection>
-    <connection>
         <sender>CancelButton</sender>
         <signal>clicked()</signal>
         <receiver>CFormat</receiver>
         <slot>close()</slot>
-    </connection>
-    <connection>
-        <sender>LeadingZerosChkB</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>LZ2LE</receiver>
-        <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
         <sender>ArtistChkB</sender>
@@ -718,10 +510,22 @@
         <slot>slotUpdateFormat()</slot>
     </connection>
     <connection>
-        <sender>LeadingZerosChkB</sender>
-        <signal>stateChanged(int)</signal>
+        <sender>MoveUpButton</sender>
+        <signal>clicked()</signal>
         <receiver>CFormat</receiver>
-        <slot>slotLZChkB(int)</slot>
+        <slot>slotMoveUpBtn()</slot>
+    </connection>
+    <connection>
+        <sender>MoveDownButton</sender>
+        <signal>clicked()</signal>
+        <receiver>CFormat</receiver>
+        <slot>slotMoveDownBtn()</slot>
+    </connection>
+    <connection>
+        <sender>RemoveAllButton</sender>
+        <signal>clicked()</signal>
+        <receiver>CFormat</receiver>
+        <slot>slotRemoveAllBtn()</slot>
     </connection>
 </connections>
 <tabstops>
@@ -737,14 +541,9 @@
     <tabstop>CommentChkB</tabstop>
     <tabstop>TrackChkB</tabstop>
     <tabstop>listBox</tabstop>
-    <tabstop>MoveUPButton</tabstop>
+    <tabstop>MoveUpButton</tabstop>
     <tabstop>MoveDownButton</tabstop>
     <tabstop>RemoveAllButton</tabstop>
-    <tabstop>LeadingZerosChkB</tabstop>
-    <tabstop>LZ1LE</tabstop>
-    <tabstop>LZ2LE</tabstop>
-    <tabstop>AppendBitrateChkB</tabstop>
-    <tabstop>checkBox25</tabstop>
     <tabstop>OKButton</tabstop>
     <tabstop>CancelButton</tabstop>
 </tabstops>
@@ -756,7 +555,9 @@
     <slot access="protected">slotCommentChkB( int )</slot>
     <slot access="protected">slotTrackChkB( int )</slot>
     <slot access="protected">slotUpdateFormat()</slot>
-    <slot access="protected">slotLZChkB( int )</slot>
+    <slot access="protected">slotMoveUpBtn()</slot>
+    <slot access="protected">slotMoveDownBtn()</slot>
+    <slot access="protected">slotRemoveAllBtn()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
