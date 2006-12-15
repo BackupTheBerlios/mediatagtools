@@ -38,8 +38,7 @@ protected:
     QString curPath;
     QStringList separators;
     QProgressBar progress;
-    QString LZ1, LZ2;
-    bool LZ, ignoreChange;
+    bool ignoreChange;
     QString selectedFname;
 
     void populateList( QDir d );

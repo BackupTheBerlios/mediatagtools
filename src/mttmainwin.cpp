@@ -467,11 +467,8 @@ void mttMainWin::slotRenameFiles()
                 if ( cformat.startsWith( "<title>" ) )
                     newfname += TStringToQString( t->title() );
                 if ( cformat.startsWith( "<track>" ) ) {
-                    if ( LZ )
-                        if ( t->track() < 10 )
-                            newfname += LZ1;
-                        else
-                            newfname += LZ2;
+                    if ( t->track() < 10 )
+                        newfname += '0';
                     newfname += QString::number( t->track() );
                 }
                 if ( cformat.startsWith( "<year>" ) )
@@ -1251,6 +1248,7 @@ void mttMainWin::slotCreateTags()
                 filename.remove( 0, curpos + 1 );
 
             // Update current file info
+            ignoreChange = true; // Ignore the following change to the line edits
             if ( filename ==  selectedFname ) {
                 GenTitleCLE->setText( TStringToQString( t->title() ) );
                 GenArtistCLE->setText( TStringToQString( t->artist() ) );
@@ -1260,6 +1258,7 @@ void mttMainWin::slotCreateTags()
                 GenCommentCLE->setText( TStringToQString( t->comment() ) );
                 GenTrackCLE->setText( QString::number( t->track() ) );
             }
+            ignoreChange = false;
         }
         ++it;
 
