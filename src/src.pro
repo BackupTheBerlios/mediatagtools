@@ -4,8 +4,11 @@
 # ? ?????????? ????? ??? ????????:  ../bin/mediatagtools
 
 INSTALLS += mtt_el.qm \
+            icons \
             target 
 target.path = bin 
+icons.files += ../icons/* 
+icons.path = share/mediatagtools/icons 
 mtt_el.qm.files += ../translations/mtt_el.qm 
 mtt_el.qm.path = share/mediatagtools 
 FORMS += form1.ui \

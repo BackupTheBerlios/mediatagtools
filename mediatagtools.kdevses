@@ -1,40 +1,34 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="11" >
+ <DocsAndViews NumberOfDocuments="9" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
    <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.cpp" >
-   <View0 Type="Source" />
+   <View0 line="0" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 line="368" Type="Source" />
+   <View0 line="471" Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
-   <View0 Type="Source" />
+   <View0 line="59" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.cpp" >
    <View0 Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qclineedit.h" >
-   <View0 Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.h" >
-   <View0 line="50" Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/TODO" >
-   <View0 line="2" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
    <View0 line="0" Type="Source" />
-  </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttcfdialog.cpp" >
-   <View0 line="252" Type="Source" />
-  </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qpicture.html#details" >
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/TODO" >
+   <View0 line="2" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
+   <View0 line="0" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qpicture.html#details" >
    <View0 Type="Documentation" />
-  </Doc10>
+  </Doc8>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
