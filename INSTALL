@@ -7,7 +7,7 @@ commands (without the #):
 
 # ./configure
 # make
-# make install
+# make install (make sure you are logged in as root before this one)
 
 Have fun! :-)
 Report bugs at the project page http://developer.berlios.de/projects/mediatagtools/ or send me an email at int.teo@gmail.com (I prefer the bug reports at berlios)

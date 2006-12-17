@@ -1,4 +1,4 @@
---- 0.3 --- soon
+--- 0.3 --- 17 Dec 2006
 * Fixed [ Bug #8306 ] Does not open files with UPPERCASE extension (e.g.
 file.MP3)
 * Fixed [ Bug #8764 ] closing & reopening the Format options dialog mangles
