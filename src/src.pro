@@ -19,7 +19,8 @@ QMAKE_LFLAGS_DEBUG = `taglib-config \
 QMAKE_CXXFLAGS_RELEASE += `taglib-config \
                           --cflags` \
                           -ansi \
-                          -pedantic 
+                          -pedantic \
+                          -Wno-long-long 
 QMAKE_CXXFLAGS_DEBUG += `taglib-config \
                         --cflags` \
                         -static \
