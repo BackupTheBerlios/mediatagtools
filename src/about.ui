@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>469</width>
-            <height>551</height>
+            <height>565</height>
         </rect>
     </property>
     <property name="caption">
@@ -84,7 +84,7 @@
             </property>
             <property name="text">
                 <string>&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;/head&gt;&lt;body style="font-size:10pt;font-family:Sans Serif"&gt;
-&lt;p&gt;&lt;span style="font-weight:600"&gt;Stavros Giannouris&lt;/span&gt; (stavrosg) for his support and bug hunting,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Michalis Pitidis&lt;/span&gt; (mikeX) for his suggestions and patches,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Apostolos Bartziokas&lt;/span&gt; for the wonderful Media Tag Tools art,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Andreas Schneider&lt;/span&gt; (GlaDiaC) for the SuSE rpms,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Gregory Potamianos&lt;/span&gt; (gregpuppy) for the debian packages,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Thomas Merkel&lt;/span&gt; for the slackware tarballs, and all those who have downloaded and supported mtt through your various comments. &lt;/p&gt;
+&lt;p&gt;&lt;span style="font-weight:600"&gt;Stavros Giannouris&lt;/span&gt; (stavrosg) for his support and bug hunting,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Michalis Pitidis&lt;/span&gt; (mikeX) for his suggestions and patches,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Apostolos Bartziokas&lt;/span&gt; for the wonderful Media Tag Tools art,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Andreas Schneider&lt;/span&gt; (GlaDiaC) for the SuSE rpms,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Gregory Potamianos&lt;/span&gt; (gregpuppy) for the debian packages,&lt;br /&gt;&lt;span style="font-weight:600"&gt;Thomas Merkel&lt;/span&gt; for the slackware tarballs,&lt;br /&gt;&lt;b&gt;Vlad Glagolev&lt;/b&gt; (Stelz) for beta testing and OpenBSD port,&lt;br /&gt;and all those who have downloaded and supported mtt through your various comments.&lt;/p&gt;
 &lt;/body&gt;&lt;/html&gt;
 </string>
             </property>
