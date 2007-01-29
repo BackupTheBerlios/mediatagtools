@@ -1,3 +1,9 @@
+--- 0.3.1 --- 29 Jan 2007
+* Make /bin/sh the default shell for the scripts
+* Files are no longer left open while working with tags ( no more lost tags
+because of too many opened files )
+* Genre list is now sorted
+
 --- 0.3 --- 17 Dec 2006
 * Fixed [ Bug #8306 ] Does not open files with UPPERCASE extension (e.g.
 file.MP3)
