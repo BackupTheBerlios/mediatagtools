@@ -15,6 +15,7 @@
 #include <mpegfile.h>
 #include <id3v1tag.h>
 #include <id3v2tag.h>
+#include <xiphcomment.h>
 #include <textidentificationframe.h>
 #include <tstring.h>
 
@@ -28,6 +29,7 @@ AListViewItem::AListViewItem( QListView * parent )
     isogg = false;
     isflac = false;
     tagChange = false;
+    tag = NULL;
 }
 
 AListViewItem::AListViewItem ( QListView * parent, QString label1, QString label2, QString label3, QString label4, QString label5, QString label6, QString label7, QString label8 )
@@ -38,6 +40,7 @@ AListViewItem::AListViewItem ( QListView * parent, QString label1, QString label
     isogg = false;
     isflac = false;
     tagChange = false;
+    tag = NULL;
 }
 
 
@@ -45,9 +48,11 @@ AListViewItem::~AListViewItem()
 {
     if ( fileref )
         delete fileref;
+    if ( tag )
+        delete tag;
 }
 
-void AListViewItem::FileRef( QString filename )
+void AListViewItem::Open( QString filename )
 {
     fname = filename;
     fileref = new TagLib::FileRef( QFile::encodeName( filename ) );
@@ -113,25 +118,45 @@ void AListViewItem::FileRef( QString filename )
     else if ( filename.endsWith( ".flac", false ) ) {
         isflac = true;
     }
+
+    delete fileref;
+    fileref = NULL;
 }
 
 TagLib::Tag *AListViewItem::getTag( bool create )
 {
-    if ( fileref )
-        if ( !ismpeg )
-            return fileref->tag();
-        else {
-            TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
-            return dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( create ) );
+    if ( tag == NULL ) {
+        fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+
+        if ( fileref ) {
+            if ( ismpeg ) {
+                TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+                tag =  new TagLib::ID3v2::Tag();
+                TagLib::Tag::duplicate( dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( create ) ), tag, true );
+                return tag;
+            }
+            else {
+                tag = new TagLib::Ogg::XiphComment();
+                TagLib::Tag::duplicate( fileref->tag(), tag, true );
+                return tag;
+            }
         }
-    else {
-        qDebug( "fileref = NULL" );
-        return NULL;
+        else {
+            qDebug( "fileref = NULL" );
+            return NULL;
+        }
+
+        delete fileref;
+        fileref = NULL;
     }
+    else
+        return tag;
 }
 
 void AListViewItem::saveTag( void )
 {
+    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
 
@@ -139,30 +164,42 @@ void AListViewItem::saveTag( void )
         f->strip( TagLib::MPEG::File::ID3v1, true );
         qDebug("ID3v1 tag stripped!");
 
+        TagLib::Tag::duplicate( tag, dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( false ) ), true );
+
         f->save( TagLib::MPEG::File::ID3v2, true );
     }
-    else
+    else {
+        TagLib::Tag::duplicate( tag, fileref->tag(), true );
         fileref->save();
+    }
+
+    delete fileref;
+    fileref = NULL;
 }
 
 void AListViewItem::removeTag( void )
 {
+    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         f->strip();
     }
     else {
-        TagLib::Tag *tag = fileref->tag();
+        TagLib::Tag *intag = fileref->tag();
 
-        tag->setTitle( TagLib::String::null );
-        tag->setArtist( TagLib::String::null );
-        tag->setAlbum( TagLib::String::null );
-        tag->setComment( TagLib::String::null );
-        tag->setGenre( TagLib::String::null );
-        tag->setYear( 0 );
-        tag->setTrack( 0 );
+        intag->setTitle( TagLib::String::null );
+        intag->setArtist( TagLib::String::null );
+        intag->setAlbum( TagLib::String::null );
+        intag->setComment( TagLib::String::null );
+        intag->setGenre( TagLib::String::null );
+        intag->setYear( 0 );
+        intag->setTrack( 0 );
         fileref->save();
     }
+
+    delete fileref;
+    fileref = NULL;
 }
 
 QString AListViewItem::getFName( void )
@@ -192,16 +229,23 @@ bool AListViewItem::isFLAC( void )
 
 TagLib::ID3v2::Tag *AListViewItem::getID3Tag( bool create )
 {
+    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         return f->ID3v2Tag( create );
     }
     else
         return NULL;
+
+    delete fileref;
+    fileref = NULL;
 }
 
 void AListViewItem::checkEncodings( void )
 {
+    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+
     if ( isMpeg() ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
 
@@ -240,6 +284,9 @@ void AListViewItem::checkEncodings( void )
                 tf->setTextEncoding( TagLib::String::UTF8 );
         }
     }
+
+    delete fileref;
+    fileref = NULL;
 }
 
 void AListViewItem::setTagChanged( bool ch )

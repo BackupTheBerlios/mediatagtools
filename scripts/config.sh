@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Check for taglib version > 1.4
 echo -n "Checking for taglib v1.4 or higher..."

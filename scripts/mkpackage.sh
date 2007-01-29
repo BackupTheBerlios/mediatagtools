@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 cd ..
 cp -r mediatagtools mediatagtools-`cat mediatagtools/VERSION`

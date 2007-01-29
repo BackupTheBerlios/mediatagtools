@@ -27,7 +27,7 @@ public:
 
     ~AListViewItem();
 
-    void FileRef( QString filename );
+    void Open( QString filename );
     void removeTag( void );
     TagLib::Tag *getTag( bool create = false );
     void saveTag( void );
@@ -47,6 +47,7 @@ private:
     bool ismpeg, isogg, isflac;
     QString fname;
     bool tagChange;
+    TagLib::Tag *tag;
 };
 
 #endif

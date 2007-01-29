@@ -226,7 +226,7 @@ void mttMainWin::slotOpenFiles()
                 qDebug( "exists" );
             else
                 qDebug( "doesn't exist" );*/
-            li->FileRef( *it );
+            li->Open( *it );
             t = li->getTag();
             if ( t ) {
                 li->setText( 1, TStringToQString( t->title() ) );
@@ -274,7 +274,7 @@ void mttMainWin::populateList( QDir d )
             qDebug( "exists" );
         else
             qDebug( "doesn't exist" );*/
-        li->FileRef( QString( d.path() + "/" + *it ) );
+        li->Open( QString( d.path() + "/" + *it ) );
         t = li->getTag();
         if ( t ) {
             li->setText( 1, TStringToQString( t->title() ) );
