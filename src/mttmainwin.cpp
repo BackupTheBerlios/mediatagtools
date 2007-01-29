@@ -937,12 +937,12 @@ void mttMainWin::slotSelectionChange()
 
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
 
-    if ( !selectedFname.isEmpty() ) {
+    if ( !selectedFname.isEmpty() ) { // If there is an item selected
         QListViewItem *lvi = GenListView->findItem( selectedFname, 0 );
         if ( lvi && !lvi->isSelected() )
             updateSelectedFname = true;
     }
-    if ( selectedFname.isEmpty() || updateSelectedFname ) {
+    if ( selectedFname.isEmpty() || updateSelectedFname || ( GenListView->findItem( selectedFname, 0 ) == NULL ) ) {
         // Clear the contents of the widgets
         //slotEmptyFields(); // Probably unecessary
 
