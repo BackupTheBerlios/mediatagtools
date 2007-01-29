@@ -137,7 +137,8 @@ TagLib::Tag *AListViewItem::getTag( bool create )
             }
             else {
                 tag = new TagLib::Ogg::XiphComment();
-                TagLib::Tag::duplicate( fileref->tag(), tag, true );
+                if ( fileref->tag() )
+                    TagLib::Tag::duplicate( fileref->tag(), tag, true );
                 return tag;
             }
         }
