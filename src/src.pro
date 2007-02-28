@@ -44,5 +44,5 @@ SOURCES += alistviewitem.cpp \
            mttmainwin.cpp \
            mttaboutdialog.cpp \
            qclineedit.cpp 
-LIBS += "`taglib-config --libs`"
+LIBS += `taglib-config --libs`
 

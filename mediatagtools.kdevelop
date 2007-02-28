@@ -68,13 +68,13 @@
       <autocompile>true</autocompile>
       <envvars/>
       <runarguments>
-        <mediatagtools/>
+        <mediatagtools></mediatagtools>
       </runarguments>
       <cwd>
         <mediatagtools>/home/oscar/Projects/mediatagtools</mediatagtools>
       </cwd>
       <debugarguments>
-        <mediatagtools/>
+        <mediatagtools></mediatagtools>
       </debugarguments>
     </run>
     <general>
