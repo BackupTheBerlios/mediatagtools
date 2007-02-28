@@ -12,9 +12,6 @@ icons.files += ../icons/*
 icons.path = share/mediatagtools/icons 
 mtt_el.qm.files += ../translations/mtt_el.qm 
 mtt_el.qm.path = share/mediatagtools 
-QMAKE_LFLAGS_RELEASE = `taglib-config \
-                       --libs`
-QMAKE_LFLAGS_DEBUG = `taglib-config --libs`
 QMAKE_CXXFLAGS_RELEASE += `taglib-config \
                           --cflags` \
                           -ansi \
@@ -29,7 +26,7 @@ QMAKE_CXXFLAGS_DEBUG += `taglib-config \
                         -pg 
 TARGET = ../bin/mediatagtools 
 CONFIG += warn_on \
-          release
+          debug
 TEMPLATE = app 
 FORMS += form1.ui \
          form2.ui \
@@ -47,3 +44,5 @@ SOURCES += alistviewitem.cpp \
            mttmainwin.cpp \
            mttaboutdialog.cpp \
            qclineedit.cpp 
+LIBS += "`taglib-config --libs`"
+

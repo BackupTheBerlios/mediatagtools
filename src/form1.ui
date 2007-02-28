@@ -859,19 +859,36 @@
                     <widget class="QTable" row="0" column="0">
                         <column>
                             <property name="text">
-                                <string>Field ID</string>
+                                <string>Field</string>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap></pixmap>
                             </property>
                         </column>
                         <column>
                             <property name="text">
-                                <string>Field</string>
+                                <string>Field ID</string>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap></pixmap>
                             </property>
                         </column>
                         <column>
                             <property name="text">
                                 <string>Value</string>
                             </property>
+                            <property name="pixmap">
+                                <pixmap></pixmap>
+                            </property>
                         </column>
+                        <row>
+                            <property name="text">
+                                <string>1</string>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap></pixmap>
+                            </property>
+                        </row>
                         <property name="name">
                             <cstring>AdvTagTable</cstring>
                         </property>

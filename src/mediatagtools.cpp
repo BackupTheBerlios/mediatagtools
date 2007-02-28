@@ -26,6 +26,13 @@ int main(int argc, char *argv[])
   mttMainWin m;
   a.setMainWidget( &m );
   m.show();
+
+  if ( argc > 1 ) {
+    if ( QFile::exists( argv[1] ) ) {
+        m.openDir( QString( argv[1] ) );
+    }
+  }
+
   a.exec();
 
   return EXIT_SUCCESS;

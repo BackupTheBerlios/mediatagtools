@@ -28,6 +28,7 @@ public:
   mttMainWin(QWidget* parent = 0, const char* name = 0, WFlags fl = 0 );
   ~mttMainWin();
   /*$PUBLIC_FUNCTIONS$*/
+    void openDir( QString );
 
 public slots:
   /*$PUBLIC_SLOTS$*/
@@ -40,6 +41,8 @@ protected:
     QProgressBar progress;
     bool ignoreChange;
     QString selectedFname;
+    QStringList availExtraFrames;
+    QStringList xtraFrames;
 
     void populateList( QDir d );
     QString firstUp( QString );
@@ -83,7 +86,7 @@ protected slots:
     virtual void slotArtistChanged( const QString& );
     virtual void slotOpenFiles();
     virtual void slotCreateTags();
-    virtual void slotAdvTagValueChanged( int );
+    virtual void slotAdvTagValueChanged( int, int );
 };
 
 #endif

@@ -116,7 +116,6 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 {
     int i;
     QStringList strlst( "<Empty>" );
-    QComboBox *cb;
 
     ignoreChange = false;
 
@@ -124,12 +123,10 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     for ( i=0; i<45; i++ ) {
         strlst.append( extraFrames[i][1] );
     }
-    AdvTagTable->setCellWidget( 0, 1, new QComboBox( false, AdvTagTable ) );
-    cb = ( QComboBox * ) AdvTagTable->cellWidget( 0, 1 );
-    cb->insertStringList( strlst );
-    connect( cb, SIGNAL( activated ( int ) ), this, SLOT( slotAdvTagValueChanged( int ) ) );
-//     AdvTagTable->setItem( 0, 1, new QComboTableItem( AdvTagTable, strlst ) );
-    AdvTagTable->setColumnWidth( 1, 200 );
+    strlst.sort();
+    availExtraFrames = strlst;
+    AdvTagTable->setItem( 0, 0, new QComboTableItem( AdvTagTable, strlst ) );
+    AdvTagTable->setColumnWidth( 0, 200 );
 //     AdvTagTable->setFocusStyle( QTable::FollowStyle );
 
     for ( i=0; i<5; i++ ) {
@@ -141,12 +138,13 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
     tabWidget->removePage( tabWidget->page( 2 ) );
     tabWidget->removePage( tabWidget->page( 2 ) );
-    tabWidget->removePage( tabWidget->page( 1 ) );
+    //tabWidget->removePage( tabWidget->page( 1 ) );
     UseDFChkBox->hide();
     comboBox1->hide();
     CleanFButton->hide();
     CreateDirButton->hide();
-    AdvTagTable->hideColumn( 0 );
+    //AdvTagTable->hideColumn( 1 );
+    AdvTagTable->setColumnReadOnly( 1, true );
 
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
@@ -160,6 +158,23 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
 mttMainWin::~mttMainWin()
 {
+}
+
+void mttMainWin::openDir( QString str )
+{
+    QDir d;
+
+    d.setPath( str );
+    d.setFilter( QDir::Files | QDir::Readable );
+    d.setNameFilter( QString( "*.mp3;*.MP3;*.ogg;*.OGG;*.flac;*.FLAC" ) );
+
+    if ( d.exists() && d.isReadable() ) {
+        curPath = d.path();
+        QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+        populateList( d );
+        QApplication::restoreOverrideCursor();
+    }
+    selectedFname = "";
 }
 
 void mttMainWin::slotOpen()
@@ -1274,12 +1289,62 @@ void mttMainWin::slotCreateTags()
     statusBar()->message( tr( QString( "Done" ) ) );
 }
 
-void mttMainWin::slotAdvTagValueChanged( int t )
+void mttMainWin::slotAdvTagValueChanged( int row, int column )
 {
-    //if ( ( column == 1 ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) )
-        AdvTagTable->insertRows( AdvTagTable->numRows() );
+    qDebug( QString::number( row ) + "-" + QString::number( column ) );
+
+    AdvTagTable->setEnabled( false );
+
+    if ( column == 0 ) {
+        if ( ( row == ( AdvTagTable->numRows() - 1 ) ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) ) { // If the last item of the table has changed and it is anything but <Empty> ...
+            int i;
+
+            for ( i = 0; i < AdvTagTable->numRows(); i++ ) { // Remove the same option from every other combobox
+                if ( i != row ) {
+                    QStringList l;
+                    QString current;
+                    int j;
+
+                    current = ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->currentText();
+                    for ( j = 0; j < ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->count(); j++ ) {
+                        if ( ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j ) != ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() )
+                            l += ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j );
+                    }
+
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setStringList( l );
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
+                }
+            }
+
+            availExtraFrames.remove( availExtraFrames.find( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() ) );
+            xtraFrames += ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText();
+
+            AdvTagTable->insertRows( AdvTagTable->numRows() );
+            AdvTagTable->setItem( AdvTagTable->numRows() - 1, 0, new QComboTableItem( AdvTagTable, availExtraFrames ) );
+        }
+        else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) {
+            AdvTagTable->removeRow( row );
+            availExtraFrames += *xtraFrames.at( row );
+            availExtraFrames.sort();
+
+            int i;
+
+            for ( i = 0; i < AdvTagTable->numRows(); i++ ) { // Add the same option in every other combobox
+                QStringList l;
+                QString current;
+                int j;
+
+                current = ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->currentText();
+                for ( j = 0; j < ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->count(); j++ )
+                    l += ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j );
+
+                l += *xtraFrames.at( row );
+                l.sort();
+                ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setStringList( l );
+                ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
+            }
+        }
+    }
+
+    AdvTagTable->setEnabled( true );
 }
-
-
-
-
