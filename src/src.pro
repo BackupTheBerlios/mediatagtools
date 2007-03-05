@@ -50,9 +50,9 @@ LIBS += `taglib-config --libs`
 
 desktop_icon.files += ../icons/mediatagtools.svg
 
-desktop_icon.path = share/icons/scalable/apps
-
 desktop_menu_entry.files += ../mediatagtools.desktop
 
 desktop_menu_entry.path = share/applications
+
+desktop_icon.path = share/icons/hicolor/scalable/apps
 
