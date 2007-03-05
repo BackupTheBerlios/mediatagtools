@@ -1,6 +1,4 @@
-  This version of Media Tag Tools the way the tags are written has changed. Now all changes are kept in memory and are
-written to the disk when you want them to be written. Every tag that has changed is colored red and remains that way
-until it is saved. In case your genre field has a strange number when loading some audio files for the first time,
+  In case your genre field has a strange number when loading some audio files for the first time,
 please save the tags and reload the files. That is a know bug of taglib that has been fixed in the svn version and
 it will be included in the next release of taglib. I want to thank the developers of taglib for their immediate
 response to my bug report and of course for creating taglib!

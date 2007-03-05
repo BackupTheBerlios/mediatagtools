@@ -138,7 +138,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
     tabWidget->removePage( tabWidget->page( 2 ) );
     tabWidget->removePage( tabWidget->page( 2 ) );
-    //tabWidget->removePage( tabWidget->page( 1 ) );
+    tabWidget->removePage( tabWidget->page( 1 ) );
     UseDFChkBox->hide();
     comboBox1->hide();
     CleanFButton->hide();
