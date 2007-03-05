@@ -1,10 +1,9 @@
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <iostream>
 #include <qapplication.h>
 #include <qtextcodec.h>
+#include <qimage.h>
 
 #include "mttmainwin.h"
 
@@ -25,6 +24,11 @@ int main(int argc, char *argv[])
 
   mttMainWin m;
   a.setMainWidget( &m );
+
+  // Window icon (get rid of that pink/purple X!)
+  QPixmap icon( QImage( QString( QString( PREFIX ) + "/share/mediatagtools/icons/Logo2.png" ) ) );
+  m.setIcon( icon );
+
   m.show();
 
   if ( argc > 1 ) {
