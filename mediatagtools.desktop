@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=MediaTagTools
+Comment=MediaTagTools is a collection of tools for viewing and editing tags and filenames of audio files
+Exec=mediatagtools %F
+Icon=mediatagtools.svg
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;AudioVideo;AudioVideoEditing;
+X-Desktop-File-Install-Version=0.3
+MimeType=audio/x-mp3;audio/x-oggflac;audio/x-flac;application/ogg;application/x-ogg;

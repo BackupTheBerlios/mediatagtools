@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   a.setMainWidget( &m );
 
   // Window icon (get rid of that pink/purple X!)
-  QPixmap icon( QImage( QString( QString( PREFIX ) + "/share/mediatagtools/icons/Logo2.png" ) ) );
+  QPixmap icon( QImage( QString( QString( PREFIX ) + "/share/mediatagtools/icons/mediatagtools.png" ) ) );
   m.setIcon( icon );
 
   m.show();

@@ -7,7 +7,8 @@ LANGUAGE = C++
 INSTALLS += mtt_el.qm \
             icons \
             target  \
-            "desktop icon"
+            desktop_icon \
+            desktop_menu_entry
 target.path = bin 
 icons.files += ../icons/* 
 icons.path = share/mediatagtools/icons 
@@ -47,7 +48,11 @@ SOURCES += alistviewitem.cpp \
            qclineedit.cpp 
 LIBS += `taglib-config --libs`
 
-desktop icon.files += ../icons/Logo2.svg
+desktop_icon.files += ../icons/mediatagtools.svg
 
-desktop icon.path = share/icons/scalable/apps
+desktop_icon.path = share/icons/scalable/apps
+
+desktop_menu_entry.files += ../mediatagtools.desktop
+
+desktop_menu_entry.path = share/applications
 
