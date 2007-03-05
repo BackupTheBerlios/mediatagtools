@@ -131,8 +131,8 @@ TagLib::Tag *AListViewItem::getTag( bool create )
         if ( fileref ) {
             if ( ismpeg ) {
                 TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
-                tag =  new TagLib::ID3v2::Tag();
-                TagLib::Tag::duplicate( dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( create ) ), tag, true );
+                tag = new TagLib::ID3v2::Tag();
+                TagLib::Tag::duplicate( dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) ), tag, true );
                 delete fileref;
                 fileref = NULL;
                 return tag;
