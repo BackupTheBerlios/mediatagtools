@@ -1,6 +1,6 @@
 * Custom tags for ogg files
-* Extra tags for mp3 file ( was: Add id3v2 "Position in set" frame support )
 * Add folders recursively
 * Add Music Brainz support
 * Convert tags from any iso charset to utf8
 * Autonumbering
+* Show an error message when a tag cannot be saved for some reason

@@ -60,6 +60,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     }
     strlst.sort();
     availExtraFrames = strlst;
+    AdvTagTable->setColumnReadOnly( 0, true );
     AdvTagTable->setItem( 0, 0, new QComboTableItem( AdvTagTable, strlst ) );
     AdvTagTable->setColumnWidth( 0, 200 );
 //     AdvTagTable->setFocusStyle( QTable::FollowStyle );
@@ -1267,7 +1268,7 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
             AdvTagTable->insertRows( AdvTagTable->numRows() );
             AdvTagTable->setItem( AdvTagTable->numRows() - 1, 0, new QComboTableItem( AdvTagTable, availExtraFrames ) );
         }
-        else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) {
+        else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) { // If any other item than the last item of the list has changed and it is now <Empty>
 //             qDebug( "Del" );
             AdvTagTable->removeRow( row );
             availExtraFrames += *xtraFrames.at( row );
@@ -1290,6 +1291,60 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
                 ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
             }
             xtraFrames.remove( xtraFrames.at( row ) );
+        }
+        else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) ) { // If any other item except the last has changed to something else than <Empty>
+            availExtraFrames += *xtraFrames.at( row );
+            availExtraFrames.sort();
+
+            int i;
+
+            for ( i = 0; i < AdvTagTable->numRows(); i++ ) { // Add the same option in every other combobox
+                if ( i != row ) {
+                    QStringList l;
+                    QString current;
+                    int j;
+
+                    current = ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->currentText();
+                    for ( j = 0; j < ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->count(); j++ )
+                        l += ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j );
+
+                    l += *xtraFrames.at( row );
+                    l.sort();
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setStringList( l );
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
+                }
+            }
+            xtraFrames.remove( xtraFrames.at( row ) );
+
+            for ( i = 0; i < AdvTagTable->numRows(); i++ ) { // Remove the same option from every other combobox
+                if ( i != row ) {
+                    QStringList l;
+                    QString current;
+                    int j;
+
+                    current = ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->currentText();
+                    for ( j = 0; j < ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->count(); j++ ) {
+                        if ( ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j ) != ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() )
+                            l += ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->text( j );
+                    }
+
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setStringList( l );
+                    ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
+                }
+            }
+
+            availExtraFrames.remove( availExtraFrames.find( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() ) );
+            xtraFrames += ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText();
+
+            // Find FrameID
+            QString fid;
+            for ( i = 0; i < EF_NUM; i++ ) {
+                if ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() == extraFrames[i][1] ) {
+                    fid = extraFrames[i][0];
+                }
+            }
+//             qDebug( fid + "--" );
+            AdvTagTable->setText( row, 1, fid );
         }
     }
     else if ( column == 2 ) {
