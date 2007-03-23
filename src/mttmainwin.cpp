@@ -1295,22 +1295,24 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
     else if ( column == 2 ) {
     }
 
-    // Create a list of extra frames for the selected files
-    QStringList eframes;
-    int i;
+    if ( !ignoreChange ) {
+        // Create a list of extra frames for the selected files
+        QStringList eframes;
+        int i;
 
-    for ( i = 0; i < ( AdvTagTable->numRows() - 1 ); i++ ) {
-        if ( ( ( QComboTableItem * ) AdvTagTable->item( i, 0 ) )->currentItem() != 0 ) {
-            eframes += AdvTagTable->text( i, 1 );
-            eframes += AdvTagTable->text( i, 2 );
+        for ( i = 0; i < ( AdvTagTable->numRows() - 1 ); i++ ) {
+            if ( ( ( QComboTableItem * ) AdvTagTable->item( i, 0 ) )->currentItem() != 0 ) {
+                eframes += AdvTagTable->text( i, 1 );
+                eframes += AdvTagTable->text( i, 2 );
+            }
         }
-    }
 
 
-    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
-    while ( it.current() ) {
-        ( (AListViewItem *) it.current() )->setMp3ExtraFrames( eframes );
-        ++it;
+        QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+        while ( it.current() ) {
+            ( (AListViewItem *) it.current() )->setMp3ExtraFrames( eframes );
+            ++it;
+        }
     }
 
     AdvTagTable->setEnabled( true );
@@ -1319,6 +1321,8 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
 void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
     // Clear the table
     int i, num = AdvTagTable->numRows() - 1;
+
+    ignoreChange = true;
 
     for( i = 0; i < num; i++ ){
         ( ( QComboTableItem * ) AdvTagTable->item( 0, 0 ) )->setCurrentItem( 0 );
@@ -1342,4 +1346,6 @@ void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
             }
         }
     }
+
+    ignoreChange = false;
 }
