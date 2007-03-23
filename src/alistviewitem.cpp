@@ -21,6 +21,8 @@
 
 #include "alistviewitem.h"
 
+#include "mp3extraframes.h"
+
 AListViewItem::AListViewItem( QListView * parent )
  : QListViewItem( parent )
 {
@@ -132,8 +134,22 @@ TagLib::Tag *AListViewItem::getTag( bool create )
             if ( ismpeg ) {
                 TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
                 tag = new TagLib::ID3v2::Tag();
-                if ( f->ID3v2Tag( create ) != NULL )
+                if ( f->ID3v2Tag( create ) != NULL ) {
                     TagLib::Tag::duplicate( dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( create ) ), tag, true );
+
+                    // Read extra mp3 tags
+                    int i;
+                    for ( i = 0; i < EF_NUM; i++ ) {
+                        TagLib::ID3v2::FrameList l = f->ID3v2Tag()->frameListMap()[extraFrames[i][0]];
+
+                        if ( !l.isEmpty() ) {
+                            mp3eframes += extraFrames[i][0];
+                            mp3eframes += TStringToQString( l.front()->toString() );
+                        }
+                    }
+                }
+
+
                 delete fileref;
                 fileref = NULL;
                 return tag;
@@ -346,4 +362,14 @@ void AListViewItem::paintCell ( QPainter * p, const QColorGroup & cg, int column
     }
     else
         QListViewItem::paintCell( p, cg, column, width /*- r*/, align );
+}
+
+void AListViewItem::setMp3ExtraFrames( QStringList ef )
+{
+    mp3eframes = ef;
+}
+
+QStringList AListViewItem::getMp3ExtraFrames( void )
+{
+    return mp3eframes;
 }

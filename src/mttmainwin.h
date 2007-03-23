@@ -29,6 +29,7 @@ public:
   ~mttMainWin();
   /*$PUBLIC_FUNCTIONS$*/
     void openDir( QString );
+    void updateAdvMp3TagTable( QStringList );
 
 public slots:
   /*$PUBLIC_SLOTS$*/

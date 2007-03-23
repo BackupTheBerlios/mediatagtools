@@ -43,73 +43,8 @@
 #include "revision.h"
 #endif
 
-static const char* genres[] = {     "Acid", "Acid Jazz", "Acid Punk", "Alternative", "AlternRock", "Ambient",
-                                    "Bass", "Blues",
-                                    "Cabaret", "Classic Rock", "Classical", "Comedy", "Country", "Christian Rap", "Cult",
-                                    "Dance", "Darkwave", "Death Metal", "Disco", "Dream", "Drum & Bass",
-                                    "Electronic", "Ethnic", "Eurodance", "Euro-Techno",
-                                    "Funk", "Fusion",
-                                    "Gangsta", "Game", "Gospel", "Gothic", "Grunge",
-                                    "Hard Rock", "Hip-Hop", "House",
-                                    "Industrial", "Instrumental", "Instrumental Pop", "Instrumental Rock",
-                                    "Jazz", "Jazz+Funk", "Jungle",
-                                    "Lo-Fi",
-                                    "Meditative", "Metal", "Musical",
-                                    "Native American", "New Age", "New Wave", "Noise",
-                                    "Oldies", "Other",
-                                    "Polka", "Pop", "Pop-Folk", "Pop/Funk", "Pranks", "Psychadelic", "Punk",
-                                    "R&B", "Rap", "Rave", "Reggae", "Retro", "Rock", "Rock & Roll",
-                                    "Showtunes", "Ska", "Soul", "Sound Clip", "Soundtrack", "Southern Rock", "Space",
-                                    "Techno", "Techno-Industrial", "Top 40", "Trailer", "Trance", "Tribal", "Trip-Hop",
-                                    "Vocal",
-                                    0 };
-
-static const char* extraFrames[45][2] = {   { "TALB", "Album/Movie/Show title" },
-                                            { "TBPM", "BPM (beats per minute)" },
-                                            { "TCOM", "Composer" },
-                                            { "TCON", "Content type" },
-                                            { "TCOP", "Copyright message" },
-                                            { "TDEN", "Encoding time" },
-                                            { "TDLY", "Playlist delay" },
-                                            { "TDOR", "Original release time" },
-                                            { "TDRC", "Recording time" },
-                                            { "TDRL", "Release time" },
-                                            { "TDTG", "Tagging time" },
-                                            { "TENC", "Encoded by" },
-                                            { "TEXT", "Lyricist/Text writer" },
-                                            { "TFLT", "File type" },
-                                            { "TIPL", "Involved people list" },
-                                            { "TIT1", "Content group description" },
-                                            { "TIT2", "Title/songname/content description" },
-                                            { "TIT3", "Subtitle/Description refinement" },
-                                            { "TKEY", "Initial key" },
-                                            { "TLAN", "Language(s)" },
-                                            { "TLEN", "Length" },
-                                            { "TMCL", "Musician credits list" },
-                                            { "TMED", "Media type" },
-                                            { "TMOO", "Mood" },
-                                            { "TOAL", "Original album/movie/show title" },
-                                            { "TOFN", "Original filename" },
-                                            { "TOLY", "Original lyricist(s)/text writer(s)" },
-                                            { "TOPE", "Original artist(s)/performer(s)" },
-                                            { "TOWN", "File owner/licensee" },
-                                            { "TPE1", "Lead performer(s)/Soloist(s)" },
-                                            { "TPE2", "Band/orchestra/accompaniment" },
-                                            { "TPE3", "Conductor/performer refinement" },
-                                            { "TPE4", "Interpreted, remixed, or otherwise modified by" },
-                                            { "TPOS", "Part of a set" },
-                                            { "TPRO", "Produced notice" },
-                                            { "TPUB", "Publisher" },
-                                            { "TRCK", "Track number/Position in set" },
-                                            { "TRSN", "Internet radio station name" },
-                                            { "TRSO", "Internet radio station owner" },
-                                            { "TSOA", "Album sort order" },
-                                            { "TSOP", "Performer sort order" },
-                                            { "TSOT", "Title sort order" },
-                                            { "TSRC", "ISRC (international standard recording code)" },
-                                            { "TSSE", "Software/Hardware and settings used for encoding" },
-                                            { "TSST", "Set subtitle" } };
-
+#include "genres.h"
+#include "mp3extraframes.h"
 
 mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 : MainForm(parent,name,fl)
@@ -120,7 +55,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     ignoreChange = false;
 
     GenGenreCB->insertStrList( genres );
-    for ( i=0; i<45; i++ ) {
+    for ( i=0; i<EF_NUM; i++ ) {
         strlst.append( extraFrames[i][1] );
     }
     strlst.sort();
@@ -138,7 +73,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
 
     tabWidget->removePage( tabWidget->page( 2 ) );
     tabWidget->removePage( tabWidget->page( 2 ) );
-    tabWidget->removePage( tabWidget->page( 1 ) );
+//     tabWidget->removePage( tabWidget->page( 1 ) );
     UseDFChkBox->hide();
     comboBox1->hide();
     CleanFButton->hide();
@@ -958,8 +893,6 @@ void mttMainWin::slotSelectionChange()
             updateSelectedFname = true;
     }
     if ( selectedFname.isEmpty() || updateSelectedFname || ( GenListView->findItem( selectedFname, 0 ) == NULL ) ) {
-        // Clear the contents of the widgets
-        //slotEmptyFields(); // Probably unecessary
 
         // Set the contents of the widgets according to the tag
         TagLib::Tag *t;
@@ -975,6 +908,8 @@ void mttMainWin::slotSelectionChange()
                 GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
                 GenCommentCLE->setText( TStringToQString( t->comment() ) );
                 GenTrackCLE->setText( QString::number( t->track() ) );
+
+                updateAdvMp3TagTable( ( ( AListViewItem *) it.current() )->getMp3ExtraFrames() );
             }
             else {
                 GenTitleCLE->setText( "" );
@@ -1291,12 +1226,13 @@ void mttMainWin::slotCreateTags()
 
 void mttMainWin::slotAdvTagValueChanged( int row, int column )
 {
-    qDebug( QString::number( row ) + "-" + QString::number( column ) );
+//     qDebug( QString::number( row ) + "-" + QString::number( column ) );
 
     AdvTagTable->setEnabled( false );
 
     if ( column == 0 ) {
         if ( ( row == ( AdvTagTable->numRows() - 1 ) ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) ) { // If the last item of the table has changed and it is anything but <Empty> ...
+//             qDebug( QString( "Add" ) + ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() );
             int i;
 
             for ( i = 0; i < AdvTagTable->numRows(); i++ ) { // Remove the same option from every other combobox
@@ -1319,10 +1255,20 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
             availExtraFrames.remove( availExtraFrames.find( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() ) );
             xtraFrames += ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText();
 
+            // Find FrameID
+            QString fid;
+            for ( i = 0; i < EF_NUM; i++ ) {
+                if ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() == extraFrames[i][1] ) {
+                    fid = extraFrames[i][0];
+                }
+            }
+//             qDebug( fid + "--" );
+            AdvTagTable->setText( row, 1, fid );
             AdvTagTable->insertRows( AdvTagTable->numRows() );
             AdvTagTable->setItem( AdvTagTable->numRows() - 1, 0, new QComboTableItem( AdvTagTable, availExtraFrames ) );
         }
         else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) {
+//             qDebug( "Del" );
             AdvTagTable->removeRow( row );
             availExtraFrames += *xtraFrames.at( row );
             availExtraFrames.sort();
@@ -1343,8 +1289,57 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
                 ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setStringList( l );
                 ( ( QComboTableItem * ) AdvTagTable->item( i, column ) )->setCurrentItem( current );
             }
+            xtraFrames.remove( xtraFrames.at( row ) );
+        }
+    }
+    else if ( column == 2 ) {
+    }
+
+    // Create a list of extra frames for the selected files
+    QStringList eframes;
+    int i;
+
+    for ( i = 0; i < ( AdvTagTable->numRows() - 1 ); i++ ) {
+        if ( ( ( QComboTableItem * ) AdvTagTable->item( i, 0 ) )->currentItem() != 0 ) {
+            eframes += AdvTagTable->text( i, 1 );
+            eframes += AdvTagTable->text( i, 2 );
         }
     }
 
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        ( (AListViewItem *) it.current() )->setMp3ExtraFrames( eframes );
+        ++it;
+    }
+
     AdvTagTable->setEnabled( true );
+}
+
+void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
+    // Clear the table
+    int i, num = AdvTagTable->numRows() - 1;
+
+    for( i = 0; i < num; i++ ){
+        ( ( QComboTableItem * ) AdvTagTable->item( 0, 0 ) )->setCurrentItem( 0 );
+        slotAdvTagValueChanged( 0, 0 );
+    }
+
+    // Fill the table with the extra tags
+    int row = 0;
+
+//     qDebug( "\n\netags = \n" );
+    for ( QStringList::Iterator it = strl.begin(); it != strl.end(); ++it ) {
+//         qDebug( QString( "\"" ) + *it + "\"=" );
+        for ( i = 0; i < EF_NUM; i++ ) {
+            if ( *it == extraFrames[i][0] ) {
+                ( ( QComboTableItem * ) AdvTagTable->item( row, 0 ) )->setCurrentItem( extraFrames[i][1] );
+                slotAdvTagValueChanged( row, 0 );
+                ++it;
+//                 qDebug( *it + "\n" );
+                AdvTagTable->setText( row, 2, *it );
+                row++;
+            }
+        }
+    }
 }

@@ -41,6 +41,8 @@ public:
     void setTagChanged( bool );
     bool tagChanged( void );
     void paintCell( QPainter *, const QColorGroup&, int, int, int );
+    void setMp3ExtraFrames( QStringList );
+    QStringList getMp3ExtraFrames( void );
 
 private:
     TagLib::FileRef *fileref;
@@ -48,6 +50,7 @@ private:
     QString fname;
     bool tagChange;
     TagLib::Tag *tag;
+    QStringList mp3eframes;
 };
 
 #endif
