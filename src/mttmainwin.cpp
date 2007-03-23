@@ -60,10 +60,11 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     }
     strlst.sort();
     availExtraFrames = strlst;
-    AdvTagTable->setColumnReadOnly( 0, true );
+//     AdvTagTable->setColumnReadOnly( 0, true );
     AdvTagTable->setItem( 0, 0, new QComboTableItem( AdvTagTable, strlst ) );
     AdvTagTable->setColumnWidth( 0, 200 );
-//     AdvTagTable->setFocusStyle( QTable::FollowStyle );
+    AdvTagTable->setFocusStyle( QTable::FollowStyle );
+    AdvTagTable->setSelectionMode( QTable::Single );
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
@@ -1373,6 +1374,7 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
     }
 
     AdvTagTable->setEnabled( true );
+    AdvTagTable->setCurrentCell( 0, 1 ); // Possible QT bug? You need to do this otherwise QComboTableItem seems to not work some times
 }
 
 void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
