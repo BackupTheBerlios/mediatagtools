@@ -188,7 +188,22 @@ void AListViewItem::saveTag( void )
 
         TagLib::Tag::duplicate( tag, dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) ), true );
 
-        f->save( TagLib::MPEG::File::ID3v2, true );
+        // Save extra mp3 tags
+        TagLib::ID3v2::TextIdentificationFrame *myframe;
+        TagLib::ID3v2::Tag *mytag;
+
+        mytag = f->ID3v2Tag( false );
+        for ( QStringList::Iterator it = mp3eframes.begin(); it != mp3eframes.end(); ++it ) {
+            myframe = new TagLib::ID3v2::TextIdentificationFrame( (*it).ascii(), TagLib::String::UTF8 );
+            mytag->removeFrames( (*it).ascii() );
+            ++it;
+            myframe->setText( QStringToTString( (*it) ) );
+            mytag->addFrame( myframe );
+        }
+
+        // TODO: Handle save errors
+        if ( !f->save( TagLib::MPEG::File::ID3v2, true ) )
+            qDebug( "Error" );
     }
     else {
         TagLib::Tag::duplicate( tag, fileref->tag(), true );

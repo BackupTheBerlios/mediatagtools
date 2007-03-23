@@ -1311,6 +1311,8 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
         QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
         while ( it.current() ) {
             ( (AListViewItem *) it.current() )->setMp3ExtraFrames( eframes );
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+            ( (AListViewItem *) it.current() )->repaint();
             ++it;
         }
     }
