@@ -80,7 +80,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     comboBox1->hide();
     CleanFButton->hide();
     CreateDirButton->hide();
-    //AdvTagTable->hideColumn( 1 );
+    AdvTagTable->hideColumn( 1 );
     AdvTagTable->setColumnReadOnly( 1, true );
 
     progress.setPercentageVisible( true );
@@ -1349,6 +1349,7 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
         }
     }
     else if ( column == 2 ) {
+        AdvTagTable->adjustColumn( column );
     }
 
     if ( !ignoreChange ) {
@@ -1405,6 +1406,8 @@ void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
             }
         }
     }
+
+    AdvTagTable->adjustColumn( 2 );
 
     ignoreChange = false;
 }
