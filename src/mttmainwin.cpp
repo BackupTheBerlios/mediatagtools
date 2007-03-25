@@ -1380,17 +1380,11 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
 
 void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
     // Clear the table
-    int i, num = AdvTagTable->numRows() - 1;
+    slotRemoveAdvTags();
 
     ignoreChange = true;
-
-    for( i = 0; i < num; i++ ){
-        ( ( QComboTableItem * ) AdvTagTable->item( 0, 0 ) )->setCurrentItem( 0 );
-        slotAdvTagValueChanged( 0, 0 );
-    }
-
     // Fill the table with the extra tags
-    int row = 0;
+    int row = 0, i;
 
 //     qDebug( "\n\netags = \n" );
     for ( QStringList::Iterator it = strl.begin(); it != strl.end(); ++it ) {
@@ -1411,3 +1405,15 @@ void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
 
     ignoreChange = false;
 }
+
+void mttMainWin::slotRemoveAdvTags()
+{
+    // Clear the table
+    int i, num = AdvTagTable->numRows() - 1;
+
+    for( i = 0; i < num; i++ ){
+        ( ( QComboTableItem * ) AdvTagTable->item( 0, 0 ) )->setCurrentItem( 0 );
+        slotAdvTagValueChanged( 0, 0 );
+    }
+}
+

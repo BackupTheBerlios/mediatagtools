@@ -88,6 +88,7 @@ protected slots:
     virtual void slotOpenFiles();
     virtual void slotCreateTags();
     virtual void slotAdvTagValueChanged( int, int );
+    virtual void slotRemoveAdvTags();
 };
 
 #endif

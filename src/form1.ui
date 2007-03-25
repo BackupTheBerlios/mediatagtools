@@ -856,57 +856,64 @@
                     <property name="name">
                         <cstring>unnamed</cstring>
                     </property>
-                    <widget class="QTable" row="0" column="0">
-                        <column>
-                            <property name="text">
-                                <string>Field</string>
-                            </property>
-                            <property name="pixmap">
-                                <pixmap></pixmap>
-                            </property>
-                        </column>
-                        <column>
-                            <property name="text">
-                                <string>Field ID</string>
-                            </property>
-                            <property name="pixmap">
-                                <pixmap></pixmap>
-                            </property>
-                        </column>
-                        <column>
-                            <property name="text">
-                                <string>Value</string>
-                            </property>
-                            <property name="pixmap">
-                                <pixmap></pixmap>
-                            </property>
-                        </column>
-                        <row>
-                            <property name="text">
-                                <string>1</string>
-                            </property>
-                            <property name="pixmap">
-                                <pixmap></pixmap>
-                            </property>
-                        </row>
+                    <widget class="QLayoutWidget" row="0" column="0">
                         <property name="name">
-                            <cstring>AdvTagTable</cstring>
+                            <cstring>layout15</cstring>
                         </property>
-                        <property name="frameShape">
-                            <enum>StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                            <enum>Sunken</enum>
-                        </property>
-                        <property name="resizePolicy">
-                            <enum>AutoOne</enum>
-                        </property>
-                        <property name="numRows">
-                            <number>1</number>
-                        </property>
-                        <property name="numCols">
-                            <number>3</number>
-                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QTable">
+                                <column>
+                                    <property name="text">
+                                        <string>Field</string>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Field ID</string>
+                                    </property>
+                                </column>
+                                <column>
+                                    <property name="text">
+                                        <string>Value</string>
+                                    </property>
+                                </column>
+                                <property name="name">
+                                    <cstring>AdvTagTable</cstring>
+                                </property>
+                                <property name="frameShape">
+                                    <enum>StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>Sunken</enum>
+                                </property>
+                                <property name="numRows">
+                                    <number>1</number>
+                                </property>
+                                <property name="numCols">
+                                    <number>3</number>
+                                </property>
+                                <property name="selectionMode">
+                                    <enum>Single</enum>
+                                </property>
+                                <property name="focusStyle">
+                                    <enum>FollowStyle</enum>
+                                </property>
+                            </widget>
+                            <widget class="QPushButton">
+                                <property name="name">
+                                    <cstring>RemoveAdvTagButton</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Remove all</string>
+                                </property>
+                                <property name="accel">
+                                    <string></string>
+                                </property>
+                            </widget>
+                        </vbox>
                     </widget>
                 </grid>
             </widget>
@@ -1593,6 +1600,12 @@
         <receiver>MainForm</receiver>
         <slot>slotAdvTagValueChanged(int,int)</slot>
     </connection>
+    <connection>
+        <sender>RemoveAdvTagButton</sender>
+        <signal>pressed()</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotRemoveAdvTags()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1639,6 +1652,7 @@
     <slot access="protected">slotCreateTags()</slot>
     <slot access="protected">slotOpenFiles()</slot>
     <slot access="protected">slotAdvTagValueChanged( int, int )</slot>
+    <slot access="προστατευμένο">slotRemoveAdvTags()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
