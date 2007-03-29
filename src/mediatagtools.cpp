@@ -4,6 +4,7 @@
 #include <qapplication.h>
 #include <qtextcodec.h>
 #include <qimage.h>
+#include <qdir.h>
 
 #include "mttmainwin.h"
 
@@ -31,9 +32,13 @@ int main(int argc, char *argv[])
 
   m.show();
 
+//   qDebug( QString( "argv[1]=\"" ) + argv[1] + "\"\n" );
   if ( argc > 1 ) {
-    if ( QFile::exists( argv[1] ) ) {
-        m.openDir( QString( argv[1] ) );
+    QDir td;
+    td.setPath( QString::fromUtf8( argv[1] ) );
+    if ( td.exists() ) {
+//         qDebug( "Exists!" );
+        m.openDir( QString::fromUtf8( argv[1] ) );
     }
   }
 
