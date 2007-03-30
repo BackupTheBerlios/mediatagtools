@@ -151,7 +151,6 @@ void mttMainWin::slotOpenFiles()
 {
     QFileDialog fd;
     QStringList files;
-    QString dirpath;
     AListViewItem *li;
     TagLib::Tag *t;
     int count = 0, current = 1;
@@ -164,7 +163,7 @@ void mttMainWin::slotOpenFiles()
         statusBar()->message( tr( QString( "Reading tags..." ) ) );
 
         files = fd.selectedFiles();
-        dirpath = fd.dirPath();
+        curPath = fd.dirPath();
 
         for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it ) {
         count++;
@@ -174,9 +173,8 @@ void mttMainWin::slotOpenFiles()
         progress.setProgress( 0, count );
 
         for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it ) {
-            qDebug( *it );
             li = new AListViewItem( GenListView );
-            li->setText( 0, (*it).right( (*it).length() - dirpath.length() - 1 ) );
+            li->setText( 0, (*it).right( (*it).length() - curPath.length() - 1 ) );
             //qDebug( QString( (*it).right( (*it).length() - dirpath.length() - 1 ).utf8() ) );
             /*if ( QFile::exists( d.path() + "/" + *it ) )
                 qDebug( "exists" );
