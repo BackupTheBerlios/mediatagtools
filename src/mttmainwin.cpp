@@ -682,6 +682,7 @@ void mttMainWin::slotLVRightMenu()
 
     menu.insertItem( tr( "Open folder" ), this, SLOT(slotOpen()) );
     menu.insertItem( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
+    menu.insertItem( tr( "Remove file(s)" ), this, SLOT(slotRemoveFiles()) );
     menu.insertSeparator();
     menu.insertItem( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
     menu.insertItem( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
@@ -1417,3 +1418,16 @@ void mttMainWin::slotRemoveAdvTags()
     }
 }
 
+void mttMainWin::slotRemoveFiles()
+{
+    QPtrList<QListViewItem> list;
+    list.setAutoDelete( TRUE ); // the list owns the objects
+
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+    while ( it.current() ) {
+        list.append( *it );
+        ++it;
+    }
+
+    list.clear(); // Delete list items
+}
