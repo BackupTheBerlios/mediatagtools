@@ -39,13 +39,15 @@ HEADERS += alistviewitem.h \
            mttmainwin.h \
            mttaboutdialog.h \
            config.h \
-           qclineedit.h 
+           qclineedit.h  \
+           qdndlistview.h
 SOURCES += alistviewitem.cpp \
            mediatagtools.cpp \
            mttcfdialog.cpp \
            mttmainwin.cpp \
            mttaboutdialog.cpp \
-           qclineedit.cpp 
+           qclineedit.cpp  \
+           qdndlistview.cpp
 LIBS += `taglib-config --libs`
 
 desktop_icon.files += ../icons/mediatagtools.svg

@@ -34,6 +34,7 @@
 #include <textidentificationframe.h>
 
 #include "qclineedit.h"
+#include "qdndlistview.h"
 #include "mttmainwin.h"
 #include "alistviewitem.h"
 #include "mttcfdialog.h"
@@ -61,8 +62,8 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     strlst.sort();
     availExtraFrames = strlst;
 //     AdvTagTable->setColumnReadOnly( 0, true );
-    AdvTagTable->setItem( 0, 0, new QComboTableItem( AdvTagTable, strlst ) );
-    AdvTagTable->setColumnWidth( 0, 200 );
+    AdvTagTable->setItem( 0, field_col, new QComboTableItem( AdvTagTable, strlst ) );
+    AdvTagTable->setColumnWidth( field_col, 200 );
     AdvTagTable->setFocusStyle( QTable::FollowStyle );
     AdvTagTable->setSelectionMode( QTable::Single );
 
@@ -80,8 +81,21 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     comboBox1->hide();
     CleanFButton->hide();
     CreateDirButton->hide();
-    AdvTagTable->hideColumn( 1 );
-    AdvTagTable->setColumnReadOnly( 1, true );
+    AdvTagTable->hideColumn( field_id_col );
+    AdvTagTable->setColumnReadOnly( field_id_col, true );
+
+    // Initialization of GenListView
+    GenListView->addColumn( tr( QString( "Filename" ) ) );
+    GenListView->addColumn( tr( QString( "Title" ) ) );
+    GenListView->addColumn( tr( QString( "Artist" ) ) );
+    GenListView->addColumn( tr( QString( "Album" ) ) );
+    GenListView->addColumn( tr( QString( "Year" ) ) );
+    GenListView->addColumn( tr( QString( "Genre" ) ) );
+    GenListView->addColumn( tr( QString( "Comment" ) ) );
+    GenListView->addColumn( tr( QString( "Track" ) ) );
+    GenListView->setAllColumnsShowFocus( TRUE );
+    GenListView->setSelectionMode( QListView::Extended );
+    GenListView->setAcceptDrops( TRUE );
 
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
@@ -97,7 +111,7 @@ mttMainWin::~mttMainWin()
 {
 }
 
-void mttMainWin::openDir( QString str )
+void mttMainWin::addDir( QString str )
 {
     QDir d;
 
@@ -112,6 +126,33 @@ void mttMainWin::openDir( QString str )
         QApplication::restoreOverrideCursor();
     }
     selectedFname = "";
+}
+
+void mttMainWin::addFile( QString fname )
+{
+    AListViewItem *li;
+    TagLib::Tag *t;
+
+    li = new AListViewItem( GenListView );
+    li->setText( 0, fname.right( fname.length() - curPath.length() - 1 ) );
+    //qDebug( QString( fname.right( fname.length() - curPath.length() - 1 ).utf8() ) );
+    /*if ( QFile::exists( d.path() + "/" + *it ) )
+        qDebug( "exists" );
+    else
+        qDebug( "doesn't exist" );*/
+    li->Open( fname );
+    t = li->getTag();
+    if ( t ) {
+        li->setText( 1, TStringToQString( t->title() ) );
+        li->setText( 2, TStringToQString( t->artist() ) );
+        li->setText( 3, TStringToQString( t->album() ) );
+        li->setText( 4, QString::number( t->year() ) );
+        li->setText( 5, TStringToQString( t->genre() ) );
+        li->setText( 6, TStringToQString( t->comment() ) );
+        li->setText( 7, QString::number( t->track() ) );
+    }
+    else
+        qDebug( "tag = NULL" );
 }
 
 void mttMainWin::slotOpen()
@@ -151,8 +192,7 @@ void mttMainWin::slotOpenFiles()
 {
     QFileDialog fd;
     QStringList files;
-    AListViewItem *li;
-    TagLib::Tag *t;
+
     int count = 0, current = 1;
 
     fd.setMode( QFileDialog::ExistingFiles );
@@ -173,26 +213,7 @@ void mttMainWin::slotOpenFiles()
         progress.setProgress( 0, count );
 
         for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it ) {
-            li = new AListViewItem( GenListView );
-            li->setText( 0, (*it).right( (*it).length() - curPath.length() - 1 ) );
-            //qDebug( QString( (*it).right( (*it).length() - dirpath.length() - 1 ).utf8() ) );
-            /*if ( QFile::exists( d.path() + "/" + *it ) )
-                qDebug( "exists" );
-            else
-                qDebug( "doesn't exist" );*/
-            li->Open( *it );
-            t = li->getTag();
-            if ( t ) {
-                li->setText( 1, TStringToQString( t->title() ) );
-                li->setText( 2, TStringToQString( t->artist() ) );
-                li->setText( 3, TStringToQString( t->album() ) );
-                li->setText( 4, QString::number( t->year() ) );
-                li->setText( 5, TStringToQString( t->genre() ) );
-                li->setText( 6, TStringToQString( t->comment() ) );
-                li->setText( 7, QString::number( t->track() ) );
-            }
-            else
-                qDebug( "tag = NULL" );
+            addFile( *it );
             progress.setProgress( current++, count );
         }
         progress.hide();
@@ -208,8 +229,6 @@ void mttMainWin::slotOpenFiles()
 void mttMainWin::populateList( QDir d )
 {
     QStringList fnames;
-    AListViewItem *li;
-    TagLib::Tag *t;
     int current, count;
 
     d.refresh();
@@ -221,26 +240,7 @@ void mttMainWin::populateList( QDir d )
     statusBar()->message( tr( QString( "Reading tags..." ) ) );
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
-        li = new AListViewItem( GenListView );
-        li->setText( 0, *it );
-        //qDebug( QString( d.path() + "/" + *it ).utf8() );
-        /*if ( QFile::exists( d.path() + "/" + *it ) )
-            qDebug( "exists" );
-        else
-            qDebug( "doesn't exist" );*/
-        li->Open( QString( d.path() + "/" + *it ) );
-        t = li->getTag();
-        if ( t ) {
-            li->setText( 1, TStringToQString( t->title() ) );
-            li->setText( 2, TStringToQString( t->artist() ) );
-            li->setText( 3, TStringToQString( t->album() ) );
-            li->setText( 4, QString::number( t->year() ) );
-            li->setText( 5, TStringToQString( t->genre() ) );
-            li->setText( 6, TStringToQString( t->comment() ) );
-            li->setText( 7, QString::number( t->track() ) );
-        }
-        else
-            qDebug( "tag = NULL" );
+        addFile( curPath + "/" + *it );
         progress.setProgress( current++, count );
     }
 
@@ -405,7 +405,7 @@ void mttMainWin::slotRenameFiles()
         t = ( (AListViewItem *) it.current() )->getTag();
         path = ( (AListViewItem *) it.current() )->getFName();
         ext = path;
-        qDebug( "filename:" + path );
+        //qDebug( "filename:" + path );
         path.truncate( path.findRev( "/" ) );
         ext = ext.right( ext.length() - ext.findRev( "." ) );
         cformat = MCFormatLE->text();
@@ -440,9 +440,9 @@ void mttMainWin::slotRenameFiles()
                         done = true;
                 }
             }
-            qDebug( "path:" + path );
+/*            qDebug( "path:" + path );
             qDebug( "ext:" + ext );
-            qDebug( "new filename:" + path + "/" + newfname + ext );
+            qDebug( "new filename:" + path + "/" + newfname + ext );*/
             QDir dir;
             QFile f( path + "/" + newfname + ext );
             if ( !noall ) {
@@ -886,6 +886,7 @@ void mttMainWin::slotSelectionChange()
 {
     bool updateSelectedFname = false;
 
+//     qDebug( "Selection Change" );
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
 
     if ( !selectedFname.isEmpty() ) { // If there is an item selected
@@ -1231,7 +1232,7 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
 
     AdvTagTable->setEnabled( false );
 
-    if ( column == 0 ) {
+    if ( column == field_col ) {
         if ( ( row == ( AdvTagTable->numRows() - 1 ) ) && ( ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() != 0 ) ) { // If the last item of the table has changed and it is anything but <Empty> ...
 //             qDebug( QString( "Add" ) + ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentText() );
             int i;
@@ -1264,9 +1265,9 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
                 }
             }
 //             qDebug( fid + "--" );
-            AdvTagTable->setText( row, 1, fid );
+            AdvTagTable->setText( row, field_id_col, fid );
             AdvTagTable->insertRows( AdvTagTable->numRows() );
-            AdvTagTable->setItem( AdvTagTable->numRows() - 1, 0, new QComboTableItem( AdvTagTable, availExtraFrames ) );
+            AdvTagTable->setItem( AdvTagTable->numRows() - 1, field_col, new QComboTableItem( AdvTagTable, availExtraFrames ) );
         }
         else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) { // If any other item than the last item of the list has changed and it is now <Empty>
 //             qDebug( "Del" );
@@ -1344,10 +1345,10 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
                 }
             }
 //             qDebug( fid + "--" );
-            AdvTagTable->setText( row, 1, fid );
+            AdvTagTable->setText( row, field_id_col, fid );
         }
     }
-    else if ( column == 2 ) {
+    else if ( column == value_col ) {
         AdvTagTable->adjustColumn( column );
     }
 
@@ -1357,9 +1358,9 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
         int i;
 
         for ( i = 0; i < ( AdvTagTable->numRows() - 1 ); i++ ) {
-            if ( ( ( QComboTableItem * ) AdvTagTable->item( i, 0 ) )->currentItem() != 0 ) {
-                eframes += AdvTagTable->text( i, 1 );
-                eframes += AdvTagTable->text( i, 2 );
+            if ( ( ( QComboTableItem * ) AdvTagTable->item( i, field_col ) )->currentItem() != 0 ) {
+                eframes += AdvTagTable->text( i, field_id_col );
+                eframes += AdvTagTable->text( i, value_col );
             }
         }
 
@@ -1374,14 +1375,16 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
     }
 
     AdvTagTable->setEnabled( true );
-    AdvTagTable->setCurrentCell( 0, 1 ); // Possible QT bug? You need to do this otherwise QComboTableItem seems to not work some times
+    AdvTagTable->setCurrentCell( 0, field_id_col ); // Possible QT bug? You need to do this otherwise QComboTableItem seems to not work some times
 }
 
 void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
+
+    ignoreChange = true;
+
     // Clear the table
     slotRemoveAdvTags();
 
-    ignoreChange = true;
     // Fill the table with the extra tags
     int row = 0, i;
 
@@ -1390,17 +1393,17 @@ void mttMainWin::updateAdvMp3TagTable( QStringList strl ) {
 //         qDebug( QString( "\"" ) + *it + "\"=" );
         for ( i = 0; i < EF_NUM; i++ ) {
             if ( *it == extraFrames[i][0] ) {
-                ( ( QComboTableItem * ) AdvTagTable->item( row, 0 ) )->setCurrentItem( extraFrames[i][1] );
-                slotAdvTagValueChanged( row, 0 );
+                ( ( QComboTableItem * ) AdvTagTable->item( row, field_col ) )->setCurrentItem( extraFrames[i][1] );
+                slotAdvTagValueChanged( row, field_col );
                 ++it;
 //                 qDebug( *it + "\n" );
-                AdvTagTable->setText( row, 2, *it );
+                AdvTagTable->setText( row, value_col, *it );
                 row++;
             }
         }
     }
 
-    AdvTagTable->adjustColumn( 2 );
+    AdvTagTable->adjustColumn( value_col );
 
     ignoreChange = false;
 }
@@ -1411,8 +1414,8 @@ void mttMainWin::slotRemoveAdvTags()
     int i, num = AdvTagTable->numRows() - 1;
 
     for( i = 0; i < num; i++ ){
-        ( ( QComboTableItem * ) AdvTagTable->item( 0, 0 ) )->setCurrentItem( 0 );
-        slotAdvTagValueChanged( 0, 0 );
+        ( ( QComboTableItem * ) AdvTagTable->item( 0, field_col ) )->setCurrentItem( 0 );
+        slotAdvTagValueChanged( 0, field_col );
     }
 }
 
@@ -1429,3 +1432,31 @@ void mttMainWin::slotRemoveFiles()
 
     list.clear(); // Delete list items
 }
+
+void mttMainWin::slotDroppedUris( QStringList qsl )
+{
+    for ( QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it ) {
+        //qDebug( *it );
+
+        QUrl url( *it );
+
+        if ( url.isLocalFile() ) {
+//             qDebug( url.path() );
+            QFileInfo fi( url.path() );
+
+            if ( fi.exists() ) {
+                if ( fi.isDir() )
+                    addDir( url.path() );
+                else {
+                    if ( url.fileName().endsWith( ".mp3", FALSE ) ||
+                         url.fileName().endsWith( ".ogg", FALSE ) ||
+                         url.fileName().endsWith( ".flac", FALSE ) ) {
+                        curPath = url.dirPath();
+                        addFile( url.path() );
+                    }
+                }
+            }
+        }
+    }
+}
+

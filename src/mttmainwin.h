@@ -28,7 +28,8 @@ public:
   mttMainWin(QWidget* parent = 0, const char* name = 0, WFlags fl = 0 );
   ~mttMainWin();
   /*$PUBLIC_FUNCTIONS$*/
-    void openDir( QString );
+    void addDir( QString );
+    void addFile( QString );
     void updateAdvMp3TagTable( QStringList );
 
 public slots:
@@ -49,6 +50,11 @@ protected:
     QString firstUp( QString );
     bool isTextFrame( QString );
     void saveTags( bool selectedOnly = false );
+
+    static const char x_col = 0;
+    static const char field_col = 1;
+    static const char field_id_col = 2;
+    static const char value_col = 3;
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
@@ -90,6 +96,7 @@ protected slots:
     virtual void slotAdvTagValueChanged( int, int );
     virtual void slotRemoveAdvTags();
     virtual void slotRemoveFiles();
+    virtual void slotDroppedUris( QStringList );
 };
 
 #endif

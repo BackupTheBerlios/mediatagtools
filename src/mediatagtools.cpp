@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     td.setPath( QString::fromUtf8( argv[1] ) );
     if ( td.exists() ) {
 //         qDebug( "Exists!" );
-        m.openDir( QString::fromUtf8( argv[1] ) );
+        m.addDir( QString::fromUtf8( argv[1] ) );
     }
   }
 
