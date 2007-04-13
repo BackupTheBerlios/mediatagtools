@@ -40,6 +40,8 @@
 #include "mttcfdialog.h"
 #include "mttaboutdialog.h"
 #include "config.h"
+#include "x.xpm"
+
 #ifndef RELEASE
 #include "revision.h"
 #endif
@@ -61,9 +63,15 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     }
     strlst.sort();
     availExtraFrames = strlst;
-//     AdvTagTable->setColumnReadOnly( 0, true );
+
+    QPixmap pix( ( const char ** ) x_xpm );
+    AdvTagTable->setPixmap( 0, x_col, pix );
+    AdvTagTable->setColumnReadOnly( x_col, TRUE );
+    AdvTagTable->setColumnReadOnly( field_id_col, TRUE );
     AdvTagTable->setItem( 0, field_col, new QComboTableItem( AdvTagTable, strlst ) );
-    AdvTagTable->setColumnWidth( field_col, 200 );
+    AdvTagTable->setColumnWidth( x_col, 20 );
+    AdvTagTable->setColumnWidth( field_col, 120 );
+    AdvTagTable->setColumnWidth( field_id_col, 70 );
     AdvTagTable->setFocusStyle( QTable::FollowStyle );
     AdvTagTable->setSelectionMode( QTable::Single );
 
@@ -81,8 +89,6 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     comboBox1->hide();
     CleanFButton->hide();
     CreateDirButton->hide();
-    AdvTagTable->hideColumn( field_id_col );
-    AdvTagTable->setColumnReadOnly( field_id_col, true );
 
     // Initialization of GenListView
     GenListView->addColumn( tr( QString( "Filename" ) ) );
@@ -97,6 +103,7 @@ mttMainWin::mttMainWin(QWidget* parent, const char* name, WFlags fl)
     GenListView->setSelectionMode( QListView::Extended );
     GenListView->setAcceptDrops( TRUE );
 
+    // Progress bar & Status Bar
     progress.setPercentageVisible( true );
     progress.setCenterIndicator( true );
     progress.setMaximumWidth( 100 );
@@ -1268,6 +1275,9 @@ void mttMainWin::slotAdvTagValueChanged( int row, int column )
             AdvTagTable->setText( row, field_id_col, fid );
             AdvTagTable->insertRows( AdvTagTable->numRows() );
             AdvTagTable->setItem( AdvTagTable->numRows() - 1, field_col, new QComboTableItem( AdvTagTable, availExtraFrames ) );
+            QPixmap pix( ( const char ** ) x_xpm );
+            AdvTagTable->setPixmap( AdvTagTable->numRows() - 1, x_col, pix );
+
         }
         else if ( ( row != ( AdvTagTable->numRows() - 1 ) ) && ( ( QComboTableItem * ) AdvTagTable->item( row, column ) )->currentItem() == 0 ) { // If any other item than the last item of the list has changed and it is now <Empty>
 //             qDebug( "Del" );
@@ -1456,6 +1466,16 @@ void mttMainWin::slotDroppedUris( QStringList qsl )
                     }
                 }
             }
+        }
+    }
+}
+
+void mttMainWin::slotXButtonClickedMP3( int row, int col )
+{
+    if ( col == x_col ) { // If an X was clicked...
+        if ( ( AdvTagTable->numRows() != 1 ) && ( row != ( AdvTagTable->numRows() - 1 ) ) ) { // If we have more than one advanced tag and we haven't clicked on the X on the last row of the table...
+            ( ( QComboTableItem * ) AdvTagTable->item( row, field_col ) )->setCurrentItem( 0 );
+            slotAdvTagValueChanged( row, field_col );
         }
     }
 }

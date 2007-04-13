@@ -97,6 +97,7 @@ protected slots:
     virtual void slotRemoveAdvTags();
     virtual void slotRemoveFiles();
     virtual void slotDroppedUris( QStringList );
+    virtual void slotXButtonClickedMP3( int, int );
 };
 
 #endif

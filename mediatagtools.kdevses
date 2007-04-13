@@ -1,34 +1,31 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="9" >
+ <DocsAndViews NumberOfDocuments="8" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.h" >
-   <View0 Encoding="UTF-8" line="0" Type="Source" />
+   <View0 Encoding="UTF-8" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/alistviewitem.cpp" >
    <View0 Encoding="UTF-8" line="0" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 Encoding="UTF-8" line="1353" Type="Source" />
+   <View0 Encoding="UTF-8" line="1504" Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
-   <View0 Encoding="UTF-8" line="95" Type="Source" />
+   <View0 Encoding="UTF-8" line="99" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qstring.html#endsWith" >
+  <Doc4 NumberOfViews="1" URL="file:///usr/qt/3/doc/html/qpushbutton.html" >
    <View0 Type="Documentation" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mediatagtools.cpp" >
    <View0 Encoding="UTF-8" line="40" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/form1.ui" >
-   <View0 Type="Other" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qdndlistview.cpp" >
+  <Doc6 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qdndlistview.cpp" >
    <View0 Encoding="UTF-8" line="15" Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qdndlistview.h" >
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/qdndlistview.h" >
    <View0 Encoding="UTF-8" line="33" Type="Source" />
-  </Doc8>
+  </Doc7>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>

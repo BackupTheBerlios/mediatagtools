@@ -181,6 +181,12 @@
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
                                                 </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
+                                                </property>
                                             </widget>
                                             <widget class="QCheckBox">
                                                 <property name="name">
@@ -214,6 +220,12 @@
                                                         <horstretch>0</horstretch>
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
                                                 </property>
                                             </widget>
                                             <widget class="QCheckBox">
@@ -249,6 +261,12 @@
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
                                                 </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
+                                                </property>
                                             </widget>
                                             <widget class="QCheckBox">
                                                 <property name="name">
@@ -282,6 +300,12 @@
                                                         <horstretch>0</horstretch>
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
                                                 </property>
                                             </widget>
                                             <widget class="QCheckBox">
@@ -355,6 +379,12 @@
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
                                                 </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
+                                                </property>
                                             </widget>
                                             <widget class="QCheckBox">
                                                 <property name="name">
@@ -388,6 +418,12 @@
                                                         <horstretch>0</horstretch>
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>19</height>
+                                                    </size>
                                                 </property>
                                             </widget>
                                             <widget class="QCheckBox">
@@ -1539,6 +1575,12 @@
         <receiver>MainForm</receiver>
         <slot>slotDroppedUris(QStringList)</slot>
     </connection>
+    <connection>
+        <sender>AdvTagTable</sender>
+        <signal>clicked(int,int,int,const QPoint&amp;)</signal>
+        <receiver>MainForm</receiver>
+        <slot>slotXButtonClickedMP3(int,int)</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>UseCFChkB</tabstop>
@@ -1587,6 +1629,7 @@
     <slot access="protected">slotAdvTagValueChanged( int, int )</slot>
     <slot access="προστατευμένο">slotRemoveAdvTags()</slot>
     <slot access="protected">slotDroppedUris( QStringList )</slot>
+    <slot access="protected">slotXButtonClickedMP3( int, int )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
