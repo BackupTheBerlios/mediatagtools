@@ -771,9 +771,6 @@
                                                     <property name="enabled">
                                                         <bool>false</bool>
                                                     </property>
-                                                    <property name="focusPolicy">
-                                                        <enum>NoFocus</enum>
-                                                    </property>
                                                 </widget>
                                                 <widget class="QLayoutWidget">
                                                     <property name="name">
