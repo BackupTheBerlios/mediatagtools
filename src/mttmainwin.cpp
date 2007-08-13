@@ -542,11 +542,18 @@ void mttMainWin::slotAllUpper()
     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
 
     ignoreChange = true; // It's needed because otherwise all the files would have this tag
-    GenTitleCLE->setText( GenTitleCLE->text().upper() );
-    GenArtistCLE->setText( GenArtistCLE->text().upper() );
-    GenAlbumCLE->setText( GenAlbumCLE->text().upper() );
-    GenGenreCB->setCurrentText( GenGenreCB->currentText().upper() );
-    GenCommentCLE->setText( GenCommentCLE->text().upper() );
+    if( GenTitleChkB->isChecked() ) {
+        GenTitleCLE->setText( GenTitleCLE->text().upper() );
+    }
+    if( GenArtistChkB->isChecked() ) {
+        GenArtistCLE->setText( GenArtistCLE->text().upper() );
+    }
+    if( GenAlbumChkB->isChecked() ) {
+        GenAlbumCLE->setText( GenAlbumCLE->text().upper() );
+    }
+    if( GenCommentChkB->isChecked() ) {
+        GenCommentCLE->setText( GenCommentCLE->text().upper() );
+    }
     ignoreChange = false;
 
     while( it.current() ) {
@@ -555,16 +562,26 @@ void mttMainWin::slotAllUpper()
         // Show tag info
         t = (( AListViewItem *) it.current() )->getTag();
         if ( t ) {
-            t->setTitle( QStringToTString( TStringToQString( t->title() ).upper() ) );
-            it.current()->setText( 1, TStringToQString( t->title() ) );
-            t->setArtist( QStringToTString( TStringToQString( t->artist() ).upper() ) );
-            it.current()->setText( 2, TStringToQString( t->artist() ) );
-            t->setAlbum( QStringToTString( TStringToQString( t->album() ).upper() ) );
-            it.current()->setText( 3, TStringToQString( t->album() ) );
-            t->setGenre( QStringToTString( TStringToQString( t->genre() ).upper() ) );
-            it.current()->setText( 5, TStringToQString( t->genre() ) );
-            t->setComment( QStringToTString( TStringToQString( t->comment() ).upper() ) );
-            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            if( GenTitleChkB->isChecked() ) {
+                t->setTitle( QStringToTString( TStringToQString( t->title() ).upper() ) );
+                it.current()->setText( 1, TStringToQString( t->title() ) );
+            }
+
+            if( GenArtistChkB->isChecked() ) {
+                t->setArtist( QStringToTString( TStringToQString( t->artist() ).upper() ) );
+                it.current()->setText( 2, TStringToQString( t->artist() ) );
+            }
+
+            if( GenAlbumChkB->isChecked() ) {
+                t->setAlbum( QStringToTString( TStringToQString( t->album() ).upper() ) );
+                it.current()->setText( 3, TStringToQString( t->album() ) );
+            }
+
+            if( GenCommentChkB->isChecked() ) {
+                t->setComment( QStringToTString( TStringToQString( t->comment() ).upper() ) );
+                it.current()->setText( 6, TStringToQString( t->comment() ) );
+            }
+
             ( (AListViewItem *) it.current() )->setTagChanged( true );
         }
         ++it;
@@ -580,11 +597,18 @@ void mttMainWin::slotAllLower()
     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
 
     ignoreChange = true; // It's needed because otherwise all the files would have this tag
-    GenTitleCLE->setText( GenTitleCLE->text().lower() );
-    GenArtistCLE->setText( GenArtistCLE->text().lower() );
-    GenAlbumCLE->setText( GenAlbumCLE->text().lower() );
-    GenGenreCB->setCurrentText( GenGenreCB->currentText().lower() );
-    GenCommentCLE->setText( GenCommentCLE->text().lower() );
+    if( GenTitleChkB->isChecked() ) {
+        GenTitleCLE->setText( GenTitleCLE->text().lower() );
+    }
+    if( GenArtistChkB->isChecked() ) {
+        GenArtistCLE->setText( GenArtistCLE->text().lower() );
+    }
+    if( GenAlbumChkB->isChecked() ) {
+        GenAlbumCLE->setText( GenAlbumCLE->text().lower() );
+    }
+    if( GenCommentChkB->isChecked() ) {
+        GenCommentCLE->setText( GenCommentCLE->text().lower() );
+    }
     ignoreChange = false;
 
     while( it.current() ) {
@@ -593,16 +617,26 @@ void mttMainWin::slotAllLower()
         // Show tag info
         t = (( AListViewItem *) it.current() )->getTag();
         if ( t ) {
-            t->setTitle( QStringToTString( TStringToQString( t->title() ).lower() ) );
-            it.current()->setText( 1, TStringToQString( t->title() ) );
-            t->setArtist( QStringToTString( TStringToQString( t->artist() ).lower() ) );
-            it.current()->setText( 2, TStringToQString( t->artist() ) );
-            t->setAlbum( QStringToTString( TStringToQString( t->album() ).lower() ) );
-            it.current()->setText( 3, TStringToQString( t->album() ) );
-            t->setGenre( QStringToTString( TStringToQString( t->genre() ).lower() ) );
-            it.current()->setText( 5, TStringToQString( t->genre() ) );
-            t->setComment( QStringToTString( TStringToQString( t->comment() ).lower() ) );
-            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            if( GenTitleChkB->isChecked() ) {
+                t->setTitle( QStringToTString( TStringToQString( t->title() ).lower() ) );
+                it.current()->setText( 1, TStringToQString( t->title() ) );
+            }
+
+            if( GenArtistChkB->isChecked() ) {
+                t->setArtist( QStringToTString( TStringToQString( t->artist() ).lower() ) );
+                it.current()->setText( 2, TStringToQString( t->artist() ) );
+            }
+
+            if( GenAlbumChkB->isChecked() ) {
+                t->setAlbum( QStringToTString( TStringToQString( t->album() ).lower() ) );
+                it.current()->setText( 3, TStringToQString( t->album() ) );
+            }
+
+            if( GenCommentChkB->isChecked() ) {
+                t->setComment( QStringToTString( TStringToQString( t->comment() ).lower() ) );
+                it.current()->setText( 6, TStringToQString( t->comment() ) );
+            }
+
             ( (AListViewItem *) it.current() )->setTagChanged( true );
         }
         ++it;
@@ -611,16 +645,23 @@ void mttMainWin::slotAllLower()
     QApplication::restoreOverrideCursor();
 }
 
-void mttMainWin::slotFirstUp()
+void mttMainWin::slotFirstUpWords()
 {
     QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
 
     ignoreChange = true; // It's needed because otherwise all the files would have this tag
-    GenTitleCLE->setText( firstUp( GenTitleCLE->text().lower() ) );
-    GenArtistCLE->setText( firstUp( GenArtistCLE->text().lower() ) );
-    GenAlbumCLE->setText( firstUp( GenAlbumCLE->text().lower() ) );
-    GenGenreCB->setCurrentText( firstUp( GenGenreCB->currentText().lower() ) );
-    GenCommentCLE->setText( firstUp( GenCommentCLE->text().lower() ) );
+    if( GenTitleChkB->isChecked() ) {
+        GenTitleCLE->setText( firstUp( GenTitleCLE->text().lower() ) );
+    }
+    if( GenArtistChkB->isChecked() ) {
+        GenArtistCLE->setText( firstUp( GenArtistCLE->text().lower() ) );
+    }
+    if( GenAlbumChkB->isChecked() ) {
+        GenAlbumCLE->setText( firstUp( GenAlbumCLE->text().lower() ) );
+    }
+    if( GenCommentChkB->isChecked() ) {
+        GenCommentCLE->setText( firstUp( GenCommentCLE->text().lower() ) );
+    }
     ignoreChange = false;
 
     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
@@ -630,16 +671,26 @@ void mttMainWin::slotFirstUp()
         // Show tag info
         t = (( AListViewItem *) it.current() )->getTag();
         if ( t ) {
-            t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
-            it.current()->setText( 1, TStringToQString( t->title() ) );
-            t->setArtist( QStringToTString( firstUp( TStringToQString( t->artist() ).lower() ) ) );
-            it.current()->setText( 2, TStringToQString( t->artist() ) );
-            t->setAlbum( QStringToTString( firstUp( TStringToQString( t->album() ).lower() ) ) );
-            it.current()->setText( 3, TStringToQString( t->album() ) );
-            t->setGenre( QStringToTString( firstUp( TStringToQString( t->genre() ).lower() ) ) );
-            it.current()->setText( 5, TStringToQString( t->genre() ) );
-            t->setComment( QStringToTString( firstUp( TStringToQString( t->comment() ).lower() ) ) );
-            it.current()->setText( 6, TStringToQString( t->comment() ) );
+            if( GenTitleChkB->isChecked() ) {
+                t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
+                it.current()->setText( 1, TStringToQString( t->title() ) );
+            }
+
+            if( GenArtistChkB->isChecked() ) {
+                t->setArtist( QStringToTString( firstUp( TStringToQString( t->artist() ).lower() ) ) );
+                it.current()->setText( 2, TStringToQString( t->artist() ) );
+            }
+
+            if( GenAlbumChkB->isChecked() ) {
+                t->setAlbum( QStringToTString( firstUp( TStringToQString( t->album() ).lower() ) ) );
+                it.current()->setText( 3, TStringToQString( t->album() ) );
+            }
+
+            if( GenCommentChkB->isChecked() ) {
+                t->setComment( QStringToTString( firstUp( TStringToQString( t->comment() ).lower() ) ) );
+                it.current()->setText( 6, TStringToQString( t->comment() ) );
+            }
+
             ( (AListViewItem *) it.current() )->setTagChanged( true );
         }
         ++it;
@@ -647,6 +698,61 @@ void mttMainWin::slotFirstUp()
 
     QApplication::restoreOverrideCursor();
 }
+
+void mttMainWin::slotFirstUpSentence() // Here is the change to get only the first letter uppercase (only track name)
+{
+    QListViewItemIterator it( GenListView, QListViewItemIterator::Selected );
+
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
+    if( GenTitleChkB->isChecked() ) {
+        GenTitleCLE->setText( firstUpSentence( GenTitleCLE->text().lower() ) );
+    }
+    if( GenArtistChkB->isChecked() ) {
+        GenArtistCLE->setText( firstUpSentence( GenArtistCLE->text().lower() ) );
+    }
+    if( GenAlbumChkB->isChecked() ) {
+        GenAlbumCLE->setText( firstUpSentence( GenAlbumCLE->text().lower() ) );
+    }
+    if( GenCommentChkB->isChecked() ) {
+        GenCommentCLE->setText( firstUpSentence( GenCommentCLE->text().lower() ) );
+    }
+    ignoreChange = false;
+
+    QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
+    while( it.current() ) {
+        TagLib::Tag *t;
+
+        // Show tag info
+        t = (( AListViewItem *) it.current() )->getTag();
+        if ( t ) {
+            if( GenTitleChkB->isChecked() ) {
+                t->setTitle( QStringToTString( firstUpSentence( TStringToQString( t->title() ).lower() ) ) );
+                it.current()->setText( 1, TStringToQString( t->title() ) );
+            }
+
+            if( GenArtistChkB->isChecked() ) {
+                t->setArtist( QStringToTString( firstUpSentence( TStringToQString( t->artist() ).lower() ) ) );
+                it.current()->setText( 2, TStringToQString( t->artist() ) );
+            }
+
+            if( GenAlbumChkB->isChecked() ) {
+                t->setAlbum( QStringToTString( firstUpSentence( TStringToQString( t->album() ).lower() ) ) );
+                it.current()->setText( 3, TStringToQString( t->album() ) );
+            }
+
+            if( GenCommentChkB->isChecked() ) {
+                t->setComment( QStringToTString( firstUpSentence( TStringToQString( t->comment() ).lower() ) ) );
+                it.current()->setText( 6, TStringToQString( t->comment() ) );
+            }
+
+            ( (AListViewItem *) it.current() )->setTagChanged( true );
+        }
+        ++it;
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
 
 void mttMainWin::slotEmptyFields()
 {
@@ -657,6 +763,15 @@ void mttMainWin::slotEmptyFields()
     GenGenreCB->clearEdit();
     GenCommentCLE->clear();
     GenTrackCLE->clear();
+}
+
+QString mttMainWin::firstUpSentence( QString str )
+{
+    if ( str[0].isLetter() ) {
+        str[0] = str[0].upper();
+    }
+
+    return str;
 }
 
 QString mttMainWin::firstUp( QString str )
@@ -681,7 +796,8 @@ void mttMainWin::slotLVRightMenu()
 {
     QPopupMenu menu, corCaseMenu;
 
-    corCaseMenu.insertItem( tr( "First letter up" ), this, SLOT(slotFirstUp()) );
+    corCaseMenu.insertItem( tr( "First letter up (first word)" ), this, SLOT(slotFirstUpSentence()) );
+    corCaseMenu.insertItem( tr( "First letter up (each word)" ), this, SLOT(slotFirstUpWords()) );
     corCaseMenu.insertItem( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
     corCaseMenu.insertItem( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
 

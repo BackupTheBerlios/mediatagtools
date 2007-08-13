@@ -48,6 +48,7 @@ protected:
 
     void populateList( QDir d );
     QString firstUp( QString );
+    QString firstUpSentence( QString );
     bool isTextFrame( QString );
     void saveTags( bool selectedOnly = false );
 
@@ -67,7 +68,8 @@ protected slots:
     virtual void slotRenameFiles();
     virtual void slotAbout();
     virtual void slotCorrectCase();
-    virtual void slotFirstUp();
+    virtual void slotFirstUpSentence();
+    virtual void slotFirstUpWords();
     virtual void slotAllUpper();
     virtual void slotAllLower();
     virtual void slotEmptyFields();
