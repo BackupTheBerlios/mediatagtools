@@ -12,18 +12,21 @@
 #ifndef QDNDLISTVIEW_H
 #define QDNDLISTVIEW_H
 
-#include <qlistview.h>
+#include <q3listview.h>
+//Added by qt3to4:
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 /**
 	@author Theofilos Intzoglou <int.teo@gmail.com>
 */
-class QDNDListView : public QListView
+class QDNDListView : public Q3ListView
 {
 Q_OBJECT
 
 public:
     QDNDListView();
-    QDNDListView( QWidget *w, const char *name ) : QListView( w, name ) {};
+    QDNDListView( QWidget *w, const char *name ) : Q3ListView( w, name ) {};
 
     ~QDNDListView();
 

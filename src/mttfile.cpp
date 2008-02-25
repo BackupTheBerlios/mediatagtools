@@ -10,7 +10,8 @@
 //
 //
 
-#include <qfile.h>
+#include <iostream>
+#include <QFile>
 
 #include <mpegfile.h>
 #include <id3v1tag.h>
@@ -22,9 +23,10 @@
 #include "alistviewitem.h"
 
 #include "mp3extraframes.h"
+#include "tools.h"
 
-AListViewItem::AListViewItem( QListView * parent )
- : QListViewItem( parent )
+mttFile::mttFile()
+ : QStandardItem()
 {
     fileref = NULL;
     ismpeg = false;
@@ -32,21 +34,10 @@ AListViewItem::AListViewItem( QListView * parent )
     isflac = false;
     tagChange = false;
     tag = NULL;
+    blown = false;
 }
 
-AListViewItem::AListViewItem ( QListView * parent, QString label1, QString label2, QString label3, QString label4, QString label5, QString label6, QString label7, QString label8 )
- : QListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
-{
-    fileref = NULL;
-    ismpeg = false;
-    isogg = false;
-    isflac = false;
-    tagChange = false;
-    tag = NULL;
-}
-
-
-AListViewItem::~AListViewItem()
+mttFile::~mttFile()
 {
     if ( fileref )
         delete fileref;
@@ -54,11 +45,12 @@ AListViewItem::~AListViewItem()
         delete tag;
 }
 
-void AListViewItem::Open( QString filename )
+void mttFile::Open( QString filename )
 {
     fname = filename;
+
     fileref = new TagLib::FileRef( QFile::encodeName( filename ) );
-    if ( filename.endsWith( ".mp3", false ) ) {
+    if ( filename.endsWith( QString( ".mp3" ), Qt::CaseInsensitive ) ) {
         ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
         if ( f ) {
@@ -114,10 +106,10 @@ void AListViewItem::Open( QString filename )
             }
         }
     }
-    else if ( filename.endsWith( ".ogg", false ) ) {
+    else if ( filename.endsWith( QString( ".ogg" ), Qt::CaseInsensitive ) ) {
         isogg = true;
     }
-    else if ( filename.endsWith( ".flac", false ) ) {
+    else if ( filename.endsWith( QString( ".flac" ), Qt::CaseInsensitive ) ) {
         isflac = true;
     }
 
@@ -125,7 +117,7 @@ void AListViewItem::Open( QString filename )
     fileref = NULL;
 }
 
-TagLib::Tag *AListViewItem::getTag( bool create )
+TagLib::Tag *mttFile::getTag( bool create )
 {
     if ( tag == NULL ) {
         fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
@@ -154,9 +146,9 @@ TagLib::Tag *AListViewItem::getTag( bool create )
                 fileref = NULL;
                 return tag;
             }
-            else {
+            else { // If the file is ogg or flac
                 tag = new TagLib::Ogg::XiphComment();
-                if ( fileref->tag() )
+                if ( fileref->tag() ) // If a tag already exists
                     TagLib::Tag::duplicate( fileref->tag(), tag, true );
                 delete fileref;
                 fileref = NULL;
@@ -175,7 +167,7 @@ TagLib::Tag *AListViewItem::getTag( bool create )
         return tag;
 }
 
-void AListViewItem::saveTag( void )
+void mttFile::saveTag( void )
 {
     fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
 
@@ -194,10 +186,10 @@ void AListViewItem::saveTag( void )
 
         mytag = f->ID3v2Tag( false );
         for ( QStringList::Iterator it = mp3eframes.begin(); it != mp3eframes.end(); ++it ) {
-            myframe = new TagLib::ID3v2::TextIdentificationFrame( (*it).ascii(), TagLib::String::UTF8 );
-            mytag->removeFrames( (*it).ascii() );
+            myframe = new TagLib::ID3v2::TextIdentificationFrame( (*it).toAscii().constData(), TagLib::String::UTF8 );
+            mytag->removeFrames( (*it).toAscii().constData() );
             ++it;
-            myframe->setText( QStringToTString( (*it) ) );
+            myframe->setText( Q4StringToTString( (*it) ) );
             mytag->addFrame( myframe );
         }
 
@@ -214,7 +206,7 @@ void AListViewItem::saveTag( void )
     fileref = NULL;
 }
 
-void AListViewItem::removeTag( void )
+void mttFile::removeTag( void )
 {
     fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
 
@@ -239,47 +231,47 @@ void AListViewItem::removeTag( void )
     fileref = NULL;
 }
 
-QString AListViewItem::getFName( void )
+QString mttFile::getFName( void )
 {
     return fname;
 }
 
-void AListViewItem::setFName( QString newname )
+void mttFile::setFName( QString newname )
 {
     fname = newname;
 }
 
-bool AListViewItem::isMpeg( void )
+bool mttFile::isMpeg( void )
 {
     return ismpeg;
 }
 
-bool AListViewItem::isOgg( void )
+bool mttFile::isOgg( void )
 {
     return isogg;
 }
 
-bool AListViewItem::isFLAC( void )
+bool mttFile::isFLAC( void )
 {
     return isflac;
 }
 
-TagLib::ID3v2::Tag *AListViewItem::getID3Tag( bool create )
-{
-    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+// TagLib::ID3v2::Tag *mttFile::getID3Tag( bool create )
+// {
+//     fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+// 
+//     if ( ismpeg ) {
+//         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
+//         return f->ID3v2Tag( create );
+//     }
+//     else
+//         return NULL;
+// 
+//     delete fileref;
+//     fileref = NULL;
+// }
 
-    if ( ismpeg ) {
-        TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
-        return f->ID3v2Tag( create );
-    }
-    else
-        return NULL;
-
-    delete fileref;
-    fileref = NULL;
-}
-
-void AListViewItem::checkEncodings( void )
+void mttFile::checkEncodings( void )
 {
     fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
 
@@ -328,63 +320,52 @@ void AListViewItem::checkEncodings( void )
     fileref = NULL;
 }
 
-void AListViewItem::setTagChanged( bool ch )
+void mttFile::setTagChanged( bool ch )
 {
     tagChange = ch;
+    QStandardItemModel *sim = model();
+
+    if ( ch ) {
+        for ( int i = 0; i < COLUMNS; i++ ) {
+            sim->item( index().row(), index().column() + i )->setForeground( QBrush( Qt::red ) );
+        }
+    }
+    else {
+        for ( int i = 0; i < COLUMNS; i++ ) {
+            sim->item( index().row(), index().column() + i )->setForeground( QBrush( Qt::NoBrush ) );
+        }
+    }
 }
 
-bool AListViewItem::tagChanged( void )
+bool mttFile::tagChanged( void )
 {
     return tagChange;
 }
 
-void AListViewItem::paintCell ( QPainter * p, const QColorGroup & cg, int column, int width, int align )
-{
-    // A rip of the default paintCell function
-    // All I ever wanted was a way to have color text in a QListView...
-    // Change width() if you change this.
-
-    if ( !p )
-        return;
-
-    QListView *lv = listView();
-    if ( !lv )
-        return;
-
-//     const BackgroundMode bgmode = lv->viewport()->backgroundMode();
-//     const QColorGroup::ColorRole crole = QPalette::backgroundRoleFromMode( bgmode );
-//     if ( cg.brush( crole ) != lv->colorGroup().brush( crole ) )
-//         p->fillRect( 0, 0, width, height(), cg.brush( crole ) );
-//     else
-//         lv->paintEmptyArea( p, QRect( 0, 0, width, height() ) );
-
-//     bool parentControl = FALSE;
-//     if ( parent() && parent()->rtti() == 1  &&
-//          ((QCheckListItem*) parent())->type() == RadioButtonController )
-//         parentControl = TRUE;
-
-//     QFontMetrics fm( lv->fontMetrics() );
-//     int marg = lv->itemMargin();
-//     int r = marg;
-
-    // Draw text ----------------------------------------------------
-/*    p->translate( r, 0 );*/
-    if ( tagChanged() ) {
-        QColorGroup cg2 = cg;
-        cg2.setColor( QColorGroup::Text, Qt::red );
-        cg2.setColor( QColorGroup::HighlightedText, Qt::red );
-        QListViewItem::paintCell( p, cg2, column, width /*- r*/, align );
-    }
-    else
-        QListViewItem::paintCell( p, cg, column, width /*- r*/, align );
-}
-
-void AListViewItem::setMp3ExtraFrames( QStringList ef )
+void mttFile::setMp3ExtraFrames( QStringList ef )
 {
     mp3eframes = ef;
 }
 
-QStringList AListViewItem::getMp3ExtraFrames( void )
+QStringList mttFile::getMp3ExtraFrames( void )
 {
     return mp3eframes;
+}
+
+void mttFile::setText( int column, QString txt )
+{
+    if (!blown)
+        blow();
+
+    model()->item( index().row(), column )->setText( txt );
+}
+
+void mttFile::blow( void ) {
+    QStandardItem *si;
+    QStandardItemModel *sim = model();
+    for ( int i = 1; i < COLUMNS; i++ ) {
+        si = new QStandardItem();
+        sim->setItem( index().row(), index().column() + i, si );
+    }
+    blown = true;
 }

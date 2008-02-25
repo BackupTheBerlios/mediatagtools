@@ -13,19 +13,20 @@
 #ifndef ATTMAINWIN_H
 #define ATTMAINWIN_H
 
-#include <qdir.h>
-#include <qstringlist.h>
-#include <qmenubar.h>
-#include <qprogressbar.h>
+#include <QDir>
+#include <QStringList>
+#include <QMenuBar>
+#include <QProgressBar>
+#include <QStandardItemModel>
 
-#include "form1.h"
+#include "ui_mainform.h"
 
-class mttMainWin : public MainForm
+class mttMainWin : public QMainWindow, private Ui::MainWindow
 {
   Q_OBJECT
 
 public:
-  mttMainWin(QWidget* parent = 0, const char* name = 0, WFlags fl = 0 );
+  mttMainWin(QWidget* parent = 0 );
   ~mttMainWin();
   /*$PUBLIC_FUNCTIONS$*/
     void addDir( QString );
@@ -38,6 +39,8 @@ public slots:
 protected:
   /*$PROTECTED_FUNCTIONS$*/
 //     QDir d;
+    QStandardItemModel model;
+
     QString curPath;
     QStringList separators;
     QProgressBar progress;
@@ -60,7 +63,7 @@ protected:
 protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotOpen();
-    virtual void slotRemoveTags();
+/*    virtual void slotRemoveTags();
     virtual void slotSaveTags();
     virtual void slotSaveSelectedTags();
     virtual void slotCFormat();
@@ -92,14 +95,14 @@ protected slots:
     virtual void slotCommentChanged( const QString& );
     virtual void slotYearChanged( const QString& );
     virtual void slotAlbumChanged( const QString& );
-    virtual void slotArtistChanged( const QString& );
+    virtual void slotArtistChanged( const QString& );*/
     virtual void slotOpenFiles();
-    virtual void slotCreateTags();
+/*    virtual void slotCreateTags();
     virtual void slotAdvTagValueChanged( int, int );
     virtual void slotRemoveAdvTags();
     virtual void slotRemoveFiles();
     virtual void slotDroppedUris( QStringList );
-    virtual void slotXButtonClickedMP3( int, int );
+    virtual void slotXButtonClickedMP3( int, int );*/
 };
 
 #endif

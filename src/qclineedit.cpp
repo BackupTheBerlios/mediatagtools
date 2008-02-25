@@ -10,6 +10,8 @@
 //
 //
 #include "qclineedit.h"
+//Added by qt3to4:
+#include <QKeyEvent>
 
 QCLineEdit::QCLineEdit( QWidget *parent, const char *name = 0 )
  : QLineEdit( parent, name )

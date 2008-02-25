@@ -13,6 +13,8 @@
 #define QCLINEEDIT_H
 
 #include <qlineedit.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 
 /**
 	@author Theofilos Intzoglou <int.teo@gmail.com>

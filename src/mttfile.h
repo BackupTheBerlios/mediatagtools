@@ -9,23 +9,26 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef ALISTVIEWITEM_H
-#define ALISTVIEWITEM_H
+#ifndef MTTFILE_H
+#define MTTFILE_H
 
-#include <qpainter.h>
-#include <qlistview.h>
+#include <QStandardItemModel>
+#include <QStandardItem>
+
 #include <fileref.h>
+
+#define COLUMNS 8
+
 
 /**
 @author Theofilos Intzoglou
 */
-class AListViewItem : public QListViewItem
+class mttFile : public QStandardItem
 {
 public:
-    AListViewItem( QListView * parent );
-    AListViewItem ( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null );
+    mttFile();
 
-    ~AListViewItem();
+    ~mttFile();
 
     void Open( QString filename );
     void removeTag( void );
@@ -33,22 +36,27 @@ public:
     void saveTag( void );
     QString getFName( void );
     void setFName( QString );
+    //TagLib::ID3v2::Tag *getID3Tag( bool create = false );
+    void checkEncodings( void );
+    void setTagChanged( bool );
+
+    void setMp3ExtraFrames( QStringList );
+    QStringList getMp3ExtraFrames( void );
+
+    void setText( int column, QString txt );
+    void blow( void );
+
+    //Checks
     bool isMpeg( void );
     bool isOgg( void );
     bool isFLAC( void );
-    TagLib::ID3v2::Tag *getID3Tag( bool create = false );
-    void checkEncodings( void );
-    void setTagChanged( bool );
     bool tagChanged( void );
-    void paintCell( QPainter *, const QColorGroup&, int, int, int );
-    void setMp3ExtraFrames( QStringList );
-    QStringList getMp3ExtraFrames( void );
 
 private:
     TagLib::FileRef *fileref;
     bool ismpeg, isogg, isflac;
     QString fname;
-    bool tagChange;
+    bool tagChange, blown;
     TagLib::Tag *tag;
     QStringList mp3eframes;
 };

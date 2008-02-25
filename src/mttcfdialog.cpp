@@ -10,7 +10,6 @@
 //
 //
 
-#include <qlistbox.h>
 #include <qbutton.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -18,7 +17,6 @@
 #include <qlayout.h>
 #include <qregexp.h>
 #include <qpushbutton.h>
-#include <qgroupbox.h>
 
 #include "mttcfdialog.h"
 

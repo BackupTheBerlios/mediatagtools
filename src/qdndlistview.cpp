@@ -10,7 +10,10 @@
 //
 //
 #include "qdndlistview.h"
-#include "qdragobject.h"
+#include "q3dragobject.h"
+//Added by qt3to4:
+#include <QDragEnterEvent>
+#include <QDropEvent>
 
 QDNDListView::QDNDListView()
 {
@@ -22,16 +25,20 @@ QDNDListView::~QDNDListView()
 
 void QDNDListView::dragEnterEvent(QDragEnterEvent* event)
 {
-    event->accept(
-        QUriDrag::canDecode(event)
-    );
+    if (event->mimeData()->hasUrls())
+         event->acceptProposedEvent();
 }
 
 void QDNDListView::dropEvent(QDropEvent* event)
 {
     QStringList uris;
+    QList <QUrl> urllist;
 
-    if ( QUriDrag::decodeToUnicodeUris(event, uris) ) {
+    if ( event->mimeData()->hasUrls() ) {
+        urllist = event->mimeData()->urls();
+        for (int i = 0; i < urllist.size(); ++i) {
+            uris << urllist.at(i).toString();
+        }
         emit droppedUris( uris );
     }
 }

@@ -30,25 +30,15 @@ TARGET = ../bin/mediatagtools
 CONFIG += warn_on \
           debug
 TEMPLATE = app 
-FORMS += form1.ui \
-         form2.ui \
-         about.ui 
+#The following line was changed from FORMS to FORMS3 by qt3to4
 TRANSLATIONS += ../translations/mtt_el.ts 
-HEADERS += alistviewitem.h \
-           mttcfdialog.h \
-           mttmainwin.h \
-           mttaboutdialog.h \
+HEADERS += mttmainwin.h \
            config.h \
-           qclineedit.h  \
-           qdndlistview.h
-SOURCES += alistviewitem.cpp \
-           mediatagtools.cpp \
-           mttcfdialog.cpp \
+ tools.h \
+ mttfile.h
+SOURCES += mediatagtools.cpp \
            mttmainwin.cpp \
-           mttaboutdialog.cpp \
-           qclineedit.cpp  \
-           qdndlistview.cpp
-LIBS += `taglib-config --libs`
+ mttfile.cpp
 
 desktop_icon.files += ../icons/mediatagtools.svg
 
@@ -58,3 +48,14 @@ desktop_menu_entry.path = share/applications
 
 desktop_icon.path = share/icons/hicolor/scalable/apps
 
+#The following line was inserted by qt3to4
+#The following line was inserted by qt3to4
+
+FORMS += mainform.ui
+
+CONFIG -= release
+
+DESTDIR = .
+
+LIBS += `taglib-config \
+--libs`

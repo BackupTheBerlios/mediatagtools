@@ -1624,7 +1624,7 @@
     <slot access="protected">slotCreateTags()</slot>
     <slot access="protected">slotOpenFiles()</slot>
     <slot access="protected">slotAdvTagValueChanged( int, int )</slot>
-    <slot access="προστατευμένο">slotRemoveAdvTags()</slot>
+    <slot access="protected">slotRemoveAdvTags()</slot>
     <slot access="protected">slotDroppedUris( QStringList )</slot>
     <slot access="protected">slotXButtonClickedMP3( int, int )</slot>
 </slots>
