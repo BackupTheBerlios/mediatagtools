@@ -10,7 +10,6 @@
 //
 //
 
-#include <iostream>
 #include <QFile>
 
 #include <mpegfile.h>
@@ -20,13 +19,12 @@
 #include <textidentificationframe.h>
 #include <tstring.h>
 
-#include "alistviewitem.h"
+#include "mttfile.h"
 
 #include "mp3extraframes.h"
 #include "tools.h"
 
 mttFile::mttFile()
- : QStandardItem()
 {
     fileref = NULL;
     ismpeg = false;
@@ -34,7 +32,6 @@ mttFile::mttFile()
     isflac = false;
     tagChange = false;
     tag = NULL;
-    blown = false;
 }
 
 mttFile::~mttFile()
@@ -156,7 +153,7 @@ TagLib::Tag *mttFile::getTag( bool create )
             }
         }
         else {
-            qDebug( "fileref = NULL" );
+            //qDebug( "fileref = NULL" );
             return NULL;
         }
 
@@ -176,7 +173,7 @@ void mttFile::saveTag( void )
 
         // Remove id3v1 tag. Help put that hack into eternal rest :-)
         f->strip( TagLib::MPEG::File::ID3v1, true );
-        qDebug("ID3v1 tag stripped!");
+        //qDebug("ID3v1 tag stripped!");
 
         TagLib::Tag::duplicate( tag, dynamic_cast<TagLib::Tag *>( f->ID3v2Tag( true ) ), true );
 
@@ -194,8 +191,8 @@ void mttFile::saveTag( void )
         }
 
         // TODO: Handle save errors
-        if ( !f->save( TagLib::MPEG::File::ID3v2, true ) )
-            qDebug( "Error" );
+        if ( !f->save( TagLib::MPEG::File::ID3v2, true ) );
+            //qDebug( "Error" );
     }
     else {
         TagLib::Tag::duplicate( tag, fileref->tag(), true );
@@ -323,7 +320,7 @@ void mttFile::checkEncodings( void )
 void mttFile::setTagChanged( bool ch )
 {
     tagChange = ch;
-    QStandardItemModel *sim = model();
+/*    QStandardItemModel *sim = model();
 
     if ( ch ) {
         for ( int i = 0; i < COLUMNS; i++ ) {
@@ -334,7 +331,7 @@ void mttFile::setTagChanged( bool ch )
         for ( int i = 0; i < COLUMNS; i++ ) {
             sim->item( index().row(), index().column() + i )->setForeground( QBrush( Qt::NoBrush ) );
         }
-    }
+    }*/
 }
 
 bool mttFile::tagChanged( void )
@@ -350,22 +347,4 @@ void mttFile::setMp3ExtraFrames( QStringList ef )
 QStringList mttFile::getMp3ExtraFrames( void )
 {
     return mp3eframes;
-}
-
-void mttFile::setText( int column, QString txt )
-{
-    if (!blown)
-        blow();
-
-    model()->item( index().row(), column )->setText( txt );
-}
-
-void mttFile::blow( void ) {
-    QStandardItem *si;
-    QStandardItemModel *sim = model();
-    for ( int i = 1; i < COLUMNS; i++ ) {
-        si = new QStandardItem();
-        sim->setItem( index().row(), index().column() + i, si );
-    }
-    blown = true;
 }

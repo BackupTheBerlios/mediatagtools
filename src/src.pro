@@ -28,17 +28,22 @@ QMAKE_CXXFLAGS_DEBUG += `taglib-config \
                         -pg 
 TARGET = ../bin/mediatagtools 
 CONFIG += warn_on \
-          debug
+          x11 \
+ build_all
 TEMPLATE = app 
 #The following line was changed from FORMS to FORMS3 by qt3to4
 TRANSLATIONS += ../translations/mtt_el.ts 
 HEADERS += mttmainwin.h \
            config.h \
  tools.h \
- mttfile.h
+ mttfile.h \
+ treeitem.h \
+ treemodel.h
 SOURCES += mediatagtools.cpp \
            mttmainwin.cpp \
- mttfile.cpp
+ mttfile.cpp \
+ treeitem.cpp \
+ treemodel.cpp
 
 desktop_icon.files += ../icons/mediatagtools.svg
 
@@ -53,9 +58,10 @@ desktop_icon.path = share/icons/hicolor/scalable/apps
 
 FORMS += mainform.ui
 
-CONFIG -= release
 
 DESTDIR = .
 
 LIBS += `taglib-config \
 --libs`
+QT += core \
+gui

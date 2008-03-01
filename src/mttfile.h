@@ -12,9 +12,7 @@
 #ifndef MTTFILE_H
 #define MTTFILE_H
 
-#include <QStandardItemModel>
-#include <QStandardItem>
-
+#include <QStringList>
 #include <fileref.h>
 
 #define COLUMNS 8
@@ -23,7 +21,7 @@
 /**
 @author Theofilos Intzoglou
 */
-class mttFile : public QStandardItem
+class mttFile
 {
 public:
     mttFile();
@@ -38,13 +36,10 @@ public:
     void setFName( QString );
     //TagLib::ID3v2::Tag *getID3Tag( bool create = false );
     void checkEncodings( void );
-    void setTagChanged( bool );
+    void setTagChanged( bool ); // TODO: Implementation of setTagChanged
 
     void setMp3ExtraFrames( QStringList );
     QStringList getMp3ExtraFrames( void );
-
-    void setText( int column, QString txt );
-    void blow( void );
 
     //Checks
     bool isMpeg( void );
@@ -56,7 +51,7 @@ private:
     TagLib::FileRef *fileref;
     bool ismpeg, isogg, isflac;
     QString fname;
-    bool tagChange, blown;
+    bool tagChange;
     TagLib::Tag *tag;
     QStringList mp3eframes;
 };

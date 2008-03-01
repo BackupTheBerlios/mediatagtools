@@ -1,3 +1,6 @@
+Qt4 Porting:
+* Window icon (get rid of that pink/purple X!)
+
 * Custom tags for ogg files
 * Add folders recursively
 * Add Music Brainz support

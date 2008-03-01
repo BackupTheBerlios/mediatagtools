@@ -15,6 +15,7 @@
     <ignoreparts/>
     <versioncontrol/>
     <projectname>mediatagtools</projectname>
+    <defaultencoding/>
   </general>
   <kdevfileview>
     <groups>
@@ -60,7 +61,7 @@
   </kdevdebugger>
   <kdevtrollproject>
     <run>
-      <mainprogram>bin/mediatagtools</mainprogram>
+      <mainprogram>/home/oscar/Projects/mediatagtools</mainprogram>
       <programargs/>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
@@ -76,9 +77,14 @@
       <debugarguments>
         <mediatagtools/>
       </debugarguments>
+      <globaldebugarguments/>
+      <globalcwd>/home/oscar/Projects/mediatagtools</globalcwd>
+      <useglobalprogram>false</useglobalprogram>
+      <autoinstall>false</autoinstall>
+      <autokdesu>false</autokdesu>
     </run>
     <general>
-      <activedir>src</activedir>
+      <activedir></activedir>
     </general>
     <make>
       <abortonerror>true</abortonerror>
@@ -87,11 +93,17 @@
       <makebin/>
       <prio>0</prio>
       <envvars/>
+      <runmultiplejobs>false</runmultiplejobs>
     </make>
     <subclassing>
       <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.cpp" />
       <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.h" />
     </subclassing>
+    <qmake>
+      <savebehaviour>2</savebehaviour>
+      <replacePaths>false</replacePaths>
+      <disableDefaultOpts>true</disableDefaultOpts>
+    </qmake>
   </kdevtrollproject>
   <kdevfilecreate>
     <filetypes/>
@@ -131,16 +143,21 @@
       <statusBarTypeEvaluation>false</statusBarTypeEvaluation>
       <namespaceAliases>std=_GLIBCXX_STD;__gnu_cxx=std</namespaceAliases>
       <processPrimaryTypes>true</processPrimaryTypes>
-      <processFunctionArguments>false</processFunctionArguments>
-      <preProcessAllHeaders>false</preProcessAllHeaders>
+      <processFunctionArguments>true</processFunctionArguments>
+      <preProcessAllHeaders>true</preProcessAllHeaders>
       <parseMissingHeaders>false</parseMissingHeaders>
       <resolveIncludePaths>true</resolveIncludePaths>
       <alwaysParseInBackground>true</alwaysParseInBackground>
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>false</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
+      <parseMissingHeadersExperimental>false</parseMissingHeadersExperimental>
+      <resolveIncludePathsUsingMakeExperimental>false</resolveIncludePathsUsingMakeExperimental>
     </codecompletion>
-    <references/>
+    <references>
+      <pcs>Taglib</pcs>
+      <pcs>Qt4</pcs>
+    </references>
     <designerintegration>
       <qtdesigner>
         <implementation class="mttMainWin" path="src/form1.ui" implementationpath="src/mttmainwin.h" />
@@ -157,14 +174,19 @@
     </creategettersetter>
     <qt>
       <used>true</used>
-      <version>3</version>
+      <version>4</version>
       <root>/usr/qt/3</root>
-      <includestyle>3</includestyle>
-      <designerintegration>EmbeddedKDevDesigner</designerintegration>
+      <includestyle>4</includestyle>
+      <designerintegration>ExternalDesigner</designerintegration>
       <qmake>/usr/qt/3/bin/qmake</qmake>
-      <designer>/usr/qt/3/bin/designer</designer>
+      <designer>/usr/bin/designer</designer>
       <designerpluginpaths/>
     </qt>
+    <splitheadersource>
+      <enabled>false</enabled>
+      <synchronize>true</synchronize>
+      <orientation>Vertical</orientation>
+    </splitheadersource>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>
@@ -181,6 +203,7 @@
   </kdevdocumentation>
   <ctagspart>
     <customArguments/>
-    <customTagfilePath/>
+    <customTagfilePath>/home/oscar/Projects/mediatagtools/tags</customTagfilePath>
+    <activeTagsFiles/>
   </ctagspart>
 </kdevelop>

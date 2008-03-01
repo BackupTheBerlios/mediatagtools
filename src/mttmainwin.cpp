@@ -10,6 +10,7 @@
 //
 //
 
+#include <iostream>
 #include <QFileDialog>
 #include <QPixmap>
 #include <QStandardItem>
@@ -27,11 +28,12 @@
 //#include "qclineedit.h"
 //#include "qdndlistview.h"
 #include "mttmainwin.h"
-#include "alistviewitem.h"
+#include "mttfile.h"
 //#include "mttcfdialog.h"
 //#include "mttaboutdialog.h"
 #include "config.h"
 //#include "x.xpm"
+#include "treeitem.h"
 
 #ifndef RELEASE
 #include "revision.h"
@@ -85,7 +87,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     treeView->setModel( &model );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeView->setTabKeyNavigation( true );
-    QStringList header;
+    QList<QVariant> header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     model.setHorizontalHeaderLabels( header );
@@ -125,35 +127,35 @@ void mttMainWin::addDir( QString str )
 
 void mttMainWin::addFile( QString fname )
 {
-    AListViewItem *li;
-    TagLib::Tag *t;
-    QList<QStandardItem *> list;
+    //mttFile *li;
+    //TagLib::Tag *t;
+    TreeItem *ti, *father;
 
-    li = new AListViewItem();
+    //li = new mttFile();
 
-    list = model.findItems( curPath );
-    qDebug( curPath.toUtf8().constData() );
-    qDebug( fname.toUtf8().constData() );
-    if ( !list.isEmpty() ) {
-        qDebug("true");
-        list.at(0)->insertRow(0,li);
-        li->blow();
+    father = model.findItem( curPath );
+    //qDebug( curPath.toUtf8().constData() );
+    //qDebug( fname.toUtf8().constData() );
+    if ( father ) {
+        //qDebug("true");
+        QList<QVariant> list;
+        list << fname;
+        ti = new TreeItem( list, father );
+        father->appendChild( ti );
     }
     else {
-        AListViewItem *lif;
-
-        lif = new AListViewItem();
-        model.invisibleRootItem()->appendRow( lif );
-        lif->setText( 0, curPath );
-        lif->appendRow(li);
+        QList<QVariant> list;
+        list << curPath;
+        ti = new TreeItem( list, model.invisibleRootItem() );
+        model.invisibleRootItem()->appendChild( ti );
     }
-    li->setText( 0, fname.right( fname.length() - curPath.length() - 1 ) );
+    //li->setText( 0, fname.right( fname.length() - curPath.length() - 1 ) );
     //qDebug( QString( fname.right( fname.length() - curPath.length() - 1 ).utf8() ) );
     /*if ( QFile::exists( d.path() + "/" + *it ) )
         qDebug( "exists" );
     else
         qDebug( "doesn't exist" );*/
-    li->Open( fname );
+/*    li->Open( fname );
     t = li->getTag();
     if ( t ) {
         li->setText( 1, TStringToQString( t->title() ) );
@@ -165,7 +167,7 @@ void mttMainWin::addFile( QString fname )
         li->setText( 7, QString::number( t->track() ) );
     }
     else
-        qDebug( "tag = NULL" );
+        qDebug( "tag = NULL" );*/
 }
 
 void mttMainWin::slotOpen()
@@ -197,10 +199,28 @@ void mttMainWin::slotOpen()
 
     curPath = d.path();
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
-    model.removeRows( 0, model.rowCount() );
+    //model.removeRows( 0, model.rowCount() );
     populateList( d );
     QApplication::restoreOverrideCursor();
     selectedFname = "";
+    treeView->show();
+
+    int i;
+    TreeItem *tmp,*tmp2,*rootItem;
+
+    rootItem = model.invisibleRootItem();
+    std::cout << rootItem->childCount() << std::endl;
+    for (i=0;i<rootItem->childCount();i++) {
+        tmp = rootItem->child( i );
+        //qDebug( tmp->data( 0 ).toString().toUtf8().constData() );
+        int j;
+        std::cout << tmp->childCount() << std::endl;
+        for (j=0;j<tmp->childCount();j++) {
+            tmp2 = tmp->child( j );
+            //qDebug( tmp2->data( 0 ).toString().toUtf8().constData() );
+        }
+    }
+
 }
 
 void mttMainWin::slotOpenFiles()
@@ -294,11 +314,11 @@ void mttMainWin::populateList( QDir d )
 //             progress.show();
 //             progress.setProgress( 0, count );
 //             while ( it.current() ) {
-//                 ( (AListViewItem *) it.current() )->removeTag();
+//                 ( (mttFile *) it.current() )->removeTag();
 //                 TagLib::Tag *t;
 // 
 //                 // Show tag info
-//                 t = (( AListViewItem *) it.current() )->getTag();
+//                 t = (( mttFile *) it.current() )->getTag();
 //                 if ( t ) {
 //                     it.current()->setText( 1, TStringToQString( t->title() ) );
 //                     it.current()->setText( 2, TStringToQString( t->artist() ) );
@@ -422,8 +442,8 @@ void mttMainWin::populateList( QDir d )
 //         QString newfname, path, ext, cformat;
 //         TagLib::Tag *t;
 // 
-//         t = ( (AListViewItem *) it.current() )->getTag();
-//         path = ( (AListViewItem *) it.current() )->getFName();
+//         t = ( (mttFile *) it.current() )->getTag();
+//         path = ( (mttFile *) it.current() )->getFName();
 //         ext = path;
 //         //qDebug( "filename:" + path );
 //         path.truncate( path.findRev( "/" ) );
@@ -476,9 +496,9 @@ void mttMainWin::populateList( QDir d )
 //                                 tr("&Yes"), tr("&No"),
 //                                 tr("No to &All"), 0, 1 ) ) {
 //                         case 0:
-//                             if ( dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
+//                             if ( dir.rename( ( (mttFile *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
 //                                 it.current()->setText( 0, newfname + ext );
-//                                 ( (AListViewItem *) it.current() )->setFName( path + "/" + newfname + ext );
+//                                 ( (mttFile *) it.current() )->setFName( path + "/" + newfname + ext );
 //                             }
 //                             else {
 //                                 QApplication::restoreOverrideCursor();
@@ -486,7 +506,7 @@ void mttMainWin::populateList( QDir d )
 //                                 switch( QMessageBox::warning(
 //                                     this,
 //                                     tr("Rename File"),
-//                                     tr("Rename failed for file %1!").arg( ( (AListViewItem *) it.current() )->getFName() ),
+//                                     tr("Rename failed for file %1!").arg( ( (mttFile *) it.current() )->getFName() ),
 //                                     QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
 //                                     case QMessageBox::Ok:
 //                                         break;
@@ -504,9 +524,9 @@ void mttMainWin::populateList( QDir d )
 //                     }
 //                 }
 //                 else
-//                     if ( dir.rename( ( (AListViewItem *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
+//                     if ( dir.rename( ( (mttFile *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
 //                         it.current()->setText( 0, newfname + ext );
-//                         ( (AListViewItem *) it.current() )->setFName( path + "/" + newfname + ext );
+//                         ( (mttFile *) it.current() )->setFName( path + "/" + newfname + ext );
 //                     }
 //                     else {
 //                         QApplication::restoreOverrideCursor();
@@ -514,7 +534,7 @@ void mttMainWin::populateList( QDir d )
 //                         switch( QMessageBox::warning(
 //                             this,
 //                             tr("Rename File"),
-//                             tr("Rename failed for file %1!").arg( ( (AListViewItem *) it.current() )->getFName() ),
+//                             tr("Rename failed for file %1!").arg( ( (mttFile *) it.current() )->getFName() ),
 //                             QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
 //                             case QMessageBox::Ok:
 //                                 break;
@@ -573,7 +593,7 @@ void mttMainWin::populateList( QDir d )
 //         TagLib::Tag *t;
 // 
 //         // Show tag info
-//         t = (( AListViewItem *) it.current() )->getTag();
+//         t = (( mttFile *) it.current() )->getTag();
 //         if ( t ) {
 //             if( GenTitleChkB->isChecked() ) {
 //                 t->setTitle( QStringToTString( TStringToQString( t->title() ).upper() ) );
@@ -595,7 +615,7 @@ void mttMainWin::populateList( QDir d )
 //                 it.current()->setText( 6, TStringToQString( t->comment() ) );
 //             }
 // 
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
 //         }
 //         ++it;
 //     }
@@ -628,7 +648,7 @@ void mttMainWin::populateList( QDir d )
 //         TagLib::Tag *t;
 // 
 //         // Show tag info
-//         t = (( AListViewItem *) it.current() )->getTag();
+//         t = (( mttFile *) it.current() )->getTag();
 //         if ( t ) {
 //             if( GenTitleChkB->isChecked() ) {
 //                 t->setTitle( QStringToTString( TStringToQString( t->title() ).lower() ) );
@@ -650,7 +670,7 @@ void mttMainWin::populateList( QDir d )
 //                 it.current()->setText( 6, TStringToQString( t->comment() ) );
 //             }
 // 
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
 //         }
 //         ++it;
 //     }
@@ -682,7 +702,7 @@ void mttMainWin::populateList( QDir d )
 //         TagLib::Tag *t;
 // 
 //         // Show tag info
-//         t = (( AListViewItem *) it.current() )->getTag();
+//         t = (( mttFile *) it.current() )->getTag();
 //         if ( t ) {
 //             if( GenTitleChkB->isChecked() ) {
 //                 t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
@@ -704,7 +724,7 @@ void mttMainWin::populateList( QDir d )
 //                 it.current()->setText( 6, TStringToQString( t->comment() ) );
 //             }
 // 
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
 //         }
 //         ++it;
 //     }
@@ -736,7 +756,7 @@ void mttMainWin::populateList( QDir d )
 //         TagLib::Tag *t;
 // 
 //         // Show tag info
-//         t = (( AListViewItem *) it.current() )->getTag();
+//         t = (( mttFile *) it.current() )->getTag();
 //         if ( t ) {
 //             if( GenTitleChkB->isChecked() ) {
 //                 t->setTitle( QStringToTString( firstUpSentence( TStringToQString( t->title() ).lower() ) ) );
@@ -758,7 +778,7 @@ void mttMainWin::populateList( QDir d )
 //                 it.current()->setText( 6, TStringToQString( t->comment() ) );
 //             }
 // 
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
 //         }
 //         ++it;
 //     }
@@ -831,8 +851,8 @@ void mttMainWin::populateList( QDir d )
 // {
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     while ( it.current() ) {
-//         if ( ( (AListViewItem *) it.current() )->isMpeg() ) {
-//             TagLib::ID3v2::Tag *tag = ( (AListViewItem *) it.current() )->getID3Tag();
+//         if ( ( (mttFile *) it.current() )->isMpeg() ) {
+//             TagLib::ID3v2::Tag *tag = ( (mttFile *) it.current() )->getID3Tag();
 //             if ( tag ) {
 //                 TagLib::ID3v2::FrameList l = tag->frameList();
 //                 TagLib::List<TagLib::ID3v2::Frame *>::Iterator fit;
@@ -854,12 +874,12 @@ void mttMainWin::populateList( QDir d )
 //                         qDebug( "fix = NULL" );
 //                     } // end if frameID starts with T
 //                 } // for each text frame
-//                 ( (AListViewItem *) it.current() )->saveTag();
+//                 ( (mttFile *) it.current() )->saveTag();
 //     
 //                 TagLib::Tag *t;
 //     
 //                 // Show tag info
-//                 t = (( AListViewItem *) it.current() )->getTag();
+//                 t = (( mttFile *) it.current() )->getTag();
 //                 if ( t ) {
 //                     it.current()->setText( 1, TStringToQString( t->title() ) );
 //                     it.current()->setText( 2, TStringToQString( t->artist() ) );
@@ -1005,12 +1025,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( TStringToQString( t->title() ) != title ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setTitle( QStringToTString( title ) );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 1, title );
 //             }
 //         it++;
@@ -1037,7 +1057,7 @@ void mttMainWin::populateList( QDir d )
 // 
 //         if ( it.current() ) {
 //             // Show tag info
-//             t = (( AListViewItem *) it.current() )->getTag();
+//             t = (( mttFile *) it.current() )->getTag();
 //             if ( t ) {
 //                 GenTitleCLE->setText( TStringToQString( t->title() ) );
 //                 GenArtistCLE->setText( TStringToQString( t->artist() ) );
@@ -1047,7 +1067,7 @@ void mttMainWin::populateList( QDir d )
 //                 GenCommentCLE->setText( TStringToQString( t->comment() ) );
 //                 GenTrackCLE->setText( QString::number( t->track() ) );
 // 
-//                 updateAdvMp3TagTable( ( ( AListViewItem *) it.current() )->getMp3ExtraFrames() );
+//                 updateAdvMp3TagTable( ( ( mttFile *) it.current() )->getMp3ExtraFrames() );
 //             }
 //             else {
 //                 GenTitleCLE->setText( "" );
@@ -1058,7 +1078,7 @@ void mttMainWin::populateList( QDir d )
 //                 GenCommentCLE->setText( "" );
 //                 GenTrackCLE->setText( "" );
 //             }
-//             selectedFname = (( AListViewItem *) it.current() )->getFName();
+//             selectedFname = (( mttFile *) it.current() )->getFName();
 //             selectedFname = selectedFname.mid( selectedFname.findRev( "/" ) + 1 );
 //         }
 //     }
@@ -1071,12 +1091,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if (  t->track() != track.toUInt() ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setTrack( track.toUInt() );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 7, track );
 //             }
 //         it++;
@@ -1092,12 +1112,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( TStringToQString( t->comment() ) != comment ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setComment( QStringToTString( comment ) );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 6, comment );
 //             }
 //         it++;
@@ -1113,12 +1133,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( t->year() != year.toUInt() ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setYear( year.toUInt() );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 4, year );
 //             }
 //         it++;
@@ -1134,12 +1154,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( TStringToQString( t->album() ) != album ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setAlbum( QStringToTString( album ) );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 3, album );
 //             }
 //         it++;
@@ -1155,12 +1175,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( TStringToQString( t->artist() ) != artist ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setArtist( QStringToTString( artist ) );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 2, artist );
 //             }
 //         it++;
@@ -1175,12 +1195,12 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //     if ( !ignoreChange ) {
 //         while ( it.current() ) {
-//             t = ( (AListViewItem *) it.current() )->getTag( true );
+//             t = ( (mttFile *) it.current() )->getTag( true );
 //             if ( TStringToQString( t->genre() ) != genre ) { // A bit of a double check but just to be sure...
-//                 ( (AListViewItem *) it.current() )->checkEncodings();
+//                 ( (mttFile *) it.current() )->checkEncodings();
 //                 // Save info from the various text fields
 //                 t->setGenre( QStringToTString( genre ) );
-//                 ( (AListViewItem *) it.current() )->setTagChanged( true );
+//                 ( (mttFile *) it.current() )->setTagChanged( true );
 //                 it.current()->setText( 5, genre );
 //             }
 //         it++;
@@ -1209,14 +1229,14 @@ void mttMainWin::populateList( QDir d )
 //         it = tmp;
 //         }
 //     while ( it.current() ) {
-//         if ( ( (AListViewItem *) it.current() )->tagChanged() ) {
-//             ( (AListViewItem *) it.current() )->checkEncodings();
+//         if ( ( (mttFile *) it.current() )->tagChanged() ) {
+//             ( (mttFile *) it.current() )->checkEncodings();
 // 
-//             ( (AListViewItem *) it.current() )->saveTag();
-//             ( (AListViewItem *) it.current() )->setTagChanged( false );
+//             ( (mttFile *) it.current() )->saveTag();
+//             ( (mttFile *) it.current() )->setTagChanged( false );
 // 
 //             // Update the ListView too
-//             ( (AListViewItem *) it.current() )->repaint();
+//             ( (mttFile *) it.current() )->repaint();
 //         }
 //         ++it;
 // 
@@ -1244,14 +1264,14 @@ void mttMainWin::populateList( QDir d )
 //     Q3ListViewItemIterator tmp( GenListView, Q3ListViewItemIterator::Selected );
 //     it = tmp;
 //     while ( it.current() ) {
-//         t = ( (AListViewItem *) it.current() )->getTag( true );
-//         ( (AListViewItem *) it.current() )->checkEncodings();
+//         t = ( (mttFile *) it.current() )->getTag( true );
+//         ( (mttFile *) it.current() )->checkEncodings();
 // 
 //         // Save info using the filename and the custom format string
 //         if ( UseCFChkB->isChecked() && ( MCFormatLE->text() != "" ) ) { // Custom format is enabled
 //             QString formatstr = MCFormatLE->text();
 //             QStringList::Iterator slit = separators.begin();
-//             QString filename = ( (AListViewItem *) it.current() )->getFName();
+//             QString filename = ( (mttFile *) it.current() )->getFName();
 //             int curpos, pos1, pos2;
 //             bool done;
 //     
@@ -1321,20 +1341,20 @@ void mttMainWin::populateList( QDir d )
 //                 }
 //             }
 //  
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
 // 
 //             // Update the ListView too
-//             ( (AListViewItem *) it.current() )->repaint();
-//             ( (AListViewItem *) it.current() )->setText( 1, TStringToQString( t->title() ) );
-//             ( (AListViewItem *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
-//             ( (AListViewItem *) it.current() )->setText( 3, TStringToQString( t->album() ) );
-//             ( (AListViewItem *) it.current() )->setText( 4, QString::number( t->year() ) );
-//             ( (AListViewItem *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
-//             ( (AListViewItem *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
-//             ( (AListViewItem *) it.current() )->setText( 7, QString::number( t->track() ) );
+//             ( (mttFile *) it.current() )->repaint();
+//             ( (mttFile *) it.current() )->setText( 1, TStringToQString( t->title() ) );
+//             ( (mttFile *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
+//             ( (mttFile *) it.current() )->setText( 3, TStringToQString( t->album() ) );
+//             ( (mttFile *) it.current() )->setText( 4, QString::number( t->year() ) );
+//             ( (mttFile *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
+//             ( (mttFile *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
+//             ( (mttFile *) it.current() )->setText( 7, QString::number( t->track() ) );
 // 
 //             // TODO: Use path & filename instead of just the name for the check
-//             filename = ( (AListViewItem *) it.current() )->getFName();
+//             filename = ( (mttFile *) it.current() )->getFName();
 //             curpos = filename.findRev( "/" );
 //             if ( curpos != -1 )
 //                 filename.remove( 0, curpos + 1 );
@@ -1506,9 +1526,9 @@ void mttMainWin::populateList( QDir d )
 // 
 //         Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
 //         while ( it.current() ) {
-//             ( (AListViewItem *) it.current() )->setMp3ExtraFrames( eframes );
-//             ( (AListViewItem *) it.current() )->setTagChanged( true );
-//             ( (AListViewItem *) it.current() )->repaint();
+//             ( (mttFile *) it.current() )->setMp3ExtraFrames( eframes );
+//             ( (mttFile *) it.current() )->setTagChanged( true );
+//             ( (mttFile *) it.current() )->repaint();
 //             ++it;
 //         }
 //     }

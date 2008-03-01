@@ -17,9 +17,9 @@
 #include <QStringList>
 #include <QMenuBar>
 #include <QProgressBar>
-#include <QStandardItemModel>
 
 #include "ui_mainform.h"
+#include "treemodel.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
 {
@@ -39,7 +39,7 @@ public slots:
 protected:
   /*$PROTECTED_FUNCTIONS$*/
 //     QDir d;
-    QStandardItemModel model;
+    TreeModel model;
 
     QString curPath;
     QStringList separators;
