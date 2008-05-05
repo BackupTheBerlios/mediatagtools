@@ -13,10 +13,10 @@
 #ifndef ATTMAINWIN_H
 #define ATTMAINWIN_H
 
-#include <QDir>
-#include <QStringList>
-#include <QMenuBar>
-#include <QProgressBar>
+#include <QtCore/QDir>
+#include <QtCore/QStringList>
+#include <QtGui/QMenuBar>
+#include <QtGui/QProgressBar>
 
 #include "ui_mainform.h"
 #include "treemodel.h"

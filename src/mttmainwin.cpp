@@ -10,13 +10,13 @@
 //
 //
 
-#include <iostream>
-#include <QFileDialog>
-#include <QPixmap>
-#include <QStandardItem>
-#include <QStandardItemModel>
-#include <QMessageBox>
-#include <QList>
+//#include <iostream>
+#include <QtGui/QFileDialog>
+#include <QtGui/QPixmap>
+#include <QtGui/QStandardItem>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QMessageBox>
+#include <QtCore/QList>
 
 #include <tag.h>
 #include <tlist.h>
@@ -42,10 +42,14 @@
 //#include "genres.h"
 //#include "mp3extraframes.h"
 
+#include "modeltest.h"
+
+
 mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 {
     setupUi( this );
     int i;
+
     /*QStringList strlst( "<Empty>" );
 
     ignoreChange = false;
@@ -87,10 +91,14 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     treeView->setModel( &model );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeView->setTabKeyNavigation( true );
+    treeView->setAllColumnsShowFocus( true );
+    treeView->setRootIsDecorated( true );
+    treeView->show();
     QList<QVariant> header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     model.setHorizontalHeaderLabels( header );
+	treeView->expandAll();
 
     // Progress bar & Status Bar
     progress.setRange( 0, 100 );
@@ -102,6 +110,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     actionExit->setShortcut( tr( "Alt+X" ) );
     connect(actionOpen_folder, SIGNAL(triggered()), this, SLOT(slotOpen()));
     connect(actionOpen_files, SIGNAL(triggered()), this, SLOT(slotOpenFiles()));
+
+    new ModelTest(&model, this);
 }
 
 mttMainWin::~mttMainWin()
@@ -127,47 +137,36 @@ void mttMainWin::addDir( QString str )
 
 void mttMainWin::addFile( QString fname )
 {
-    //mttFile *li;
-    //TagLib::Tag *t;
+    mttFile *li;
+    TagLib::Tag *t;
     TreeItem *ti, *father;
+    QList<QVariant> list;
 
-    //li = new mttFile();
-
+    li = new mttFile();
+    li->Open( fname );
     father = model.findItem( curPath );
-    //qDebug( curPath.toUtf8().constData() );
-    //qDebug( fname.toUtf8().constData() );
-    if ( father ) {
-        //qDebug("true");
-        QList<QVariant> list;
-        list << fname;
-        ti = new TreeItem( list, father );
-        father->appendChild( ti );
-    }
-    else {
-        QList<QVariant> list;
-        list << curPath;
+    if ( !father ) {
+        list << curPath << " " << " " << " " << " " << " " << " " << " ";
         ti = new TreeItem( list, model.invisibleRootItem() );
         model.invisibleRootItem()->appendChild( ti );
+        father = model.findItem( curPath );
+        list.clear();
     }
-    //li->setText( 0, fname.right( fname.length() - curPath.length() - 1 ) );
-    //qDebug( QString( fname.right( fname.length() - curPath.length() - 1 ).utf8() ) );
-    /*if ( QFile::exists( d.path() + "/" + *it ) )
-        qDebug( "exists" );
-    else
-        qDebug( "doesn't exist" );*/
-/*    li->Open( fname );
+
+    list << fname;
     t = li->getTag();
     if ( t ) {
-        li->setText( 1, TStringToQString( t->title() ) );
-        li->setText( 2, TStringToQString( t->artist() ) );
-        li->setText( 3, TStringToQString( t->album() ) );
-        li->setText( 4, QString::number( t->year() ) );
-        li->setText( 5, TStringToQString( t->genre() ) );
-        li->setText( 6, TStringToQString( t->comment() ) );
-        li->setText( 7, QString::number( t->track() ) );
+       list << TStringToQString( t->title() )
+            << TStringToQString( t->artist() )
+            << TStringToQString( t->album() )
+            << QString::number( t->year() )
+            << TStringToQString( t->genre() )
+            << TStringToQString( t->comment() )
+            << QString::number( t->track() );
     }
-    else
-        qDebug( "tag = NULL" );*/
+
+    ti = new TreeItem( list, father );
+    father->appendChild( ti );
 }
 
 void mttMainWin::slotOpen()
@@ -203,24 +202,16 @@ void mttMainWin::slotOpen()
     populateList( d );
     QApplication::restoreOverrideCursor();
     selectedFname = "";
-    treeView->show();
-
-    int i;
-    TreeItem *tmp,*tmp2,*rootItem;
-
-    rootItem = model.invisibleRootItem();
-    std::cout << rootItem->childCount() << std::endl;
-    for (i=0;i<rootItem->childCount();i++) {
-        tmp = rootItem->child( i );
-        //qDebug( tmp->data( 0 ).toString().toUtf8().constData() );
-        int j;
-        std::cout << tmp->childCount() << std::endl;
-        for (j=0;j<tmp->childCount();j++) {
-            tmp2 = tmp->child( j );
-            //qDebug( tmp2->data( 0 ).toString().toUtf8().constData() );
-        }
-    }
-
+    //treeView->update();
+    /*std::cout << "Expand!" << std::endl;
+	QModelIndex t = model.index( 0, 0 );
+	if ( t.isValid() )
+		std::cout << "modelInd not valid";
+	else
+		std::cout << "modelInd valid...";
+	treeView->expand( model.index( 0, 0 ) );*/
+	treeView->collapseAll();
+    //std::cout << "Rows:" << model.rowCount() << std::endl;
 }
 
 void mttMainWin::slotOpenFiles()

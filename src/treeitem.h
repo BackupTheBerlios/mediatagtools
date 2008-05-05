@@ -13,16 +13,16 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
-#include <QList>
-#include <QVariant>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 
 #include "mttfile.h"
 
 class TreeItem
 {
 public:
-    TreeItem( TreeItem *parent = 0 );
-    TreeItem(const QList<QVariant> &data, TreeItem *parent = 0);
+    //TreeItem( TreeItem *parent = 0 );
+    TreeItem(const QList<QVariant> &data, TreeItem *parent = NULL);
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -30,8 +30,8 @@ public:
     TreeItem *child(int row);
     int childCount() const;
     int columnCount() const;
-    void setData( QList<QVariant> );
-    void setData( int column, QVariant d ); //TODO: Implementation
+    void setData( QList<QVariant> &d );
+    //void setData( int column, QVariant d ); //TODO: Implementation
     QVariant data( int column ) const;
     int row() const;
     TreeItem *parent();

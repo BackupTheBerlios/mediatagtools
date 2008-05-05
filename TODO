@@ -1,6 +1,7 @@
 Qt4 Porting:
 * Window icon (get rid of that pink/purple X!)
 
+* New name and old name shouldn't be the same while renaming...
 * Custom tags for ogg files
 * Add folders recursively
 * Add Music Brainz support

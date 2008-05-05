@@ -1,13 +1,13 @@
-#include <config.h>
+//#include <config.h>
 
-#include <iostream>
-#include <qapplication.h>
-#include <qtextcodec.h>
-#include <qimage.h>
-#include <qdir.h>
+//#include <iostream>
+#include <QtGui/QApplication>
+#include <QtCore/QTextCodec>
+#include <QtGui/QImage>
+#include <QtCore/QDir>
 //Added by qt3to4:
-#include <QPixmap>
-#include <QTranslator>
+#include <QtGui/QPixmap>
+#include <QtCore/QTranslator>
 
 #include "mttmainwin.h"
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
   // TODO: Window icon (get rid of that pink/purple X!)
   //QPixmap icon( QImage( QString( QString( PREFIX ) + "/share/mediatagtools/icons/mediatagtools.png" ) ) );
-  QPixmap icon( QString( QString( PREFIX ) + "/share/mediatagtools/icons/mediatagtools.png" ) );
+  //QPixmap icon( QString( QString( PREFIX ) + "/share/mediatagtools/icons/mediatagtools.png" ) );
   //m.setIcon( icon );
 
   m.show();

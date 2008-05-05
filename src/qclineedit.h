@@ -12,9 +12,9 @@
 #ifndef QCLINEEDIT_H
 #define QCLINEEDIT_H
 
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 //Added by qt3to4:
-#include <QKeyEvent>
+#include <QtGui/QKeyEvent>
 
 /**
 	@author Theofilos Intzoglou <int.teo@gmail.com>

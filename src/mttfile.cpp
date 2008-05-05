@@ -10,7 +10,7 @@
 //
 //
 
-#include <QFile>
+#include <QtCore/QFile>
 
 #include <mpegfile.h>
 #include <id3v1tag.h>
@@ -46,7 +46,7 @@ void mttFile::Open( QString filename )
 {
     fname = filename;
 
-    fileref = new TagLib::FileRef( QFile::encodeName( filename ) );
+	fileref = new TagLib::FileRef( QFile::encodeName( filename ).constData() );
     if ( filename.endsWith( QString( ".mp3" ), Qt::CaseInsensitive ) ) {
         ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -117,7 +117,7 @@ void mttFile::Open( QString filename )
 TagLib::Tag *mttFile::getTag( bool create )
 {
     if ( tag == NULL ) {
-        fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+		fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
 
         if ( fileref ) {
             if ( ismpeg ) {
@@ -166,7 +166,7 @@ TagLib::Tag *mttFile::getTag( bool create )
 
 void mttFile::saveTag( void )
 {
-    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+	fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
 
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -191,7 +191,7 @@ void mttFile::saveTag( void )
         }
 
         // TODO: Handle save errors
-        if ( !f->save( TagLib::MPEG::File::ID3v2, true ) );
+        //if ( !f->save( TagLib::MPEG::File::ID3v2, true ) );
             //qDebug( "Error" );
     }
     else {
@@ -205,7 +205,7 @@ void mttFile::saveTag( void )
 
 void mttFile::removeTag( void )
 {
-    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+	fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
 
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -270,7 +270,7 @@ bool mttFile::isFLAC( void )
 
 void mttFile::checkEncodings( void )
 {
-    fileref = new TagLib::FileRef( QFile::encodeName( fname ) );
+	fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
 
     if ( isMpeg() ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
