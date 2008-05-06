@@ -30,8 +30,8 @@ public:
     TreeItem *child(int row);
     int childCount() const;
     int columnCount() const;
-    void setData( QList<QVariant> &d );
-    //void setData( int column, QVariant d ); //TODO: Implementation
+    void setData( const QList<QVariant> &d );
+    void setData( int column, QVariant d );
     QVariant data( int column ) const;
     int row() const;
     TreeItem *parent();

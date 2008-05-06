@@ -3,7 +3,7 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="9" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 Encoding="UTF-8" line="114" Type="Source" />
+   <View0 Encoding="UTF-8" line="137" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
    <View0 Encoding="UTF-8" Type="Source" />
@@ -24,7 +24,7 @@
    <View0 Encoding="UTF-8" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/treemodel.cpp" >
-   <View0 Encoding="UTF-8" line="18" Type="Source" />
+   <View0 Encoding="UTF-8" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/treemodel.h" >
    <View0 Encoding="UTF-8" line="4" Type="Source" />

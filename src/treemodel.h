@@ -40,6 +40,13 @@ public:
     TreeItem *findItem( QString );
     void setHorizontalHeaderLabels( QList<QVariant> );
 
+    bool setData ( const QModelIndex & index, const QVariant & value,
+                   int role = Qt::EditRole );
+    bool setData ( const QModelIndex & index, const QList<QVariant> & value,
+                   int role = Qt::EditRole );
+    bool insertRows ( int row, int count,
+                      const QModelIndex & parent = QModelIndex() );
+
 private:
     TreeItem *rootItem;
 };

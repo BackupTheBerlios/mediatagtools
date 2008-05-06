@@ -98,7 +98,6 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     model.setHorizontalHeaderLabels( header );
-	treeView->expandAll();
 
     // Progress bar & Status Bar
     progress.setRange( 0, 100 );
@@ -111,7 +110,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect(actionOpen_folder, SIGNAL(triggered()), this, SLOT(slotOpen()));
     connect(actionOpen_files, SIGNAL(triggered()), this, SLOT(slotOpenFiles()));
 
-    new ModelTest(&model, this);
+    //new ModelTest(&model, this);
 }
 
 mttMainWin::~mttMainWin()
@@ -147,10 +146,12 @@ void mttMainWin::addFile( QString fname )
     father = model.findItem( curPath );
     if ( !father ) {
         list << curPath << " " << " " << " " << " " << " " << " " << " ";
-        ti = new TreeItem( list, model.invisibleRootItem() );
-        model.invisibleRootItem()->appendChild( ti );
-        father = model.findItem( curPath );
+//         ti = new TreeItem( list, model.invisibleRootItem() );
+//         model.invisibleRootItem()->appendChild( ti );
+        model.insertRows( model.rowCount(), 1 );
+        model.setData( model.index( ( model.rowCount() - 1 ), 0 ), list );
         list.clear();
+        father = model.findItem( curPath );
     }
 
     list << fname;
@@ -165,8 +166,8 @@ void mttMainWin::addFile( QString fname )
             << QString::number( t->track() );
     }
 
-    ti = new TreeItem( list, father );
-    father->appendChild( ti );
+    model.insertRows( father->childCount(), 1, model.index( father->row(), 0 ) );
+    father->child( father->childCount() - 1 )->setData( list );
 }
 
 void mttMainWin::slotOpen()
@@ -210,7 +211,7 @@ void mttMainWin::slotOpen()
 	else
 		std::cout << "modelInd valid...";
 	treeView->expand( model.index( 0, 0 ) );*/
-	treeView->collapseAll();
+	//treeView->collapseAll();
     //std::cout << "Rows:" << model.rowCount() << std::endl;
 }
 

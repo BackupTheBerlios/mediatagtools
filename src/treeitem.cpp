@@ -22,7 +22,7 @@
 TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
 {
     parentItem = parent;
-	itemData = data;
+    itemData = data;
 }
 
 TreeItem::~TreeItem()
@@ -52,10 +52,10 @@ int TreeItem::columnCount() const
 
 QVariant TreeItem::data(int column) const
 {
-//    if ( column <= ( itemData.size() - 1 ) )
+    if ( column <= ( itemData.size() - 1 ) )
         return itemData.value(column);
-//    else
-//        return new QVariant();
+    else
+        return new QVariant();
 }
 
 TreeItem *TreeItem::parent()
@@ -71,11 +71,14 @@ int TreeItem::row() const
     return 0;
 }
 
-void TreeItem::setData( QList<QVariant> &d )
+void TreeItem::setData( const QList<QVariant> &d )
 {
-    itemData = d;
+    itemData.clear();
+    itemData += d;
 }
 
-/*void TreeItem::setData( int column, QVariant d )
+void TreeItem::setData( int column, QVariant d )
 {
-}*/
+    if ( ( column >= 0 ) && ( column < columnCount() ) )
+        itemData.replace( column, d );
+}
