@@ -79,9 +79,9 @@ protected slots:
     virtual void slotFirstUpWords();
     virtual void slotAllUpper();
     virtual void slotAllLower();
-    virtual void slotEmptyFields();
+    virtual void slotEmptyFields();*/
     virtual void slotLVRightMenu();
-    virtual void slotFixTags();
+/*    virtual void slotFixTags();
     virtual void slotCommentEnter();
     virtual void slotGenreEnter();
     virtual void slotYearEnter();

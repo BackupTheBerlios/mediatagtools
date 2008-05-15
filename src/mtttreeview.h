@@ -19,6 +19,9 @@ Q_OBJECT
 public:
     mttTreeView( QWidget * parent = 0 );
 
+signals:
+    void rightMouseButtonReleased(void);
+
 protected:
     void mouseReleaseEvent ( QMouseEvent * event );
 };

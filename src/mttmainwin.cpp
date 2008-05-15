@@ -86,7 +86,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     CleanFButton->hide();
     CreateDirButton->hide();*/
 
-    // Initialization of TreeWidget
+    // Initialization of TreeView
     treeView = new mttTreeView( this );
     setCentralWidget( treeView );
     treeView->setModel( &model );
@@ -100,12 +100,15 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     model.setHorizontalHeaderLabels( header );
 
+    // Signal & Slot connections for TreeView
+    connect( treeView, SIGNAL(rightMouseButtonReleased()), this, SLOT(slotLVRightMenu()) );
+
     // Progress bar & Status Bar
     progress.setRange( 0, 100 );
     progress.setValue( 100 );
     statusBar()->showMessage( tr( "Ready" ) );
 
-    // Signal & Slots connections for menubar
+    // Signal & Slot connections for menubar
     actionOpen_folder->setShortcut( tr( "Ctrl+O" ) );
     actionExit->setShortcut( tr( "Alt+X" ) );
     connect(actionOpen_folder, SIGNAL(triggered()), this, SLOT(slotOpen()));
@@ -823,28 +826,29 @@ void mttMainWin::populateList( QDir d )
 //     return str;
 // }
 // 
-// void mttMainWin::slotLVRightMenu()
-// {
-//     Q3PopupMenu menu, corCaseMenu;
-// 
-//     corCaseMenu.insertItem( tr( "First letter up (first word)" ), this, SLOT(slotFirstUpSentence()) );
-//     corCaseMenu.insertItem( tr( "First letter up (each word)" ), this, SLOT(slotFirstUpWords()) );
-//     corCaseMenu.insertItem( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
-//     corCaseMenu.insertItem( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
-// 
-//     menu.insertItem( tr( "Open folder" ), this, SLOT(slotOpen()) );
-//     menu.insertItem( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
-//     menu.insertItem( tr( "Remove file(s)" ), this, SLOT(slotRemoveFiles()) );
-//     menu.insertSeparator();
-//     menu.insertItem( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
-//     menu.insertItem( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
-//     menu.insertItem( tr( "Remove tag" ), this, SLOT(slotRemoveTags()) );
-//     menu.insertSeparator();
-//     menu.insertItem( tr( "Correct Case" ), &corCaseMenu );
-//     menu.insertItem( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
-//     menu.exec( QCursor::pos() );
-// }
-// 
+void mttMainWin::slotLVRightMenu()
+{
+    QMenu menu, corCaseMenu;
+
+    corCaseMenu.setTitle( "Correct Case" );
+    corCaseMenu.addAction( tr( "First letter up (first word)" ), this, SLOT(slotFirstUpSentence()) );
+    corCaseMenu.addAction( tr( "First letter up (each word)" ), this, SLOT(slotFirstUpWords()) );
+    corCaseMenu.addAction( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
+    corCaseMenu.addAction( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
+
+    menu.addAction( tr( "Open folder" ), this, SLOT(slotOpen()) );
+    menu.addAction( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
+    menu.addAction( tr( "Remove file(s)" ), this, SLOT(slotRemoveFiles()) );
+    menu.addSeparator();
+    menu.addAction( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
+    menu.addAction( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
+    menu.addAction( tr( "Remove tag" ), this, SLOT(slotRemoveTags()) );
+    menu.addSeparator();
+    menu.addMenu( &corCaseMenu );
+    menu.addAction( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
+    menu.exec( QCursor::pos() );
+}
+
 // void mttMainWin::slotFixTags()
 // {
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );

@@ -24,5 +24,6 @@ void mttTreeView::mouseReleaseEvent ( QMouseEvent * event )
     {
         qDebug( "Right Click!" );
         event->accept();
+        emit rightMouseButtonReleased();
     }
 }
