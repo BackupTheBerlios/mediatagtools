@@ -150,11 +150,10 @@ bool TreeModel::setData ( const QModelIndex & index, const QVariant & value, int
     item = static_cast<TreeItem*>( index.internalPointer() );
 
     if ( role == Qt::ForegroundRole ) {
-        qDebug( "Color" );
         if ( item )
             item->setColor( value.value<QColor>() );
         else {
-            qDebug( "item == NULL" );
+            //qDebug( "setData::FG::item == NULL" );
             return false;
         }
     }
@@ -162,7 +161,7 @@ bool TreeModel::setData ( const QModelIndex & index, const QVariant & value, int
         if ( item )
             item->setData( index.column(), value );
         else {
-            qDebug( "item == NULL" );
+            //qDebug( "setData::ELSE::item == NULL" );
             return false;
         }
     }
@@ -198,7 +197,7 @@ bool TreeModel::insertRows ( int row, int count, const QModelIndex & parent )
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
-    beginInsertRows( parent, row, row + count );
+    beginInsertRows( parent, row, row + count - 1 );
     for ( i=0; i<count; i++)
         parentItem->appendChild( new TreeItem( list, parentItem ) );
     endInsertRows();
@@ -206,4 +205,18 @@ bool TreeModel::insertRows ( int row, int count, const QModelIndex & parent )
 
 bool TreeModel::removeRows ( int row, int count, const QModelIndex & parent )
 {
+    TreeItem *parentItem;
+    QList<QVariant> list;
+    int i;
+
+    if (!parent.isValid()) {
+        parentItem = rootItem;
+        qDebug( "rootItem" );
+    }
+    else
+        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+    beginRemoveRows( parent, row, row + count - 1 );
+    parentItem->deleteChildren( row, count );
+    endRemoveRows();
 }

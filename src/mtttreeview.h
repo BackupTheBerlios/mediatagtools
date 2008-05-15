@@ -9,6 +9,8 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#ifndef MTTTREEVIEW_H
+#define MTTTREEVIEW_H
 
 #include <QtGui/QTreeView>
 
@@ -25,3 +27,5 @@ signals:
 protected:
     void mouseReleaseEvent ( QMouseEvent * event );
 };
+
+#endif

@@ -44,7 +44,7 @@ private:
 protected:
   /*$PROTECTED_FUNCTIONS$*/
 //     QDir d;
-
+    QStringList knownFiletypes;
     QString curPath;
     QStringList separators;
     QProgressBar progress;
@@ -52,6 +52,7 @@ protected:
     QString selectedFname;
     QStringList availExtraFrames;
     QStringList xtraFrames;
+
 
     void populateList( QDir d );
     QString firstUp( QString );
@@ -67,6 +68,7 @@ protected:
 protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotOpen();
+    virtual void slotOpenFiles();
 /*    virtual void slotRemoveTags();
     virtual void slotSaveTags();
     virtual void slotSaveSelectedTags();
@@ -100,12 +102,11 @@ protected slots:
     virtual void slotYearChanged( const QString& );
     virtual void slotAlbumChanged( const QString& );
     virtual void slotArtistChanged( const QString& );*/
-    virtual void slotOpenFiles();
 /*    virtual void slotCreateTags();
     virtual void slotAdvTagValueChanged( int, int );
-    virtual void slotRemoveAdvTags();
+    virtual void slotRemoveAdvTags();*/
     virtual void slotRemoveFiles();
-    virtual void slotDroppedUris( QStringList );
+/*    virtual void slotDroppedUris( QStringList );
     virtual void slotXButtonClickedMP3( int, int );*/
 };
 

@@ -47,7 +47,7 @@ public:
     bool insertRows ( int row, int count,
                       const QModelIndex & parent = QModelIndex() );
     bool removeRows ( int row, int count,
-                      const QModelIndex & parent = QModelIndex() ); // TODO: Implementation
+                      const QModelIndex & parent = QModelIndex() );
 
 private:
     TreeItem *rootItem;

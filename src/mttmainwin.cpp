@@ -17,12 +17,14 @@
 #include <QtGui/QMessageBox>
 #include <QtCore/QList>
 
+#include <fileref.h>
 #include <tag.h>
 #include <tlist.h>
 #include <tstring.h>
 #include <id3v2framefactory.h>
 #include <id3v2tag.h>
 #include <textidentificationframe.h>
+#include <tstringlist.h>
 
 //#include "qclineedit.h"
 //#include "qdndlistview.h"
@@ -114,7 +116,13 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect(actionOpen_folder, SIGNAL(triggered()), this, SLOT(slotOpen()));
     connect(actionOpen_files, SIGNAL(triggered()), this, SLOT(slotOpenFiles()));
 
-    //new ModelTest(&model, this);
+    // Create list for taglib known filetypes
+    TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
+    for ( int i=0; i<tl.size(); i++ ) {
+        knownFiletypes << QString( "*." ) + TStringToQString( tl[i] );
+    }
+
+    new ModelTest(&model, this);
 }
 
 mttMainWin::~mttMainWin()
@@ -127,7 +135,7 @@ void mttMainWin::addDir( QString str )
 
     d.setPath( str );
     d.setFilter( QDir::Files | QDir::Readable );
-    d.setNameFilters( QString( "*.mp3;*.MP3;*.ogg;*.OGG;*.flac;*.FLAC" ).split(';') );
+    d.setNameFilters( knownFiletypes );
 
     if ( d.exists() && d.isReadable() ) {
         curPath = d.path();
@@ -151,15 +159,13 @@ void mttMainWin::addFile( QString fname )
     father = model.findItem( curPath );
     if ( !father ) {
         list << curPath << " " << " " << " " << " " << " " << " " << " ";
-//         ti = new TreeItem( list, model.invisibleRootItem() );
-//         model.invisibleRootItem()->appendChild( ti );
         model.insertRows( model.rowCount(), 1 );
         model.setData( model.index( ( model.rowCount() - 1 ), 0 ), list );
         list.clear();
         father = model.findItem( curPath );
     }
 
-    list << fname;
+    list << fname.right( fname.size() - curPath.size() - 1 );
     t = li->getTag();
     if ( t ) {
        list << TStringToQString( t->title() )
@@ -174,7 +180,6 @@ void mttMainWin::addFile( QString fname )
     model.insertRows( father->childCount(), 1, model.index( father->row(), 0 ) );
     father->child( father->childCount() - 1 )->setData( list );
     father->child( father->childCount() - 1 )->setFile( li );
-    //qDebug( QString::number( father->row() ).toUtf8().constData() );
     if ( itemChanged )
         model.setData( model.index( father->row(), 0 ).child( father->childCount() - 1, 0 ) , QColor( Qt::red ), Qt::ForegroundRole );
 }
@@ -186,16 +191,13 @@ void mttMainWin::slotOpen()
     bool done = false;
 
     d.setFilter( QDir::Files | QDir::Readable );
-    d.setNameFilters( QString( "*.mp3;*.MP3;*.ogg;*.OGG;*.flac;*.FLAC" ).split(';') );
+    d.setNameFilters( knownFiletypes );
 
     fd.setFileMode( QFileDialog::Directory );
     QStringList filters = fd.filters();
-    filters << tr( "Audio Files (*.mp3 *.ogg *.flac *.MP3 *.OGG *.FLAC)" );
-    fd.setFilters(filters);
     fd.setDirectory( curPath );
     while (!done) {
         if ( fd.exec() == QDialog::Accepted ) {
-            //qDebug( fd.selectedFile().utf8() );
             d.setPath( QString( fd.selectedFiles().at( 0 ) ) );
             if ( d.exists() )
                 done = true;
@@ -208,20 +210,9 @@ void mttMainWin::slotOpen()
 
     curPath = d.path();
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
-    //model.removeRows( 0, model.rowCount() );
     populateList( d );
     QApplication::restoreOverrideCursor();
     selectedFname = "";
-    //treeView->update();
-    /*std::cout << "Expand!" << std::endl;
-	QModelIndex t = model.index( 0, 0 );
-	if ( t.isValid() )
-		std::cout << "modelInd not valid";
-	else
-		std::cout << "modelInd valid...";
-	treeView->expand( model.index( 0, 0 ) );*/
-	//treeView->collapseAll();
-    //std::cout << "Rows:" << model.rowCount() << std::endl;
 }
 
 void mttMainWin::slotOpenFiles()
@@ -233,7 +224,7 @@ void mttMainWin::slotOpenFiles()
 
     fd.setFileMode( QFileDialog::ExistingFiles );
     QStringList filters = fd.filters();
-    filters << tr( "Audio Files (*.mp3 *.ogg *.flac *.MP3 *.OGG *.FLAC)" );
+    filters = QStringList() << QString( tr( "Audio Files (" ) ) + knownFiletypes.join( " " ) + ")" << filters;
     fd.setFilters(filters);
     fd.setDirectory( curPath );
     if ( fd.exec() == QDialog::Accepted ) {
@@ -1580,20 +1571,25 @@ void mttMainWin::slotLVRightMenu()
 //     }
 // }
 // 
-// void mttMainWin::slotRemoveFiles()
-// {
-//     Q3PtrList<Q3ListViewItem> list;
-//     list.setAutoDelete( TRUE ); // the list owns the objects
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     while ( it.current() ) {
-//         list.append( *it );
-//         ++it;
-//     }
-// 
-//     list.clear(); // Delete list items
-// }
-// 
+void mttMainWin::slotRemoveFiles()
+{
+    QList<QModelIndex> list;
+    TreeItem *ti;
+    int i;
+
+    list = treeView->selectionModel()->selectedIndexes();
+    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
+        model.removeRows( list.at(i).row(), 1, list.at(i).parent() );
+    }
+
+    //Remove parents with no children
+    for ( i = 0; i<model.rowCount(); i++ ) {
+        ti = (TreeItem*) model.index( i, 0 ).internalPointer();
+        if ( ti->childCount() == 0 )
+            model.removeRows( i, 1 );
+    }
+}
+
 // void mttMainWin::slotDroppedUris( QStringList qsl )
 // {
 //     for ( QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it ) {

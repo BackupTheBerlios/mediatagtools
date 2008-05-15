@@ -107,3 +107,13 @@ mttFile *TreeItem::getFile( void )
 {
     return mfile;
 }
+
+void TreeItem::deleteChildren( int row, int count )
+{
+    int i;
+
+    for ( i=0; i<count; i++ ) {
+        delete childItems.takeAt( row );
+    }
+}
+

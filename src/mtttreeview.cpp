@@ -22,7 +22,6 @@ void mttTreeView::mouseReleaseEvent ( QMouseEvent * event )
 {
     if ( event->button() == Qt::RightButton )
     {
-        qDebug( "Right Click!" );
         event->accept();
         emit rightMouseButtonReleased();
     }
