@@ -15,6 +15,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>
+#include <QtGui/QColor>
 
 #include "mttfile.h"
 
@@ -35,11 +36,20 @@ public:
     QVariant data( int column ) const;
     int row() const;
     TreeItem *parent();
+    void setColor( QColor );
+    QColor getColor( void );
+    void setItemChanged( bool );
+    bool isItemChanged( void );
+    void setFile( mttFile* );
+    mttFile *getFile( void );
 
 private:
     QList<TreeItem*> childItems;
     QList<QVariant> itemData;
     TreeItem *parentItem;
+
+    QColor itemColor;
+    bool itemChanged;
 
     mttFile *mfile;
 };

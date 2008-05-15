@@ -39,12 +39,19 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
+    if ( ( role == Qt::DisplayRole ) || ( role == Qt::EditRole ) ) {
+        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+        return item->data(index.column());
+    }
+    else if ( role == Qt::ForegroundRole ) {
+        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+        if ( item->getColor().isValid() )
+            return item->getColor();
+        else
+            return QVariant();
+    }
+    else
         return QVariant();
-
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    return item->data(index.column());
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -52,7 +59,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return 0;
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
@@ -141,7 +148,24 @@ bool TreeModel::setData ( const QModelIndex & index, const QVariant & value, int
     TreeItem *item;
 
     item = static_cast<TreeItem*>( index.internalPointer() );
-    item->setData( index.column(), value );
+
+    if ( role == Qt::ForegroundRole ) {
+        qDebug( "Color" );
+        if ( item )
+            item->setColor( value.value<QColor>() );
+        else {
+            qDebug( "item == NULL" );
+            return false;
+        }
+    }
+    else {
+        if ( item )
+            item->setData( index.column(), value );
+        else {
+            qDebug( "item == NULL" );
+            return false;
+        }
+    }
 
     emit dataChanged( index, index );
 
@@ -153,7 +177,10 @@ bool TreeModel::setData ( const QModelIndex & index, const QList<QVariant> & val
     TreeItem *item;
 
     item = static_cast<TreeItem*>( index.internalPointer() );
-    item->setData( value );
+    if ( item )
+        item->setData( value );
+    else
+        return false;
 
     emit dataChanged( index, index );
 
@@ -175,4 +202,8 @@ bool TreeModel::insertRows ( int row, int count, const QModelIndex & parent )
     for ( i=0; i<count; i++)
         parentItem->appendChild( new TreeItem( list, parentItem ) );
     endInsertRows();
+}
+
+bool TreeModel::removeRows ( int row, int count, const QModelIndex & parent )
+{
 }

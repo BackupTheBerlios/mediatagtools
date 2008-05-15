@@ -23,6 +23,8 @@ TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
 {
     parentItem = parent;
     itemData = data;
+    itemChanged = false;
+    mfile = NULL;
 }
 
 TreeItem::~TreeItem()
@@ -81,4 +83,27 @@ void TreeItem::setData( int column, QVariant d )
 {
     if ( ( column >= 0 ) && ( column < columnCount() ) )
         itemData.replace( column, d );
+}
+
+void TreeItem::setColor( QColor c )
+{
+    if ( c.isValid() )
+        itemColor = c;
+    else
+        qDebug( "Color not valid" );
+}
+
+QColor TreeItem::getColor( void )
+{
+    return itemColor;
+}
+
+void TreeItem::setFile( mttFile *mf )
+{
+    mfile = mf;
+}
+
+mttFile *TreeItem::getFile( void )
+{
+    return mfile;
 }

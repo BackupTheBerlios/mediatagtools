@@ -28,7 +28,7 @@ public:
 
     ~mttFile();
 
-    void Open( QString filename );
+    bool Open( QString filename ); // Returns true if tag has changed
     void removeTag( void );
     TagLib::Tag *getTag( bool create = false );
     void saveTag( void );
@@ -36,7 +36,6 @@ public:
     void setFName( QString );
     //TagLib::ID3v2::Tag *getID3Tag( bool create = false );
     void checkEncodings( void );
-    void setTagChanged( bool ); // TODO: Implementation of setTagChanged
 
     void setMp3ExtraFrames( QStringList );
     QStringList getMp3ExtraFrames( void );
@@ -45,13 +44,11 @@ public:
     bool isMpeg( void );
     bool isOgg( void );
     bool isFLAC( void );
-    bool tagChanged( void );
 
 private:
     TagLib::FileRef *fileref;
     bool ismpeg, isogg, isflac;
     QString fname;
-    bool tagChange;
     TagLib::Tag *tag;
     QStringList mp3eframes;
 };

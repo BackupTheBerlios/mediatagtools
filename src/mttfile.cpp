@@ -30,7 +30,6 @@ mttFile::mttFile()
     ismpeg = false;
     isogg = false;
     isflac = false;
-    tagChange = false;
     tag = NULL;
 }
 
@@ -42,11 +41,13 @@ mttFile::~mttFile()
         delete tag;
 }
 
-void mttFile::Open( QString filename )
+bool mttFile::Open( QString filename )
 {
+    bool changed = false;
+
     fname = filename;
 
-	fileref = new TagLib::FileRef( QFile::encodeName( filename ).constData() );
+    fileref = new TagLib::FileRef( QFile::encodeName( filename ).constData() );
     if ( filename.endsWith( QString( ".mp3" ), Qt::CaseInsensitive ) ) {
         ismpeg = true;
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -64,7 +65,7 @@ void mttFile::Open( QString filename )
                     v2tag->setTitle( v1tag->title() );
                     v2tag->setTrack( v1tag->track() );
                     v2tag->setYear( v1tag->year() );
-                    setTagChanged( true );
+                    changed = true;
                 }
                 else if ( f->ID3v2Tag() && f->ID3v1Tag() ) {
                     // Fill gaps of ID3v2Tag from ID3v1Tag
@@ -73,31 +74,31 @@ void mttFile::Open( QString filename )
     
                     if ( v2tag->album().isEmpty() ) {
                         v2tag->setAlbum( v1tag->album() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->artist().isEmpty() ) {
                         v2tag->setArtist( v1tag->artist() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->comment().isEmpty() ) {
                         v2tag->setComment( v1tag->comment() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->genre().isEmpty() ) {
                         v2tag->setGenre( v1tag->genre() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->title().isEmpty() ) {
                         v2tag->setTitle( v1tag->title() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->track() == 0 ) {
                         v2tag->setTrack( v1tag->track() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                     if ( v2tag->year() == 0 ) {
                         v2tag->setYear( v1tag->year() );
-                        setTagChanged( true );
+                        changed = true;
                     }
                 }
             }
@@ -112,6 +113,8 @@ void mttFile::Open( QString filename )
 
     delete fileref;
     fileref = NULL;
+
+    return changed;
 }
 
 TagLib::Tag *mttFile::getTag( bool create )
@@ -315,28 +318,6 @@ void mttFile::checkEncodings( void )
 
     delete fileref;
     fileref = NULL;
-}
-
-void mttFile::setTagChanged( bool ch )
-{
-    tagChange = ch;
-/*    QStandardItemModel *sim = model();
-
-    if ( ch ) {
-        for ( int i = 0; i < COLUMNS; i++ ) {
-            sim->item( index().row(), index().column() + i )->setForeground( QBrush( Qt::red ) );
-        }
-    }
-    else {
-        for ( int i = 0; i < COLUMNS; i++ ) {
-            sim->item( index().row(), index().column() + i )->setForeground( QBrush( Qt::NoBrush ) );
-        }
-    }*/
-}
-
-bool mttFile::tagChanged( void )
-{
-    return tagChange;
 }
 
 void mttFile::setMp3ExtraFrames( QStringList ef )

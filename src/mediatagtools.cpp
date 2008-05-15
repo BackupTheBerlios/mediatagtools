@@ -1,12 +1,10 @@
-//#include <config.h>
+#include "config.h"
 
-//#include <iostream>
 #include <QtGui/QApplication>
-#include <QtCore/QTextCodec>
-#include <QtGui/QImage>
-#include <QtCore/QDir>
-//Added by qt3to4:
 #include <QtGui/QPixmap>
+#include <QtGui/QImage>
+#include <QtCore/QTextCodec>
+#include <QtCore/QDir>
 #include <QtCore/QTranslator>
 
 #include "mttmainwin.h"

@@ -46,6 +46,8 @@ public:
                    int role = Qt::EditRole );
     bool insertRows ( int row, int count,
                       const QModelIndex & parent = QModelIndex() );
+    bool removeRows ( int row, int count,
+                      const QModelIndex & parent = QModelIndex() ); // TODO: Implementation
 
 private:
     TreeItem *rootItem;

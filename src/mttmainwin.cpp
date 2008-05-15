@@ -10,7 +10,6 @@
 //
 //
 
-//#include <iostream>
 #include <QtGui/QFileDialog>
 #include <QtGui/QPixmap>
 #include <QtGui/QStandardItem>
@@ -88,6 +87,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     CreateDirButton->hide();*/
 
     // Initialization of TreeWidget
+    treeView = new mttTreeView( this );
+    setCentralWidget( treeView );
     treeView->setModel( &model );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeView->setTabKeyNavigation( true );
@@ -140,9 +141,10 @@ void mttMainWin::addFile( QString fname )
     TagLib::Tag *t;
     TreeItem *ti, *father;
     QList<QVariant> list;
+    bool itemChanged;
 
     li = new mttFile();
-    li->Open( fname );
+    itemChanged = li->Open( fname );
     father = model.findItem( curPath );
     if ( !father ) {
         list << curPath << " " << " " << " " << " " << " " << " " << " ";
@@ -168,6 +170,10 @@ void mttMainWin::addFile( QString fname )
 
     model.insertRows( father->childCount(), 1, model.index( father->row(), 0 ) );
     father->child( father->childCount() - 1 )->setData( list );
+    father->child( father->childCount() - 1 )->setFile( li );
+    //qDebug( QString::number( father->row() ).toUtf8().constData() );
+    if ( itemChanged )
+        model.setData( model.index( father->row(), 0 ).child( father->childCount() - 1, 0 ) , QColor( Qt::red ), Qt::ForegroundRole );
 }
 
 void mttMainWin::slotOpen()

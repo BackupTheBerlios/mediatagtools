@@ -20,6 +20,7 @@
 
 #include "ui_mainform.h"
 #include "treemodel.h"
+#include "mtttreeview.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
 {
@@ -36,10 +37,13 @@ public:
 public slots:
   /*$PUBLIC_SLOTS$*/
 
+private:
+    TreeModel model;
+    mttTreeView *treeView;
+
 protected:
   /*$PROTECTED_FUNCTIONS$*/
 //     QDir d;
-    TreeModel model;
 
     QString curPath;
     QStringList separators;
