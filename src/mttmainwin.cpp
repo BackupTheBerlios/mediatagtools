@@ -15,7 +15,12 @@
 #include <QtGui/QStandardItem>
 #include <QtGui/QStandardItemModel>
 #include <QtGui/QMessageBox>
+#include <QtGui/QCursor>
+#include <QtGui/QLineEdit>
+#include <QtGui/QLabel>
 #include <QtCore/QList>
+#include <QtGui/QFrame>
+#include <QtGui/QFormLayout>
 
 #include <fileref.h>
 #include <tag.h>
@@ -23,6 +28,7 @@
 #include <tstring.h>
 #include <id3v2framefactory.h>
 #include <id3v2tag.h>
+#include <id3v1genres.h>
 #include <textidentificationframe.h>
 #include <tstringlist.h>
 
@@ -35,6 +41,7 @@
 #include "config.h"
 //#include "x.xpm"
 #include "treeitem.h"
+#include "tools.h"
 
 #ifndef RELEASE
 #include "revision.h"
@@ -45,17 +52,16 @@
 
 #include "modeltest.h"
 
-
 mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 {
     setupUi( this );
     int i;
 
-    /*QStringList strlst( "<Empty>" );
+    /*QStringList strlst( "<Empty>" );*/
 
     ignoreChange = false;
 
-    GenGenreCB->insertStrList( genres );
+    /*GenGenreCB->insertStrList( genres );
     for ( i=0; i<EF_NUM; i++ ) {
         strlst.append( extraFrames[i][1] );
     }
@@ -91,7 +97,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     // Initialization of TreeView
     treeView = new mttTreeView( this );
     setCentralWidget( treeView );
-    treeView->setModel( &model );
+	treeView->setModel( &treeModel );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeView->setTabKeyNavigation( true );
     treeView->setAllColumnsShowFocus( true );
@@ -100,15 +106,110 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     QList<QVariant> header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
-    model.setHorizontalHeaderLabels( header );
+    treeModel.setHorizontalHeaderLabels( header );
 
     // Signal & Slot connections for TreeView
     connect( treeView, SIGNAL(rightMouseButtonReleased()), this, SLOT(slotLVRightMenu()) );
+	connect( treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotSelectionChange(const QModelIndex&, const QModelIndex&)) );
+	connect( treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(slotSelectionChange(const QItemSelection&, const QItemSelection&)) );
 
     // Progress bar & Status Bar
     progress.setRange( 0, 100 );
     progress.setValue( 100 );
     statusBar()->showMessage( tr( "Ready" ) );
+
+	// Add Dock Widgets
+	// ----------------
+	// Detail Dock
+	QDockWidget *dockDetails;
+	QFrame *detailFrame;
+	QFormLayout *detailLayout;
+
+	dockDetails = new QDockWidget( tr("Details"), this );
+	detailFrame = new QFrame( dockDetails );
+	detailLayout = new QFormLayout( detailFrame );
+
+	lengthLabel = new QLabel();
+	detailLayout->addRow( tr("Length:"), lengthLabel );
+	bitrateLabel = new QLabel();
+	detailLayout->addRow( tr("Bitrate:"), bitrateLabel );
+	sampleRateLabel = new QLabel();
+	detailLayout->addRow( tr("Sample Rate:"), sampleRateLabel );
+	channelLabel = new QLabel();
+	detailLayout->addRow( tr("Channels:"), channelLabel );
+	detailFrame->setLayout( detailLayout );
+	dockDetails->setWidget( detailFrame );
+	this->addDockWidget( Qt::RightDockWidgetArea, dockDetails );
+
+	// Edit Dock
+	QDockWidget *dockEdit;
+	QFrame *editFrame;
+	QFormLayout *formLayout;
+	dockEdit = new QDockWidget( tr("Edit"), this );
+	editFrame = new QFrame(dockEdit);
+	formLayout = new QFormLayout( editFrame );
+
+	titleEdit = new QLineEdit( editFrame );
+	formLayout->addRow( tr("Title"), titleEdit );
+	artistEdit = new QLineEdit( editFrame );
+	formLayout->addRow( tr("Artist"), artistEdit );
+	albumEdit = new QLineEdit( editFrame );
+	formLayout->addRow( tr("Album"), albumEdit );
+	yearEdit = new QLineEdit( editFrame );
+	yearEdit->setInputMask( "0000" );
+	formLayout->addRow( tr("Year"), yearEdit );
+	genreEdit = new QComboBox( editFrame );
+	genreEdit->setDuplicatesEnabled( false );
+	genreEdit->setEditable( true );
+	TagLib::StringList sl;
+	QStringList qsl;
+	sl = TagLib::ID3v1::genreList();
+	for (unsigned int i=0;i<sl.size();i++)
+		qsl << TStringToQString( sl[i] );
+	genreEdit->insertItems( 0, qsl );
+	formLayout->addRow( tr("Genre"), genreEdit );
+	commentEdit = new QLineEdit( editFrame );
+	formLayout->addRow( tr("Comment"), commentEdit );
+	trackEdit = new QLineEdit( editFrame );
+	trackEdit->setInputMask( "0000" );
+	formLayout->addRow( tr("Track"), trackEdit );
+	
+	editFrame->setLayout( formLayout );
+	dockEdit->setWidget( editFrame );
+	this->addDockWidget( Qt::RightDockWidgetArea, dockEdit );
+	tabifyDockWidget( dockDetails, dockEdit );
+
+	// Renumber dock
+	QDockWidget *dockRenum;
+	dockRenum = new QDockWidget( tr("Renumber"), this );
+	renumModel.setSupportedDragActions( Qt::CopyAction | Qt::MoveAction );
+	tableView = new QTableView( this );
+	tableView->setModel( &renumModel );
+	tableView->setAlternatingRowColors( true );
+	tableView->setSelectionMode( QAbstractItemView::SingleSelection );
+	tableView->setDragEnabled( true );
+	tableView->setAcceptDrops( true );
+	tableView->setDropIndicatorShown( true );
+	tableView->setDragDropMode( QAbstractItemView::InternalMove );
+	tableView->setSelectionBehavior( QAbstractItemView::SelectRows );
+	tableView->setSortingEnabled( false );
+	dockRenum->setWidget( tableView );
+	this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
+
+	// Signal & Slot connections for dock widgets
+	connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
+	connect( artistEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotArtistChanged(const QString&) ) );
+	connect( albumEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotAlbumChanged(const QString&) ) );
+	connect( yearEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotYearChanged(const QString&) ) );
+	connect( trackEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTrackChanged(const QString&) ) );
+	connect( genreEdit, SIGNAL( editTextChanged(const QString&) ), this, SLOT( slotGenreChanged(const QString&) ) );
+
+	connect( titleEdit, SIGNAL( returnPressed() ), this, SLOT( slotTitleEnter() ) );
+	connect( artistEdit, SIGNAL( returnPressed() ), this, SLOT( slotArtistEnter() ) );
+	connect( albumEdit, SIGNAL( returnPressed() ), this, SLOT( slotAlbumEnter() ) );
+	connect( yearEdit, SIGNAL( returnPressed() ), this, SLOT( slotYearEnter() ) );
+	connect( commentEdit, SIGNAL( returnPressed() ), this, SLOT( slotCommentEnter() ) );
+	//connect( trackEdit, SIGNAL( returnPressed() ), this, SLOT( slotSaveTags() ) );
 
     // Signal & Slot connections for menubar
     actionOpen_folder->setShortcut( tr( "Ctrl+O" ) );
@@ -118,11 +219,11 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     // Create list for taglib known filetypes
     TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
-    for ( int i=0; i<tl.size(); i++ ) {
+    for ( unsigned int i=0; i<tl.size(); i++ ) {
         knownFiletypes << QString( "*." ) + TStringToQString( tl[i] );
     }
 
-    new ModelTest(&model, this);
+    new ModelTest(&treeModel, this);
 }
 
 mttMainWin::~mttMainWin()
@@ -150,19 +251,19 @@ void mttMainWin::addFile( QString fname )
 {
     mttFile *li;
     TagLib::Tag *t;
-    TreeItem *ti, *father;
+    TreeItem *father;
     QList<QVariant> list;
     bool itemChanged;
 
     li = new mttFile();
     itemChanged = li->Open( fname );
-    father = model.findItem( curPath );
+    father = treeModel.findItem( curPath );
     if ( !father ) {
         list << curPath << " " << " " << " " << " " << " " << " " << " ";
-        model.insertRows( model.rowCount(), 1 );
-        model.setData( model.index( ( model.rowCount() - 1 ), 0 ), list );
+        treeModel.insertRows( treeModel.rowCount(), 1 );
+        treeModel.setData( treeModel.index( ( treeModel.rowCount() - 1 ), 0 ), list );
         list.clear();
-        father = model.findItem( curPath );
+        father = treeModel.findItem( curPath );
     }
 
     list << fname.right( fname.size() - curPath.size() - 1 );
@@ -177,11 +278,11 @@ void mttMainWin::addFile( QString fname )
             << QString::number( t->track() );
     }
 
-    model.insertRows( father->childCount(), 1, model.index( father->row(), 0 ) );
+    treeModel.insertRows( father->childCount(), 1, treeModel.index( father->row(), 0 ) );
     father->child( father->childCount() - 1 )->setData( list );
     father->child( father->childCount() - 1 )->setFile( li );
     if ( itemChanged )
-        model.setData( model.index( father->row(), 0 ).child( father->childCount() - 1, 0 ) , QColor( Qt::red ), Qt::ForegroundRole );
+        treeModel.setData( treeModel.index( father->row(), 0 ).child( father->childCount() - 1, 0 ) , QColor( Qt::red ), Qt::ForegroundRole );
 }
 
 void mttMainWin::slotOpen()
@@ -272,10 +373,13 @@ void mttMainWin::populateList( QDir d )
     statusBar()->showMessage( tr( "Reading tags..." ) );
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
+		//qDebug( QString::number( current ).toUtf8().constData() );
+		//qDebug( QString::number( treeModel.rowCount() ).toUtf8().constData() );
         addFile( curPath + "/" + *it );
         progress.setValue( current++ );
     }
 
+	//qDebug( QString::number( treeModel.rowCount() ).toUtf8().constData() );
     statusBar()->removeWidget( &progress );
     statusBar()->showMessage( tr( "Done" ) );
 }
@@ -559,13 +663,17 @@ void mttMainWin::populateList( QDir d )
 // void mttMainWin::slotCorrectCase()
 // {
 // }
-// 
-// void mttMainWin::slotAllUpper()
-// {
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-// 
+
+void mttMainWin::slotAllUpper()
+{
+    QList<QModelIndex> list;
+    TreeItem *ti;
+    int i;
+
+    list = treeView->selectionModel()->selectedIndexes();
+
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+
 //     ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
 //         GenTitleCLE->setText( GenTitleCLE->text().upper() );
@@ -580,47 +688,37 @@ void mttMainWin::populateList( QDir d )
 //         GenCommentCLE->setText( GenCommentCLE->text().upper() );
 //     }
 //     ignoreChange = false;
-// 
-//     while( it.current() ) {
-//         TagLib::Tag *t;
-// 
-//         // Show tag info
-//         t = (( mttFile *) it.current() )->getTag();
-//         if ( t ) {
-//             if( GenTitleChkB->isChecked() ) {
-//                 t->setTitle( QStringToTString( TStringToQString( t->title() ).upper() ) );
-//                 it.current()->setText( 1, TStringToQString( t->title() ) );
-//             }
-// 
-//             if( GenArtistChkB->isChecked() ) {
-//                 t->setArtist( QStringToTString( TStringToQString( t->artist() ).upper() ) );
-//                 it.current()->setText( 2, TStringToQString( t->artist() ) );
-//             }
-// 
-//             if( GenAlbumChkB->isChecked() ) {
-//                 t->setAlbum( QStringToTString( TStringToQString( t->album() ).upper() ) );
-//                 it.current()->setText( 3, TStringToQString( t->album() ) );
-//             }
-// 
-//             if( GenCommentChkB->isChecked() ) {
-//                 t->setComment( QStringToTString( TStringToQString( t->comment() ).upper() ) );
-//                 it.current()->setText( 6, TStringToQString( t->comment() ) );
-//             }
-// 
-//             ( (mttFile *) it.current() )->setTagChanged( true );
-//         }
-//         ++it;
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-// }
-// 
-// void mttMainWin::slotAllLower()
-// {
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-// 
+
+    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
+        QList<QVariant> l;
+
+        ti = (TreeItem *) list.at(i).internalPointer();
+		ti->setItemChanged( true );
+
+        l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString();
+        treeModel.setData( list.at(i), l );
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
+void mttMainWin::slotAllLower()
+{
+    QList<QModelIndex> list;
+    TreeItem *ti;
+    int i;
+
+    list = treeView->selectionModel()->selectedIndexes();
+
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+
 //     ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
 //         GenTitleCLE->setText( GenTitleCLE->text().lower() );
@@ -635,41 +733,27 @@ void mttMainWin::populateList( QDir d )
 //         GenCommentCLE->setText( GenCommentCLE->text().lower() );
 //     }
 //     ignoreChange = false;
-// 
-//     while( it.current() ) {
-//         TagLib::Tag *t;
-// 
-//         // Show tag info
-//         t = (( mttFile *) it.current() )->getTag();
-//         if ( t ) {
-//             if( GenTitleChkB->isChecked() ) {
-//                 t->setTitle( QStringToTString( TStringToQString( t->title() ).lower() ) );
-//                 it.current()->setText( 1, TStringToQString( t->title() ) );
-//             }
-// 
-//             if( GenArtistChkB->isChecked() ) {
-//                 t->setArtist( QStringToTString( TStringToQString( t->artist() ).lower() ) );
-//                 it.current()->setText( 2, TStringToQString( t->artist() ) );
-//             }
-// 
-//             if( GenAlbumChkB->isChecked() ) {
-//                 t->setAlbum( QStringToTString( TStringToQString( t->album() ).lower() ) );
-//                 it.current()->setText( 3, TStringToQString( t->album() ) );
-//             }
-// 
-//             if( GenCommentChkB->isChecked() ) {
-//                 t->setComment( QStringToTString( TStringToQString( t->comment() ).lower() ) );
-//                 it.current()->setText( 6, TStringToQString( t->comment() ) );
-//             }
-// 
-//             ( (mttFile *) it.current() )->setTagChanged( true );
-//         }
-//         ++it;
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-// }
-// 
+
+    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
+        QList<QVariant> l;
+
+        ti = (TreeItem *) list.at(i).internalPointer();
+		ti->setItemChanged( true );
+
+        l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower()
+			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString();
+        treeModel.setData( list.at(i), l );
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
 // void mttMainWin::slotFirstUpWords()
 // {
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
@@ -890,67 +974,67 @@ void mttMainWin::slotLVRightMenu()
 //     //GenListView->clear();
 //     //populateList();
 // }
-// 
-// void mttMainWin::slotTitleEnter()
-// {
-//     if ( GenArtistCLE->isEnabled() )
-//         GenArtistCLE->setFocus();
-//     else if ( GenAlbumCLE->isEnabled() )
-//         GenAlbumCLE->setFocus();
-//     else if ( GenYearCLE->isEnabled() )
-//         GenYearCLE->setFocus();
-// //    else if ( GenGenreCB->isEnabled() )
-// //        GenGenreCB->setFocus();
-//     else if ( GenCommentCLE->isEnabled() )
-//         GenCommentCLE->setFocus();
-//     else if ( GenTrackCLE->isEnabled() )
-//         GenTrackCLE->setFocus();
+
+void mttMainWin::slotTitleEnter()
+{
+	if ( artistEdit->isEnabled() )
+		artistEdit->setFocus();
+    else if ( albumEdit->isEnabled() )
+        albumEdit->setFocus();
+    else if ( yearEdit->isEnabled() )
+        yearEdit->setFocus();
+    else if ( genreEdit->isEnabled() )
+        genreEdit->setFocus();
+    else if ( commentEdit->isEnabled() )
+        commentEdit->setFocus();
+    else if ( trackEdit->isEnabled() )
+        trackEdit->setFocus();
 //     else
 //         saveTags( true );
-// }
-// 
-// void mttMainWin::slotArtistEnter()
-// {
-//     if ( GenAlbumCLE->isEnabled() )
-//         GenAlbumCLE->setFocus();
-//     else if ( GenYearCLE->isEnabled() )
-//         GenYearCLE->setFocus();
-// /*    else if ( GenGenreCB->isEnabled() )
-//         GenGenreCB->setFocus();*/
-//     else if ( GenCommentCLE->isEnabled() )
-//         GenCommentCLE->setFocus();
-//     else if ( GenTrackCLE->isEnabled() )
-//         GenTrackCLE->setFocus();
+}
+
+void mttMainWin::slotArtistEnter()
+{
+    if ( albumEdit->isEnabled() )
+        albumEdit->setFocus();
+    else if ( yearEdit->isEnabled() )
+        yearEdit->setFocus();
+    else if ( genreEdit->isEnabled() )
+        genreEdit->setFocus();
+    else if ( commentEdit->isEnabled() )
+        commentEdit->setFocus();
+    else if ( trackEdit->isEnabled() )
+        trackEdit->setFocus();
 //     else
 //         saveTags( true );
-// }
+}
 // 
-// void mttMainWin::slotAlbumEnter()
-// {
-//     if ( GenYearCLE->isEnabled() )
-//         GenYearCLE->setFocus();
-// /*    else if ( GenGenreCB->isEnabled() )
-//         GenGenreCB->setFocus();*/
-//     else if ( GenCommentCLE->isEnabled() )
-//         GenCommentCLE->setFocus();
-//     else if ( GenTrackCLE->isEnabled() )
-//         GenTrackCLE->setFocus();
+void mttMainWin::slotAlbumEnter()
+{
+    if ( yearEdit->isEnabled() )
+        yearEdit->setFocus();
+    else if ( genreEdit->isEnabled() )
+        genreEdit->setFocus();
+    else if ( commentEdit->isEnabled() )
+        commentEdit->setFocus();
+    else if ( trackEdit->isEnabled() )
+        trackEdit->setFocus();
 //     else
 //         saveTags( true );
-// }
-// 
-// void mttMainWin::slotYearEnter()
-// {
-// /*    if ( GenGenreCB->isEnabled() )
-//         GenGenreCB->setFocus();*/
-//     if ( GenCommentCLE->isEnabled() )
-//         GenCommentCLE->setFocus();
-//     else if ( GenTrackCLE->isEnabled() )
-//         GenTrackCLE->setFocus();
+}
+
+void mttMainWin::slotYearEnter()
+{
+    if ( genreEdit->isEnabled() )
+        genreEdit->setFocus();
+    else if ( commentEdit->isEnabled() )
+        commentEdit->setFocus();
+    else if ( trackEdit->isEnabled() )
+        trackEdit->setFocus();
 //     else
 //         saveTags( true );
-// }
-// 
+}
+ 
 // void mttMainWin::slotGenreEnter()
 // {
 //     if ( GenCommentCLE->isEnabled() )
@@ -960,15 +1044,15 @@ void mttMainWin::slotLVRightMenu()
 //     else
 //         saveTags( true );
 // }
-// 
-// void mttMainWin::slotCommentEnter()
-// {
-//     if ( GenTrackCLE->isEnabled() )
-//         GenTrackCLE->setFocus();
+
+void mttMainWin::slotCommentEnter()
+{
+    if ( trackEdit->isEnabled() )
+        trackEdit->setFocus();
 //     else
 //         saveTags( true );
-// }
-// 
+}
+
 // void mttMainWin::slotNextEntry()
 // {
 //     Q3ListViewItem *c;
@@ -1011,195 +1095,180 @@ void mttMainWin::slotLVRightMenu()
 // {
 // }
 // 
-// void mttMainWin::slotTitleChanged( const QString &title )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( TStringToQString( t->title() ) != title ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setTitle( QStringToTString( title ) );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 1, title );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// void mttMainWin::slotSelectionChange()
-// {
-//     bool updateSelectedFname = false;
-// 
-// //     qDebug( "Selection Change" );
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-// 
-//     if ( !selectedFname.isEmpty() ) { // If there is an item selected
-//         Q3ListViewItem *lvi = GenListView->findItem( selectedFname, 0 );
-//         if ( lvi && !lvi->isSelected() )
-//             updateSelectedFname = true;
-//     }
-//     if ( selectedFname.isEmpty() || updateSelectedFname || ( GenListView->findItem( selectedFname, 0 ) == NULL ) ) {
-// 
-//         // Set the contents of the widgets according to the tag
-//         TagLib::Tag *t;
-// 
-//         if ( it.current() ) {
-//             // Show tag info
-//             t = (( mttFile *) it.current() )->getTag();
-//             if ( t ) {
-//                 GenTitleCLE->setText( TStringToQString( t->title() ) );
-//                 GenArtistCLE->setText( TStringToQString( t->artist() ) );
-//                 GenAlbumCLE->setText( TStringToQString( t->album() ) );
-//                 GenYearCLE->setText( QString::number( t->year() ) );
-//                 GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
-//                 GenCommentCLE->setText( TStringToQString( t->comment() ) );
-//                 GenTrackCLE->setText( QString::number( t->track() ) );
-// 
-//                 updateAdvMp3TagTable( ( ( mttFile *) it.current() )->getMp3ExtraFrames() );
-//             }
-//             else {
-//                 GenTitleCLE->setText( "" );
-//                 GenArtistCLE->setText( "" );
-//                 GenAlbumCLE->setText( "" );
-//                 GenYearCLE->setText( "" );
-//                 GenGenreCB->setCurrentText( "" );
-//                 GenCommentCLE->setText( "" );
-//                 GenTrackCLE->setText( "" );
-//             }
-//             selectedFname = (( mttFile *) it.current() )->getFName();
-//             selectedFname = selectedFname.mid( selectedFname.findRev( "/" ) + 1 );
-//         }
-//     }
-// }
-// 
-// void mttMainWin::slotTrackChanged( const QString &track )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if (  t->track() != track.toUInt() ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setTrack( track.toUInt() );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 7, track );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// 
-// void mttMainWin::slotCommentChanged( const QString &comment )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( TStringToQString( t->comment() ) != comment ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setComment( QStringToTString( comment ) );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 6, comment );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// 
-// void mttMainWin::slotYearChanged( const QString &year )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( t->year() != year.toUInt() ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setYear( year.toUInt() );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 4, year );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// 
-// void mttMainWin::slotAlbumChanged( const QString &album )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( TStringToQString( t->album() ) != album ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setAlbum( QStringToTString( album ) );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 3, album );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// 
-// void mttMainWin::slotArtistChanged( const QString &artist )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( TStringToQString( t->artist() ) != artist ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setArtist( QStringToTString( artist ) );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 2, artist );
-//             }
-//         it++;
-//         }
-//     }
-// }
-// 
-// void mttMainWin::slotGenreChanged( const QString &genre )
-// {
-//     TagLib::Tag *t;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( !ignoreChange ) {
-//         while ( it.current() ) {
-//             t = ( (mttFile *) it.current() )->getTag( true );
-//             if ( TStringToQString( t->genre() ) != genre ) { // A bit of a double check but just to be sure...
-//                 ( (mttFile *) it.current() )->checkEncodings();
-//                 // Save info from the various text fields
-//                 t->setGenre( QStringToTString( genre ) );
-//                 ( (mttFile *) it.current() )->setTagChanged( true );
-//                 it.current()->setText( 5, genre );
-//             }
-//         it++;
-//         }
-//     }
-// }
+
+void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIndex &previous )
+{
+	mttFile *mf;
+	TagLib::AudioProperties *ap;
+
+	ignoreChange = true;
+	//qDebug("slotSelectionChange");
+	if ( current.isValid() ) { //FIXME: Remove the last empty row from the treeView
+		titleEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 1 ) ) ).toString() );
+		artistEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 2 ) ) ).toString() );
+		albumEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 3 ) ) ).toString() );
+		yearEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 4 ) ) ).toString() );
+		genreEdit->setEditText( current.model()->data( QModelIndex( current.sibling( current.row(), 5 ) ) ).toString() );
+		commentEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 6 ) ) ).toString() );
+		trackEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 7 ) ) ).toString() );
+		mf = ( (TreeItem *) current.internalPointer() )->getFile();
+		if ( mf ) {
+			ap = mf->getAudioProperties();
+			if ( ap ) {
+				int hours, min, sec;
+				QString length;
+
+				// Calculate track length
+				hours = ap->length() / 3600;
+				min = ( ap->length() - hours * 3600 ) / 60;
+				sec = ( ap->length() - hours * 3600 ) % 60;
+				if ( hours )
+					length.sprintf( "%dh %dm %ds", hours, min, sec );
+				else
+					length.sprintf( "%dm %ds", min, sec );
+
+				lengthLabel->setText( length );
+				bitrateLabel->setText( QString::number( ap->bitrate() ) );
+				sampleRateLabel->setText( QString::number( ap->sampleRate() ) );
+				channelLabel->setText( QString::number( ap->channels() ) );
+			}
+			else {
+				lengthLabel->setText( QString( "" ) );
+				bitrateLabel->setText( QString( "" ) );
+				sampleRateLabel->setText( QString( "" ) );
+				channelLabel->setText( QString( "" ) );
+			}
+		}
+	}
+	ignoreChange = false;
+}
+
+void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItemSelection &previous )
+{
+	renumModel.setData( current.indexes() ); //BUG? I doesn't return all the selected items. It leaves out the first of a set.
+	tableView->resizeColumnsToContents();
+}
+
+void mttMainWin::slotTitleChanged( const QString &title )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 1 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), title );
+     }
+}
+
+void mttMainWin::slotTrackChanged( const QString &track )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 7 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), track );
+     }
+}
+
+void mttMainWin::slotCommentChanged( const QString &comment )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 6 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), comment );
+     }
+}
+
+void mttMainWin::slotYearChanged( const QString &year )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 4 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), year );
+     }
+}
+
+void mttMainWin::slotAlbumChanged( const QString &album )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 3 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), album );
+     }
+}
+
+void mttMainWin::slotArtistChanged( const QString &artist )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	//qDebug("slotTitleChanged");
+    list += treeView->selectionModel()->selectedRows( 2 );
+
+     for (int i=0;i<list.count();i++) {
+		ti = (TreeItem *) list.at(i).internalPointer();
+        ( (mttFile *) ti->getFile() )->checkEncodings();
+		// Save info from the various text fields
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+		treeModel.setData( list.at(i), artist );
+     }
+}
+
+void mttMainWin::slotGenreChanged( const QString &genre )
+{
+    QModelIndexList list;
+    TreeItem *ti;
+
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list = treeView->selectionModel()->selectedRows( 5 );
+
+		for (int i=0;i<list.count();i++) {
+			ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+			treeModel.setData( list.at(i), genre );
+		}
+	}
+}
 // 
 // void mttMainWin::saveTags( bool selectedOnly )
 // {
@@ -1579,14 +1648,14 @@ void mttMainWin::slotRemoveFiles()
 
     list = treeView->selectionModel()->selectedIndexes();
     for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
-        model.removeRows( list.at(i).row(), 1, list.at(i).parent() );
+        treeModel.removeRows( list.at(i).row(), 1, list.at(i).parent() );
     }
 
     //Remove parents with no children
-    for ( i = 0; i<model.rowCount(); i++ ) {
-        ti = (TreeItem*) model.index( i, 0 ).internalPointer();
+    for ( i = 0; i<treeModel.rowCount(); i++ ) {
+        ti = (TreeItem*) treeModel.index( i, 0 ).internalPointer();
         if ( ti->childCount() == 0 )
-            model.removeRows( i, 1 );
+            treeModel.removeRows( i, 1 );
     }
 }
 

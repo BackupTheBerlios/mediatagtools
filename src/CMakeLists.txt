@@ -3,7 +3,6 @@ QT4_GENERATE_MOC( treemodel.h ${MTT_SOURCE_DIR}/src/moc_treemodel.cpp )
 QT4_GENERATE_MOC( modeltest.h ${MTT_SOURCE_DIR}/src/moc_modeltest.cpp )
 QT4_GENERATE_MOC( mtttreeview.h ${MTT_SOURCE_DIR}/src/moc_mtttreeview.cpp )
 
-
 ADD_EXECUTABLE(../bin/mediatagtools.exe
 mediatagtools.cpp
 mttfile.cpp
@@ -19,9 +18,10 @@ moc_modeltest.cpp
 #mttaboutdialog.cpp
 #mttcfdialog.cpp
 #qclineedit.cpp
+renummodel.cpp
 )
 
 TARGET_LINK_LIBRARIES( ../bin/mediatagtools.exe ${TAGLIB_LIBRARIES}
-${QT_QTCORE_LIBRARY_RELEASE}
-${QT_QTGUI_LIBRARY_RELEASE})
+${QT_QTCORE_LIBRARY_DEBUG}
+${QT_QTGUI_LIBRARY_DEBUG})
       

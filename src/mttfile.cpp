@@ -54,6 +54,7 @@ bool mttFile::Open( QString filename )
         if ( f ) {
             if ( f->ID3v1Tag() ) {
                 if ( !(f->ID3v2Tag()) ) {
+					qDebug("ID3v1 found");
                     // Copy id3v1 tag to id3v2 tag
                     TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
                     TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag( true );
@@ -68,6 +69,7 @@ bool mttFile::Open( QString filename )
                     changed = true;
                 }
                 else if ( f->ID3v2Tag() && f->ID3v1Tag() ) {
+					qDebug("ID3v1 & v2 found");
                     // Fill gaps of ID3v2Tag from ID3v1Tag
                     TagLib::ID3v1::Tag *v1tag = f->ID3v1Tag();
                     TagLib::ID3v2::Tag *v2tag = f->ID3v2Tag();
@@ -328,4 +330,15 @@ void mttFile::setMp3ExtraFrames( QStringList ef )
 QStringList mttFile::getMp3ExtraFrames( void )
 {
     return mp3eframes;
+}
+
+TagLib::AudioProperties *mttFile::getAudioProperties( void )
+{
+	if ( !fname.isNull() )
+		fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
+
+	if ( fileref )
+		return fileref->audioProperties();
+	else
+		return NULL;
 }

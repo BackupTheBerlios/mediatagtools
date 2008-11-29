@@ -25,7 +25,8 @@ signals:
     void rightMouseButtonReleased(void);
 
 protected:
-    void mouseReleaseEvent ( QMouseEvent * event );
+    void mouseReleaseEvent ( QMouseEvent * );
+	void keyReleaseEvent( QKeyEvent * );
 };
 
 #endif

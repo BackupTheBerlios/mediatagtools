@@ -10,6 +10,10 @@
 //
 //
 
+#include <QtGui/QPixmap>
+#include <QtGui/QIcon>
+#include <QtGui/QPainter>
+
 #include "treeitem.h"
 #include "treemodel.h"
 
@@ -45,12 +49,22 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     }
     else if ( role == Qt::ForegroundRole ) {
         TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-        if ( item->getColor().isValid() )
-            return item->getColor();
+		if ( item->isItemChanged() )
+			return Qt::red; // TODO: Set the color configurable
         else
             return QVariant();
     }
-    else
+	else if ( role == Qt::DecorationRole ) {
+		if ( index.column() == 0 && index.parent() == QModelIndex() ) {
+			// TODO: Show icons for the albums
+			QIcon p( "C:\\Users\\Mz\\Documents\\Pictures\\DSC00196.JPG" );
+			//qDebug( p.isNull() == true?"1":"0" );
+			return p;
+		}
+		else
+			return QVariant();
+	}
+	else
         return QVariant();
 }
 
@@ -157,7 +171,22 @@ bool TreeModel::setData ( const QModelIndex & index, const QVariant & value, int
             return false;
         }
     }
-    else {
+    else if ( role == Qt::EditRole ) {
+        if ( item ) {
+			if ( data( index, Qt::DisplayRole ) != value ) { // If there was a change...
+				item->setItemChanged( true );
+				item->setData( index.column(), value );
+			}
+        }
+        else {
+            //qDebug( "setData::ER::item == NULL" );
+            return false;
+        }
+    }
+	else if ( role == Qt::DecorationRole ) {
+		// TODO: Set new album art
+	}
+	else {
         if ( item )
             item->setData( index.column(), value );
         else {
@@ -166,7 +195,7 @@ bool TreeModel::setData ( const QModelIndex & index, const QVariant & value, int
         }
     }
 
-    emit dataChanged( index, index );
+	emit dataChanged( index.sibling( index.row(), 0 ), index.sibling( index.row(), 7 ) );
 
     return true;
 }
@@ -201,13 +230,14 @@ bool TreeModel::insertRows ( int row, int count, const QModelIndex & parent )
     for ( i=0; i<count; i++)
         parentItem->appendChild( new TreeItem( list, parentItem ) );
     endInsertRows();
+
+	return true;
 }
 
 bool TreeModel::removeRows ( int row, int count, const QModelIndex & parent )
 {
     TreeItem *parentItem;
     QList<QVariant> list;
-    int i;
 
     if (!parent.isValid()) {
         parentItem = rootItem;
@@ -219,4 +249,5 @@ bool TreeModel::removeRows ( int row, int count, const QModelIndex & parent )
     beginRemoveRows( parent, row, row + count - 1 );
     parentItem->deleteChildren( row, count );
     endRemoveRows();
+	return( true );
 }

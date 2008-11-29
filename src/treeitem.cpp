@@ -44,7 +44,7 @@ TreeItem *TreeItem::child(int row)
 
 int TreeItem::childCount() const
 {
-    return childItems.count();
+	return childItems.count();
 }
 
 int TreeItem::columnCount() const
@@ -117,3 +117,12 @@ void TreeItem::deleteChildren( int row, int count )
     }
 }
 
+void TreeItem::setItemChanged(bool changed)
+{
+	itemChanged = changed;
+}
+
+bool TreeItem::isItemChanged( void )
+{
+	return itemChanged;
+}

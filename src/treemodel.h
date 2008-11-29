@@ -16,6 +16,7 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QModelIndex>
 #include <QtCore/QVariant>
+#include <QtGui/QIcon>
 
 class TreeItem;
 

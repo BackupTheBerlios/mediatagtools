@@ -1,5 +1,6 @@
 project (MTT)
 
+cmake_minimum_required(VERSION 2.6)
 
 FIND_PACKAGE(Qt4 REQUIRED)
 

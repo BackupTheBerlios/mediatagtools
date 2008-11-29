@@ -1,6 +1,10 @@
 Qt4 Porting:
 * Window icon (get rid of that pink/purple X!)
 
+* Pressing Enter in QComboBox should send the focus to the LineEdit below it. Should I subclass it?
+* BUG: An empty line appears at the end of the list. Why? Possible model/view implementation bug
+* BUG: Segfault when pressing left arrow key after selecting an item form the list
+* Make the color of changed items configurable
 * New name and old name shouldn't be the same while renaming...
 * Custom tags for ogg files
 * Add folders recursively

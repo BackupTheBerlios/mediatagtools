@@ -1,5 +1,5 @@
 //
-// C++ Interface: alistviewitem
+// C++ Interface: mtt
 //
 // Description: 
 //
@@ -36,6 +36,7 @@ public:
     void setFName( QString );
     //TagLib::ID3v2::Tag *getID3Tag( bool create = false );
     void checkEncodings( void );
+	TagLib::AudioProperties *getAudioProperties( void );
 
     void setMp3ExtraFrames( QStringList );
     QStringList getMp3ExtraFrames( void );

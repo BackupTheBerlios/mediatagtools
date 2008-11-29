@@ -17,9 +17,16 @@
 #include <QtCore/QStringList>
 #include <QtGui/QMenuBar>
 #include <QtGui/QProgressBar>
+#include <QtGui/QDockWidget>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
+#include <QtGui/QSpinBox>
+#include <QtGui/QTableView>
+#include <QtGui/QLabel>
 
 #include "ui_mainform.h"
 #include "treemodel.h"
+#include "renummodel.h"
 #include "mtttreeview.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
@@ -38,8 +45,13 @@ public slots:
   /*$PUBLIC_SLOTS$*/
 
 private:
-    TreeModel model;
+    TreeModel treeModel;
+	RenumModel renumModel;
+	QTableView *tableView;
     mttTreeView *treeView;
+	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
+	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
+	QComboBox *genreEdit;
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
@@ -76,32 +88,33 @@ protected slots:
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
     virtual void slotAbout();
-    virtual void slotCorrectCase();
-    virtual void slotFirstUpSentence();
-    virtual void slotFirstUpWords();
+    virtual void slotCorrectCase();*/
+    //virtual void slotFirstUpSentence();
+    //virtual void slotFirstUpWords();
     virtual void slotAllUpper();
     virtual void slotAllLower();
-    virtual void slotEmptyFields();*/
+    //virtual void slotEmptyFields();
     virtual void slotLVRightMenu();
-/*    virtual void slotFixTags();
+    //virtual void slotFixTags();
     virtual void slotCommentEnter();
-    virtual void slotGenreEnter();
+    //virtual void slotGenreEnter(); // Only available through subclassing I'm afraid :-(
     virtual void slotYearEnter();
     virtual void slotAlbumEnter();
     virtual void slotArtistEnter();
     virtual void slotTitleEnter();
-    virtual void slotNextEntry();
+    /*virtual void slotNextEntry();
     virtual void slotPreviousEntry();
     virtual void slotPreviousPage();
-    virtual void slotNextPage();
+    virtual void slotNextPage();*/
+    virtual void slotSelectionChange( const QModelIndex&, const QModelIndex& );
+    virtual void slotSelectionChange( const QItemSelection&, const QItemSelection& );
     virtual void slotTitleChanged( const QString& );
-    virtual void slotSelectionChange();
     virtual void slotGenreChanged( const QString& );
     virtual void slotTrackChanged( const QString& );
     virtual void slotCommentChanged( const QString& );
     virtual void slotYearChanged( const QString& );
     virtual void slotAlbumChanged( const QString& );
-    virtual void slotArtistChanged( const QString& );*/
+    virtual void slotArtistChanged( const QString& );
 /*    virtual void slotCreateTags();
     virtual void slotAdvTagValueChanged( int, int );
     virtual void slotRemoveAdvTags();*/
