@@ -99,10 +99,12 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     setCentralWidget( treeView );
 	treeView->setModel( &treeModel );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
+	treeView->setSelectionBehavior( QAbstractItemView::SelectRows );
     treeView->setTabKeyNavigation( true );
     treeView->setAllColumnsShowFocus( true );
     treeView->setRootIsDecorated( true );
     treeView->show();
+	
     QList<QVariant> header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
@@ -223,7 +225,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
         knownFiletypes << QString( "*." ) + TStringToQString( tl[i] );
     }
 
-    new ModelTest(&treeModel, this);
+    //new ModelTest(&treeModel, this);
 }
 
 mttMainWin::~mttMainWin()

@@ -73,7 +73,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return 0;
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled;
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
@@ -241,7 +241,7 @@ bool TreeModel::removeRows ( int row, int count, const QModelIndex & parent )
 
     if (!parent.isValid()) {
         parentItem = rootItem;
-        qDebug( "rootItem" );
+        //qDebug( "rootItem" );
     }
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());

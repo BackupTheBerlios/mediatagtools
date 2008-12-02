@@ -26,7 +26,7 @@ signals:
 
 protected:
     void mouseReleaseEvent ( QMouseEvent * );
-	void keyReleaseEvent( QKeyEvent * );
+	//void keyReleaseEvent( QKeyEvent * );
 };
 
 #endif
