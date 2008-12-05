@@ -15,8 +15,8 @@ FIND_PATH(TAGLIB_INCLUDE_DIR taglib.h
 )
 
 FIND_PATH(TAGLIB_LIBRARY_DIR tag.lib
-  /usr/local/include
-  /usr/include
+  /usr/local/lib
+  /usr/lib
   $ENV{TAGLIB_DIR}/lib
 )
 

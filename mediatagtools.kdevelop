@@ -1,114 +1,68 @@
 <?xml version = '1.0'?>
 <kdevelop>
   <general>
-    <author>Theofilos Intzoglou</author>
-    <email>int.teo@gmail.com</email>
-    <version>0.1</version>
-    <projectmanagement>KDevTrollProject</projectmanagement>
+    <author/>
+    <email/>
+    <version>$VERSION$</version>
+    <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
-    <keywords>
-      <keyword>Qt</keyword>
-    </keywords>
-    <projectdirectory>.</projectdirectory>
-    <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
     <ignoreparts/>
-    <versioncontrol/>
+    <projectdirectory>/home/oscar/Projects/mediatagtools</projectdirectory>
+    <absoluteprojectpath>true</absoluteprojectpath>
+    <secondaryLanguages>
+      <language>C</language>
+    </secondaryLanguages>
+    <versioncontrol>kdevsubversion</versioncontrol>
     <projectname>mediatagtools</projectname>
-    <defaultencoding/>
   </general>
-  <kdevfileview>
-    <groups>
-      <group pattern="*.cpp;*.cxx;*.h" name="Sources" />
-      <group pattern="*.ui" name="User Interface" />
-      <group pattern="*.png" name="Icons" />
-      <group pattern="*" name="Others" />
-      <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidenonlocation>false</hidenonlocation>
-    </groups>
-    <tree>
-      <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
-      <showvcsfields>false</showvcsfields>
-    </tree>
-  </kdevfileview>
-  <kdevdoctreeview>
-    <ignoretocs>
-      <toc>gtk</toc>
-      <toc>gnustep</toc>
-      <toc>python</toc>
-      <toc>php</toc>
-      <toc>perl</toc>
-    </ignoretocs>
-  </kdevdoctreeview>
-  <kdevdebugger>
-    <general>
-      <dbgshell/>
-      <programargs/>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
-      <breakonloadinglibs>true</breakonloadinglibs>
-      <separatetty>false</separatetty>
-      <floatingtoolbar>false</floatingtoolbar>
-      <raiseGDBOnStart>false</raiseGDBOnStart>
-    </general>
-    <display>
-      <staticmembers>false</staticmembers>
-      <demanglenames>true</demanglenames>
-      <outputradix>10</outputradix>
-    </display>
-  </kdevdebugger>
-  <kdevtrollproject>
+  <kdevcustomproject>
+    <filelistdirectory>/home/oscar/Projects/mediatagtools</filelistdirectory>
     <run>
-      <mainprogram>/home/oscar/Projects/mediatagtools</mainprogram>
+      <mainprogram>/home/oscar/Projects/mediatagtools/mediatagtools</mainprogram>
+      <directoryradio>custom</directoryradio>
+      <customdirectory>/home/oscar/Projects/mediatagtools</customdirectory>
       <programargs/>
-      <directoryradio>executable</directoryradio>
-      <customdirectory>/</customdirectory>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
-      <runarguments>
-        <mediatagtools/>
-      </runarguments>
-      <cwd>
-        <mediatagtools>/home/oscar/Projects/mediatagtools</mediatagtools>
-      </cwd>
-      <debugarguments>
-        <mediatagtools/>
-      </debugarguments>
-      <globaldebugarguments/>
-      <globalcwd>/home/oscar/Projects/mediatagtools</globalcwd>
-      <useglobalprogram>false</useglobalprogram>
-      <autoinstall>false</autoinstall>
-      <autokdesu>false</autokdesu>
     </run>
-    <general>
-      <activedir></activedir>
-    </general>
+    <build>
+      <buildtool>make</buildtool>
+      <builddir>/home/oscar/Projects/mediatagtools</builddir>
+    </build>
     <make>
-      <abortonerror>true</abortonerror>
+      <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
-      <prio>0</prio>
-      <envvars/>
-      <runmultiplejobs>false</runmultiplejobs>
+      <makebin>/usr/bin/gmake </makebin>
+      <selectedenvironment>default</selectedenvironment>
+      <environments>
+        <default>
+          <envvar value="1" name="VERBOSE" />
+        </default>
+      </environments>
     </make>
-    <subclassing>
-      <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.cpp" />
-      <subclass uifile="/src/about.ui" sourcefile="/src/mttaboutdialog.h" />
-    </subclassing>
-    <qmake>
-      <savebehaviour>2</savebehaviour>
-      <replacePaths>false</replacePaths>
-      <disableDefaultOpts>true</disableDefaultOpts>
-      <enableFilenamesOnly>false</enableFilenamesOnly>
-      <showVariablesInTree>true</showVariablesInTree>
-      <showParseErrors>true</showParseErrors>
-    </qmake>
-  </kdevtrollproject>
+    <blacklist>
+      <path>CMakeFiles</path>
+      <path>src/qdndlistview.cpp</path>
+    </blacklist>
+    <filetypes>
+      <filetype>*.java</filetype>
+      <filetype>*.h</filetype>
+      <filetype>*.H</filetype>
+      <filetype>*.hh</filetype>
+      <filetype>*.hxx</filetype>
+      <filetype>*.hpp</filetype>
+      <filetype>*.c</filetype>
+      <filetype>*.C</filetype>
+      <filetype>*.cc</filetype>
+      <filetype>*.cpp</filetype>
+      <filetype>*.c++</filetype>
+      <filetype>*.cxx</filetype>
+      <filetype>Makefile</filetype>
+      <filetype>CMakeLists.txt</filetype>
+    </filetypes>
+  </kdevcustomproject>
   <kdevfilecreate>
     <filetypes/>
     <useglobaltypes>
@@ -117,17 +71,23 @@
       <type ext="h" />
     </useglobaltypes>
   </kdevfilecreate>
-  <kdevcvs>
-    <cvsoptions>-f</cvsoptions>
-    <commitoptions/>
-    <addoptions/>
-    <logoptions/>
-    <updateoptions>-dP</updateoptions>
-    <removeoptions>-f</removeoptions>
-    <revertoptions>-C -d -P</revertoptions>
-    <diffoptions>-u3 -p</diffoptions>
-    <rshoptions/>
-  </kdevcvs>
+  <kdevdoctreeview>
+    <projectdoc>
+      <userdocDir>html/</userdocDir>
+      <apidocDir>html/</apidocDir>
+    </projectdoc>
+    <ignoreqt_xml/>
+    <ignoredoxygen/>
+    <ignorekdocs/>
+    <ignoretocs/>
+    <ignoredevhelp/>
+  </kdevdoctreeview>
+  <cppsupportpart>
+    <filetemplates>
+      <interfacesuffix>.h</interfacesuffix>
+      <implementationsuffix>.cpp</implementationsuffix>
+    </filetemplates>
+  </cppsupportpart>
   <kdevcppsupport>
     <codecompletion>
       <includeGlobalFunctions>true</includeGlobalFunctions>
@@ -136,78 +96,64 @@
       <includeTypedefs>false</includeTypedefs>
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>true</automaticArgumentsHint>
+      <automaticHeaderCompletion>true</automaticHeaderCompletion>
       <codeCompletionDelay>250</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
-      <automaticHeaderCompletion>true</automaticHeaderCompletion>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>
       <completionBoxItemOrder>0</completionBoxItemOrder>
       <howEvaluationContextMenu>true</howEvaluationContextMenu>
       <showCommentWithArgumentHint>true</showCommentWithArgumentHint>
-      <statusBarTypeEvaluation>true</statusBarTypeEvaluation>
+      <statusBarTypeEvaluation>false</statusBarTypeEvaluation>
       <namespaceAliases>std=_GLIBCXX_STD;__gnu_cxx=std</namespaceAliases>
       <processPrimaryTypes>true</processPrimaryTypes>
-      <processFunctionArguments>true</processFunctionArguments>
-      <preProcessAllHeaders>true</preProcessAllHeaders>
-      <parseMissingHeaders>false</parseMissingHeaders>
-      <resolveIncludePaths>true</resolveIncludePaths>
+      <processFunctionArguments>false</processFunctionArguments>
+      <preProcessAllHeaders>false</preProcessAllHeaders>
+      <parseMissingHeadersExperimental>false</parseMissingHeadersExperimental>
+      <resolveIncludePathsUsingMakeExperimental>false</resolveIncludePathsUsingMakeExperimental>
       <alwaysParseInBackground>true</alwaysParseInBackground>
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>false</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
-      <parseMissingHeadersExperimental>false</parseMissingHeadersExperimental>
-      <resolveIncludePathsUsingMakeExperimental>false</resolveIncludePathsUsingMakeExperimental>
     </codecompletion>
-    <references>
-      <pcs>Qt4</pcs>
-      <pcs>taglib</pcs>
-    </references>
-    <designerintegration>
-      <qtdesigner>
-        <implementation class="mttMainWin" path="src/form1.ui" implementationpath="src/mttmainwin.h" />
-        <implementation class="mttCFDialog" path="src/form2.ui" implementationpath="src/mttcfdialog.h" />
-      </qtdesigner>
-    </designerintegration>
-    <creategettersetter>
-      <prefixGet/>
-      <prefixSet>set</prefixSet>
-      <prefixVariable>m_,_</prefixVariable>
-      <parameterName>theValue</parameterName>
-      <inlineGet>true</inlineGet>
-      <inlineSet>true</inlineSet>
-    </creategettersetter>
+    <references/>
     <qt>
-      <used>true</used>
-      <version>4</version>
+      <used>false</used>
+      <version>3</version>
+      <includestyle>3</includestyle>
       <root>/usr/qt/3</root>
-      <includestyle>4</includestyle>
-      <designerintegration>ExternalDesigner</designerintegration>
-      <qmake>/usr/bin/qmake</qmake>
-      <designer>/usr/bin/designer</designer>
+      <designerintegration>EmbeddedKDevDesigner</designerintegration>
+      <qmake>/usr/qt/3/bin/qmake</qmake>
+      <designer>/usr/qt/3/bin/designer</designer>
       <designerpluginpaths/>
     </qt>
-    <splitheadersource>
-      <enabled>false</enabled>
-      <synchronize>true</synchronize>
-      <orientation>Vertical</orientation>
-    </splitheadersource>
   </kdevcppsupport>
-  <cppsupportpart>
-    <filetemplates>
-      <interfacesuffix>.h</interfacesuffix>
-      <implementationsuffix>.cpp</implementationsuffix>
-    </filetemplates>
-  </cppsupportpart>
-  <kdevdocumentation>
-    <projectdoc>
-      <docsystem/>
-      <docurl/>
-      <usermanualurl/>
-    </projectdoc>
-  </kdevdocumentation>
-  <ctagspart>
-    <customArguments/>
-    <customTagfilePath>/home/oscar/Projects/mediatagtools/tags</customTagfilePath>
-    <activeTagsFiles/>
-  </ctagspart>
+  <kdevfileview>
+    <groups>
+      <group pattern="CMakeLists.txt;*.cmake;" name="CMake" />
+      <group pattern="*.h;*.hxx;*.hpp" name="Header" />
+      <group pattern="*.c" name="C Sources" />
+      <group pattern="*.cpp;*.C;*.cxx;*.cc" name="C++ Sources" />
+      <group pattern="*.ui" name="Qt Designer files" />
+      <hidenonprojectfiles>true</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
+    </groups>
+    <tree>
+      <hidepatterns>*.o,*.lo,CVS,*~,cmake*</hidepatterns>
+      <hidenonprojectfiles>true</hidenonprojectfiles>
+    </tree>
+  </kdevfileview>
+  <substmap>
+    <APPNAME>mediatagtools</APPNAME>
+    <APPNAMELC>mediatagtools</APPNAMELC>
+    <APPNAMESC>Mediatagtools</APPNAMESC>
+    <APPNAMEUC>MEDIATAGTOOLS</APPNAMEUC>
+    <AUTHOR>Θεόφιλος Ιντζόγλου</AUTHOR>
+    <EMAIL>int.teo@gmail.com</EMAIL>
+    <LICENSE>GPL</LICENSE>
+    <LICENSEFILE>COPYING</LICENSEFILE>
+    <VERSION>0.4</VERSION>
+    <YEAR>2008</YEAR>
+    <dest>/home/oscar/Projects/mediatagtools</dest>
+  </substmap>
 </kdevelop>
