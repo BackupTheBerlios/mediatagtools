@@ -14,7 +14,6 @@ moc_modeltest.cpp
 #mttaboutdialog.cpp
 #mttcfdialog.cpp
 #qclineedit.cpp
-renummodel.cpp
 )
 
 QT4_WRAP_UI( mttSRCS mainform.ui )

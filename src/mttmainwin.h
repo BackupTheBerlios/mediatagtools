@@ -26,8 +26,6 @@
 #include <QtGui/QLabel>
 
 #include "ui_mainform.h"
-#include "treemodel.h"
-#include "renummodel.h"
 #include "mtttreeview.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
@@ -47,7 +45,7 @@ public slots:
 
 private:
     QStandardItemModel treeModel;
-	RenumModel renumModel;
+	QStandardItemModel renumModel;
 	QTableView *tableView;
     mttTreeView *treeView;
 	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;

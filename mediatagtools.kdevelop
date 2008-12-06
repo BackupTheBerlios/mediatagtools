@@ -136,7 +136,10 @@
       <alwaysIncludeNamespaces>false</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
     </codecompletion>
-    <references/>
+    <references>
+      <pcs>Qt4</pcs>
+      <pcs>taglib</pcs>
+    </references>
     <qt>
       <used>false</used>
       <version>3</version>
@@ -168,10 +171,13 @@
       <group pattern="*.c" name="C Sources" />
       <group pattern="*.cpp;*.C;*.cxx;*.cc" name="C++ Sources" />
       <group pattern="*.ui" name="Qt Designer files" />
+      <hidenonprojectfiles>true</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidepatterns>*.o,*.lo,CVS,*~,cmake*</hidepatterns>
       <hidenonprojectfiles>true</hidenonprojectfiles>
+      <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
   <substmap>

@@ -40,7 +40,6 @@
 //#include "mttaboutdialog.h"
 #include "config.h"
 //#include "x.xpm"
-#include "treeitem.h"
 #include "tools.h"
 
 #ifndef RELEASE
@@ -677,7 +676,7 @@ void mttMainWin::populateList( QDir d )
 void mttMainWin::slotAllUpper()
 {
     QList<QModelIndex> list;
-    TreeItem *ti;
+//     TreeItem *ti;
     int i;
 
     list = treeView->selectionModel()->selectedIndexes();
@@ -722,7 +721,7 @@ void mttMainWin::slotAllUpper()
 void mttMainWin::slotAllLower()
 {
     QList<QModelIndex> list;
-    TreeItem *ti;
+//     TreeItem *ti;
     int i;
 
     list = treeView->selectionModel()->selectedIndexes();
@@ -1160,14 +1159,14 @@ void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIn
 
 void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItemSelection &previous )
 {
-	renumModel.setData( current.indexes() ); //BUG? I doesn't return all the selected items. It leaves out the first of a set.
+// 	renumModel.setData( current.indexes() ); //BUG? I doesn't return all the selected items. It leaves out the first of a set.
 	tableView->resizeColumnsToContents();
 }
 
 void mttMainWin::slotTitleChanged( const QString &title )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 1 );
@@ -1184,7 +1183,7 @@ void mttMainWin::slotTitleChanged( const QString &title )
 void mttMainWin::slotTrackChanged( const QString &track )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 7 );
@@ -1201,7 +1200,7 @@ void mttMainWin::slotTrackChanged( const QString &track )
 void mttMainWin::slotCommentChanged( const QString &comment )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 6 );
@@ -1218,7 +1217,7 @@ void mttMainWin::slotCommentChanged( const QString &comment )
 void mttMainWin::slotYearChanged( const QString &year )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 4 );
@@ -1235,7 +1234,7 @@ void mttMainWin::slotYearChanged( const QString &year )
 void mttMainWin::slotAlbumChanged( const QString &album )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 3 );
@@ -1252,7 +1251,7 @@ void mttMainWin::slotAlbumChanged( const QString &album )
 void mttMainWin::slotArtistChanged( const QString &artist )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	//qDebug("slotTitleChanged");
     list += treeView->selectionModel()->selectedRows( 2 );
@@ -1269,7 +1268,7 @@ void mttMainWin::slotArtistChanged( const QString &artist )
 void mttMainWin::slotGenreChanged( const QString &genre )
 {
     QModelIndexList list;
-    TreeItem *ti;
+//     TreeItem *ti;
 
 	if ( !ignoreChange ) {
 		//qDebug("slotTitleChanged");
