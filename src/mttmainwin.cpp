@@ -105,7 +105,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     treeView->setRootIsDecorated( true );
     treeView->show();
 	
-    QList<QVariant> header;
+    QStringList header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     treeModel.setHorizontalHeaderLabels( header );
@@ -249,42 +249,48 @@ void mttMainWin::addDir( QString str )
     selectedFname = "";
 }
 
-void mttMainWin::addFile( QString fname )
+void mttMainWin::addFile( QString &fname )
 {
     mttFile *li;
     TagLib::Tag *t;
-    TreeItem *father;
+    QList<QStandardItem *> fatherlist, newrow;
+	QStandardItem *father;
     QList<QVariant> list;
     bool itemChanged;
 
     li = new mttFile();
     itemChanged = li->Open( fname );
-    father = treeModel.findItem( curPath );
-    if ( !father ) {
-        list << curPath << " " << " " << " " << " " << " " << " " << " ";
-        treeModel.insertRows( treeModel.rowCount(), 1 );
-        treeModel.setData( treeModel.index( ( treeModel.rowCount() - 1 ), 0 ), list );
-        list.clear();
-        father = treeModel.findItem( curPath );
-    }
 
-    list << fname.right( fname.size() - curPath.size() - 1 );
+	qDebug( fname.toUtf8().constData() );
+	// Search if another file was opened from the same path
+	fatherlist = treeModel.findItems( curPath );
+	// If not then create a new branch
+    if ( fatherlist.empty() ) {
+		father = treeModel.invisibleRootItem();
+		QStandardItem *item = new QStandardItem( curPath );
+		father->appendRow( item );
+		father = item;
+    }
+	else
+		father = fatherlist[0];
+
+	newrow << new QStandardItem( fname.right( fname.size() - curPath.size() -1 ) );
     t = li->getTag();
     if ( t ) {
-       list << TStringToQString( t->title() )
-            << TStringToQString( t->artist() )
-            << TStringToQString( t->album() )
-            << QString::number( t->year() )
-            << TStringToQString( t->genre() )
-            << TStringToQString( t->comment() )
-            << QString::number( t->track() );
+       newrow << new QStandardItem( TStringToQString( t->title() ) )
+            << new QStandardItem( TStringToQString( t->artist() ) )
+            << new QStandardItem( TStringToQString( t->album() ) )
+            << new QStandardItem( QString::number( t->year() ) )
+            << new QStandardItem( TStringToQString( t->genre() ) )
+            << new QStandardItem( TStringToQString( t->comment() ) )
+            << new QStandardItem( QString::number( t->track() ) );
     }
 
-    treeModel.insertRows( father->childCount(), 1, treeModel.index( father->row(), 0 ) );
-    father->child( father->childCount() - 1 )->setData( list );
-    father->child( father->childCount() - 1 )->setFile( li );
+	father->appendRow( newrow );
+
+	// If the file had id3v1 tag that was converted to id3v2 make it different from the others
     if ( itemChanged )
-        treeModel.setData( treeModel.index( father->row(), 0 ).child( father->childCount() - 1, 0 ) , QColor( Qt::red ), Qt::ForegroundRole );
+		newrow[0]->setForeground( QBrush( QColor( Qt::red ) ) );
 }
 
 void mttMainWin::slotOpen()
@@ -376,8 +382,10 @@ void mttMainWin::populateList( QDir d )
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
 		//qDebug( QString::number( current ).toUtf8().constData() );
-		//qDebug( QString::number( treeModel.rowCount() ).toUtf8().constData() );
-        addFile( curPath + "/" + *it );
+		//qDebug( QString::number( treeModel.rowCount() ).toUtf8().constData() 
+		QString fn;
+		fn = curPath + "/" + *it;
+        addFile( fn );
         progress.setValue( current++ );
     }
 
@@ -694,8 +702,8 @@ void mttMainWin::slotAllUpper()
     for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
         QList<QVariant> l;
 
-        ti = (TreeItem *) list.at(i).internalPointer();
-		ti->setItemChanged( true );
+//         ti = (TreeItem *) list.at(i).internalPointer();
+// 		ti->setItemChanged( true );
 
         l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
 			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper()
@@ -739,8 +747,8 @@ void mttMainWin::slotAllLower()
     for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
         QList<QVariant> l;
 
-        ti = (TreeItem *) list.at(i).internalPointer();
-		ti->setItemChanged( true );
+//         ti = (TreeItem *) list.at(i).internalPointer();
+// 		ti->setItemChanged( true );
 
         l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
 			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower()
@@ -1106,41 +1114,46 @@ void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIn
 	ignoreChange = true;
 	//qDebug("slotSelectionChange");
 	if ( current.isValid() ) { //FIXME: Remove the last empty row from the treeView
-		titleEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 1 ) ) ).toString() );
-		artistEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 2 ) ) ).toString() );
-		albumEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 3 ) ) ).toString() );
-		yearEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 4 ) ) ).toString() );
-		genreEdit->setEditText( current.model()->data( QModelIndex( current.sibling( current.row(), 5 ) ) ).toString() );
-		commentEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 6 ) ) ).toString() );
-		trackEdit->setText( current.model()->data( QModelIndex( current.sibling( current.row(), 7 ) ) ).toString() );
-		mf = ( (TreeItem *) current.internalPointer() )->getFile();
-		if ( mf ) {
-			ap = mf->getAudioProperties();
-			if ( ap ) {
-				int hours, min, sec;
-				QString length;
-
-				// Calculate track length
-				hours = ap->length() / 3600;
-				min = ( ap->length() - hours * 3600 ) / 60;
-				sec = ( ap->length() - hours * 3600 ) % 60;
-				if ( hours )
-					length.sprintf( "%dh %dm %ds", hours, min, sec );
-				else
-					length.sprintf( "%dm %ds", min, sec );
-
-				lengthLabel->setText( length );
-				bitrateLabel->setText( QString::number( ap->bitrate() ) );
-				sampleRateLabel->setText( QString::number( ap->sampleRate() ) );
-				channelLabel->setText( QString::number( ap->channels() ) );
-			}
-			else {
-				lengthLabel->setText( QString( "" ) );
-				bitrateLabel->setText( QString( "" ) );
-				sampleRateLabel->setText( QString( "" ) );
-				channelLabel->setText( QString( "" ) );
+		titleEdit->setText( current.model()->data( current.sibling( current.row(), 1 ) ).toString() );
+		artistEdit->setText( current.model()->data( current.sibling( current.row(), 2 ) ).toString() );
+		albumEdit->setText( current.model()->data( current.sibling( current.row(), 3 ) ).toString() );
+		yearEdit->setText( current.model()->data( current.sibling( current.row(), 4 ) ).toString() );
+		genreEdit->setEditText( current.model()->data( current.sibling( current.row(), 5 ) ).toString() );
+		commentEdit->setText( current.model()->data( current.sibling( current.row(), 6 ) ).toString() );
+		trackEdit->setText( current.model()->data( current.sibling( current.row(), 7 ) ).toString() );
+		mf = new mttFile();
+		if ( current.parent().internalPointer() != NULL ) {
+			QString fn = current.model()->data( current.parent().sibling( 0, 0 ) ).toString() + "/" + current.model()->data( current.sibling( current.row(), 0 ) ).toString();
+			mf->Open( fn );
+			if ( mf ) {
+				ap = mf->getAudioProperties();
+				if ( ap ) {
+					int hours, min, sec;
+					QString length;
+	
+					// Calculate track length
+					hours = ap->length() / 3600;
+					min = ( ap->length() - hours * 3600 ) / 60;
+					sec = ( ap->length() - hours * 3600 ) % 60;
+					if ( hours )
+						length.sprintf( "%dh %dm %ds", hours, min, sec );
+					else
+						length.sprintf( "%dm %ds", min, sec );
+	
+					lengthLabel->setText( length );
+					bitrateLabel->setText( QString::number( ap->bitrate() ) );
+					sampleRateLabel->setText( QString::number( ap->sampleRate() ) );
+					channelLabel->setText( QString::number( ap->channels() ) );
+				}
+				else {
+					lengthLabel->setText( QString( "" ) );
+					bitrateLabel->setText( QString( "" ) );
+					sampleRateLabel->setText( QString( "" ) );
+					channelLabel->setText( QString( "" ) );
+				}
 			}
 		}
+		delete mf;
 	}
 	ignoreChange = false;
 }
@@ -1160,10 +1173,10 @@ void mttMainWin::slotTitleChanged( const QString &title )
     list += treeView->selectionModel()->selectedRows( 1 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), title );
      }
 }
@@ -1177,10 +1190,10 @@ void mttMainWin::slotTrackChanged( const QString &track )
     list += treeView->selectionModel()->selectedRows( 7 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), track );
      }
 }
@@ -1194,10 +1207,10 @@ void mttMainWin::slotCommentChanged( const QString &comment )
     list += treeView->selectionModel()->selectedRows( 6 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), comment );
      }
 }
@@ -1211,10 +1224,10 @@ void mttMainWin::slotYearChanged( const QString &year )
     list += treeView->selectionModel()->selectedRows( 4 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), year );
      }
 }
@@ -1228,10 +1241,10 @@ void mttMainWin::slotAlbumChanged( const QString &album )
     list += treeView->selectionModel()->selectedRows( 3 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), album );
      }
 }
@@ -1245,10 +1258,10 @@ void mttMainWin::slotArtistChanged( const QString &artist )
     list += treeView->selectionModel()->selectedRows( 2 );
 
      for (int i=0;i<list.count();i++) {
-		ti = (TreeItem *) list.at(i).internalPointer();
+/*		ti = (TreeItem *) list.at(i).internalPointer();
         ( (mttFile *) ti->getFile() )->checkEncodings();
 		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 		treeModel.setData( list.at(i), artist );
      }
 }
@@ -1263,10 +1276,10 @@ void mttMainWin::slotGenreChanged( const QString &genre )
 		list = treeView->selectionModel()->selectedRows( 5 );
 
 		for (int i=0;i<list.count();i++) {
-			ti = (TreeItem *) list.at(i).internalPointer();
+/*			ti = (TreeItem *) list.at(i).internalPointer();
 			( (mttFile *) ti->getFile() )->checkEncodings();
 			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
 			treeModel.setData( list.at(i), genre );
 		}
 	}
@@ -1644,7 +1657,7 @@ void mttMainWin::slotGenreChanged( const QString &genre )
 // 
 void mttMainWin::slotRemoveFiles()
 {
-    QList<QModelIndex> list;
+/*    QList<QModelIndex> list;
     TreeItem *ti;
     int i;
 
@@ -1658,7 +1671,7 @@ void mttMainWin::slotRemoveFiles()
         ti = (TreeItem*) treeModel.index( i, 0 ).internalPointer();
         if ( ti->childCount() == 0 )
             treeModel.removeRows( i, 1 );
-    }
+    }*/
 }
 
 // void mttMainWin::slotDroppedUris( QStringList qsl )

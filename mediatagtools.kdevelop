@@ -1,8 +1,8 @@
 <?xml version = '1.0'?>
 <kdevelop>
   <general>
-    <author/>
-    <email/>
+    <author></author>
+    <email></email>
     <version>$VERSION$</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
@@ -14,17 +14,24 @@
     </secondaryLanguages>
     <versioncontrol>kdevsubversion</versioncontrol>
     <projectname>mediatagtools</projectname>
+    <description></description>
+    <defaultencoding></defaultencoding>
   </general>
   <kdevcustomproject>
     <filelistdirectory>/home/oscar/Projects/mediatagtools</filelistdirectory>
     <run>
-      <mainprogram>/home/oscar/Projects/mediatagtools/mediatagtools</mainprogram>
+      <mainprogram></mainprogram>
       <directoryradio>custom</directoryradio>
       <customdirectory>/home/oscar/Projects/mediatagtools</customdirectory>
-      <programargs/>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
+      <globaldebugarguments></globaldebugarguments>
+      <globalcwd>/home/oscar/Projects/mediatagtools</globalcwd>
+      <useglobalprogram>false</useglobalprogram>
+      <autoinstall>false</autoinstall>
+      <autokdesu>false</autokdesu>
     </run>
     <build>
       <buildtool>make</buildtool>
@@ -41,6 +48,9 @@
           <envvar value="1" name="VERBOSE" />
         </default>
       </environments>
+      <prio>0</prio>
+      <defaulttarget></defaulttarget>
+      <makeoptions></makeoptions>
     </make>
     <blacklist>
       <path>CMakeFiles</path>
@@ -62,6 +72,16 @@
       <filetype>Makefile</filetype>
       <filetype>CMakeLists.txt</filetype>
     </filetypes>
+    <other>
+      <prio>0</prio>
+      <otherbin></otherbin>
+      <defaulttarget></defaulttarget>
+      <otheroptions></otheroptions>
+      <selectedenvironment>default</selectedenvironment>
+      <environments>
+        <default/>
+      </environments>
+    </other>
   </kdevcustomproject>
   <kdevfilecreate>
     <filetypes/>
@@ -127,6 +147,19 @@
       <designer>/usr/qt/3/bin/designer</designer>
       <designerpluginpaths/>
     </qt>
+    <creategettersetter>
+      <prefixGet></prefixGet>
+      <prefixSet>set</prefixSet>
+      <prefixVariable>m_,_</prefixVariable>
+      <parameterName>theValue</parameterName>
+      <inlineGet>true</inlineGet>
+      <inlineSet>true</inlineSet>
+    </creategettersetter>
+    <splitheadersource>
+      <enabled>false</enabled>
+      <synchronize>true</synchronize>
+      <orientation>Vertical</orientation>
+    </splitheadersource>
   </kdevcppsupport>
   <kdevfileview>
     <groups>
@@ -135,8 +168,6 @@
       <group pattern="*.c" name="C Sources" />
       <group pattern="*.cpp;*.C;*.cxx;*.cc" name="C++ Sources" />
       <group pattern="*.ui" name="Qt Designer files" />
-      <hidenonprojectfiles>true</hidenonprojectfiles>
-      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidepatterns>*.o,*.lo,CVS,*~,cmake*</hidepatterns>
@@ -156,4 +187,22 @@
     <YEAR>2008</YEAR>
     <dest>/home/oscar/Projects/mediatagtools</dest>
   </substmap>
+  <kdevdebugger>
+    <general>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
+      <breakonloadinglibs>true</breakonloadinglibs>
+      <separatetty>false</separatetty>
+      <floatingtoolbar>false</floatingtoolbar>
+      <raiseGDBOnStart>false</raiseGDBOnStart>
+    </general>
+    <display>
+      <staticmembers>false</staticmembers>
+      <demanglenames>true</demanglenames>
+      <outputradix>10</outputradix>
+    </display>
+  </kdevdebugger>
 </kdevelop>

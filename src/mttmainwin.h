@@ -15,6 +15,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
+#include <QtGui/QStandardItemModel>
 #include <QtGui/QMenuBar>
 #include <QtGui/QProgressBar>
 #include <QtGui/QDockWidget>
@@ -38,14 +39,14 @@ public:
   ~mttMainWin();
   /*$PUBLIC_FUNCTIONS$*/
     void addDir( QString );
-    void addFile( QString );
+    void addFile( QString& );
     void updateAdvMp3TagTable( QStringList );
 
 public slots:
   /*$PUBLIC_SLOTS$*/
 
 private:
-    TreeModel treeModel;
+    QStandardItemModel treeModel;
 	RenumModel renumModel;
 	QTableView *tableView;
     mttTreeView *treeView;
