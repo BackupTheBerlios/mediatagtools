@@ -35,6 +35,7 @@
 //#include "qclineedit.h"
 //#include "qdndlistview.h"
 #include "mttmainwin.h"
+#include "mttitemdelegate.h"
 #include "mttfile.h"
 //#include "mttcfdialog.h"
 //#include "mttaboutdialog.h"
@@ -94,23 +95,24 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     CreateDirButton->hide();*/
 
     // Initialization of TreeView
-    treeView = new mttTreeView( this );
+    treeView = new QTreeView( this );
     setCentralWidget( treeView );
-	treeView->setModel( &treeModel );
+    treeView->setModel( &treeModel );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-	treeView->setSelectionBehavior( QAbstractItemView::SelectRows );
-    treeView->setTabKeyNavigation( true );
-    treeView->setAllColumnsShowFocus( true );
+    treeView->setSelectionBehavior( QAbstractItemView::SelectRows );
+    //treeView->setDragEnabled( true );
+    //treeView->setTabKeyNavigation( true );
+    //treeView->setAllColumnsShowFocus( true );
     treeView->setRootIsDecorated( true );
+    //treeView->setItemDelegate( (QAbstractItemDelegate*) new mttItemDelegate() );
     treeView->show();
-	
+
     QStringList header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
            << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
     treeModel.setHorizontalHeaderLabels( header );
 
     // Signal & Slot connections for TreeView
-    connect( treeView, SIGNAL(rightMouseButtonReleased()), this, SLOT(slotLVRightMenu()) );
 	connect( treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotSelectionChange(const QModelIndex&, const QModelIndex&)) );
 	connect( treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(slotSelectionChange(const QItemSelection&, const QItemSelection&)) );
 
@@ -910,7 +912,7 @@ void mttMainWin::slotAllLower()
 //     return str;
 // }
 // 
-void mttMainWin::slotLVRightMenu()
+void mttMainWin::contextMenuEvent( QContextMenuEvent *e )
 {
     QMenu menu, corCaseMenu;
 
@@ -930,7 +932,7 @@ void mttMainWin::slotLVRightMenu()
     menu.addSeparator();
     menu.addMenu( &corCaseMenu );
     menu.addAction( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
-    menu.exec( QCursor::pos() );
+    menu.exec( e->globalPos() );
 }
 
 // void mttMainWin::slotFixTags()
@@ -1168,16 +1170,18 @@ void mttMainWin::slotTitleChanged( const QString &title )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 1 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), title );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 1 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), title );
+		}
+	}
 }
 
 void mttMainWin::slotTrackChanged( const QString &track )
@@ -1185,16 +1189,18 @@ void mttMainWin::slotTrackChanged( const QString &track )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 7 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), track );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 7 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), track );
+		}
+	}
 }
 
 void mttMainWin::slotCommentChanged( const QString &comment )
@@ -1202,16 +1208,18 @@ void mttMainWin::slotCommentChanged( const QString &comment )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 6 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), comment );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 6 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), comment );
+		}
+	}
 }
 
 void mttMainWin::slotYearChanged( const QString &year )
@@ -1219,16 +1227,18 @@ void mttMainWin::slotYearChanged( const QString &year )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 4 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), year );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 4 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), year );
+		}
+	}
 }
 
 void mttMainWin::slotAlbumChanged( const QString &album )
@@ -1236,16 +1246,18 @@ void mttMainWin::slotAlbumChanged( const QString &album )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 3 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), album );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 3 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), album );
+		}
+	}
 }
 
 void mttMainWin::slotArtistChanged( const QString &artist )
@@ -1253,16 +1265,18 @@ void mttMainWin::slotArtistChanged( const QString &artist )
     QModelIndexList list;
 //     TreeItem *ti;
 
-	//qDebug("slotTitleChanged");
-    list += treeView->selectionModel()->selectedRows( 2 );
-
-     for (int i=0;i<list.count();i++) {
-/*		ti = (TreeItem *) list.at(i).internalPointer();
-        ( (mttFile *) ti->getFile() )->checkEncodings();
-		// Save info from the various text fields
-        ( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-		treeModel.setData( list.at(i), artist );
-     }
+	if ( !ignoreChange ) {
+		//qDebug("slotTitleChanged");
+		list += treeView->selectionModel()->selectedRows( 2 );
+	
+		for (int i=0;i<list.count();i++) {
+	/*		ti = (TreeItem *) list.at(i).internalPointer();
+			( (mttFile *) ti->getFile() )->checkEncodings();
+			// Save info from the various text fields
+			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
+			treeModel.setData( list.at(i), artist );
+		}
+	}
 }
 
 void mttMainWin::slotGenreChanged( const QString &genre )

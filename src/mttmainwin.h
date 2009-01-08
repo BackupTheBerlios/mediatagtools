@@ -24,9 +24,10 @@
 #include <QtGui/QSpinBox>
 #include <QtGui/QTableView>
 #include <QtGui/QLabel>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QTreeView>
 
 #include "ui_mainform.h"
-#include "mtttreeview.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
 {
@@ -39,6 +40,7 @@ public:
     void addDir( QString );
     void addFile( QString& );
     void updateAdvMp3TagTable( QStringList );
+    void contextMenuEvent( QContextMenuEvent * );
 
 public slots:
   /*$PUBLIC_SLOTS$*/
@@ -47,7 +49,7 @@ private:
     QStandardItemModel treeModel;
 	QStandardItemModel renumModel;
 	QTableView *tableView;
-    mttTreeView *treeView;
+    QTreeView *treeView;
 	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
 	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
 	QComboBox *genreEdit;
@@ -93,7 +95,6 @@ protected slots:
     virtual void slotAllUpper();
     virtual void slotAllLower();
     //virtual void slotEmptyFields();
-    virtual void slotLVRightMenu();
     //virtual void slotFixTags();
     virtual void slotCommentEnter();
     //virtual void slotGenreEnter(); // Only available through subclassing I'm afraid :-(
