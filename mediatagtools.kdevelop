@@ -20,7 +20,7 @@
   <kdevcustomproject>
     <filelistdirectory>/home/oscar/Projects/mediatagtools</filelistdirectory>
     <run>
-      <mainprogram/>
+      <mainprogram>/home/oscar/Projects/mediatagtools</mainprogram>
       <directoryradio>custom</directoryradio>
       <customdirectory>/home/oscar/Projects/mediatagtools</customdirectory>
       <programargs/>
@@ -136,13 +136,16 @@
       <alwaysIncludeNamespaces>false</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
     </codecompletion>
-    <references/>
+    <references>
+      <pcs>Qt4</pcs>
+      <pcs>taglib</pcs>
+    </references>
     <qt>
-      <used>false</used>
-      <version>3</version>
-      <includestyle>3</includestyle>
+      <used>true</used>
+      <version>4</version>
+      <includestyle>4</includestyle>
       <root>/usr/qt/3</root>
-      <designerintegration>EmbeddedKDevDesigner</designerintegration>
+      <designerintegration>ExternalDesigner</designerintegration>
       <qmake>/usr/bin/qmake</qmake>
       <designer>/usr/bin/designer</designer>
       <designerpluginpaths/>

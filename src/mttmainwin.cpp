@@ -21,6 +21,7 @@
 #include <QtCore/QList>
 #include <QtGui/QFrame>
 #include <QtGui/QFormLayout>
+#include <QtGui/QPushButton>
 
 #include <fileref.h>
 #include <tag.h>
@@ -86,25 +87,15 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     setWindowTitle( windowTitle() + " - " + RV_SNAPSHOT_VERSION );
 #endif
 
-    /*tabWidget->removePage( tabWidget->page( 2 ) );
-    tabWidget->removePage( tabWidget->page( 2 ) );
-//     tabWidget->removePage( tabWidget->page( 1 ) );
-    UseDFChkBox->hide();
-    comboBox1->hide();
-    CleanFButton->hide();
-    CreateDirButton->hide();*/
-
     // Initialization of TreeView
-    treeView = new QTreeView( this );
+    treeView = new mttTreeView( this );
     setCentralWidget( treeView );
     treeView->setModel( &treeModel );
     treeView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeView->setSelectionBehavior( QAbstractItemView::SelectRows );
-    //treeView->setDragEnabled( true );
-    //treeView->setTabKeyNavigation( true );
-    //treeView->setAllColumnsShowFocus( true );
     treeView->setRootIsDecorated( true );
     //treeView->setItemDelegate( (QAbstractItemDelegate*) new mttItemDelegate() );
+    treeView->setUniformRowHeights( true ); // Helps improve speed with large lists
     treeView->show();
 
     QStringList header;
@@ -185,18 +176,31 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	// Renumber dock
 	QDockWidget *dockRenum;
 	dockRenum = new QDockWidget( tr("Renumber"), this );
-	renumModel.setSupportedDragActions( Qt::CopyAction | Qt::MoveAction );
-	tableView = new QTableView( this );
-	tableView->setModel( &renumModel );
-	tableView->setAlternatingRowColors( true );
-	tableView->setSelectionMode( QAbstractItemView::SingleSelection );
-	tableView->setDragEnabled( true );
-	tableView->setAcceptDrops( true );
-	tableView->setDropIndicatorShown( true );
-	tableView->setDragDropMode( QAbstractItemView::InternalMove );
-	tableView->setSelectionBehavior( QAbstractItemView::SelectRows );
-	tableView->setSortingEnabled( false );
-	dockRenum->setWidget( tableView );
+	renumModel.setSupportedDragActions( Qt::MoveAction );
+
+	QWidget *miniwin = new QWidget( this );
+
+	listView = new QListView( this );
+	listView->setModel( &renumModel );
+	listView->setAlternatingRowColors( true );
+	listView->setSelectionMode( QAbstractItemView::SingleSelection );
+	listView->setDragEnabled( true );
+	listView->viewport()->setAcceptDrops( true );
+	listView->setDropIndicatorShown( true );
+	listView->setDragDropMode( QAbstractItemView::InternalMove );
+	listView->setSelectionBehavior( QAbstractItemView::SelectRows );
+
+	QPushButton *upButton = new QPushButton( tr( "Up" ) );
+	QPushButton *downButton = new QPushButton( tr( "Down" ) );
+	QPushButton *renumButton = new QPushButton( tr( "Renumber" ) );
+	QGridLayout *layout = new QGridLayout;
+	listView->setToolTip( QString( "<b>Track renumber:</b>\n<ol><li>Select the tracks from the main view<li>Use the up & down buttons or drag & drop to change track position<li>Press the renumber button.</ol>") );
+	layout->addWidget( listView, 0, 0, 4, 2 );
+	layout->addWidget( upButton, 1, 2 );
+	layout->addWidget( downButton, 2, 2 );
+	layout->addWidget( renumButton, 4, 0, 1, 2 );
+	miniwin->setLayout( layout );
+	dockRenum->setWidget( miniwin );
 	this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
 
 	// Signal & Slot connections for dock widgets
@@ -262,7 +266,7 @@ void mttMainWin::addFile( QString &fname )
     li = new mttFile();
     itemChanged = li->Open( fname );
 
-	qDebug( fname.toUtf8().constData() );
+	//qDebug( fname.toUtf8().constData() );
 	// Search if another file was opened from the same path
 	fatherlist = treeModel.findItems( curPath );
 	// If not then create a new branch
@@ -290,8 +294,12 @@ void mttMainWin::addFile( QString &fname )
 	father->appendRow( newrow );
 
 	// If the file had id3v1 tag that was converted to id3v2 make it different from the others
-    if ( itemChanged )
-		newrow[0]->setForeground( QBrush( QColor( Qt::red ) ) );
+    if ( itemChanged ) {
+        QFont f;
+        f.setBold( true );
+        f.setUnderline( true );
+		newrow[0]->setFont( f );
+    }
 }
 
 void mttMainWin::slotOpen()
@@ -356,6 +364,7 @@ void mttMainWin::slotOpenFiles()
             addFile( *it );
             progress.setValue( current++ );
         }
+
         statusBar()->removeWidget( &progress );
         statusBar()->showMessage( tr( "Done" ) );
         QApplication::restoreOverrideCursor();
@@ -382,8 +391,6 @@ void mttMainWin::populateList( QDir d )
     statusBar()->showMessage( tr( "Reading tags..." ) );
 
     for ( QStringList::Iterator it = fnames.begin(); it != fnames.end(); ++it ) {
-		//qDebug( QString::number( current ).toUtf8().constData() );
-		//qDebug( QString::number( treeModel.rowCount() ).toUtf8().constData() 
 		QString fn;
 		fn = curPath + "/" + *it;
         addFile( fn );
@@ -678,7 +685,6 @@ void mttMainWin::populateList( QDir d )
 void mttMainWin::slotAllUpper()
 {
     QList<QModelIndex> list;
-//     TreeItem *ti;
     int i;
 
     list = treeView->selectionModel()->selectedIndexes();
@@ -687,34 +693,33 @@ void mttMainWin::slotAllUpper()
 
 //     ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
-//         GenTitleCLE->setText( GenTitleCLE->text().upper() );
+    titleEdit->setText( titleEdit->text().toUpper() );
 //     }
 //     if( GenArtistChkB->isChecked() ) {
-//         GenArtistCLE->setText( GenArtistCLE->text().upper() );
+    artistEdit->setText( artistEdit->text().toUpper() );
 //     }
 //     if( GenAlbumChkB->isChecked() ) {
-//         GenAlbumCLE->setText( GenAlbumCLE->text().upper() );
+    albumEdit->setText( albumEdit->text().toUpper() );
 //     }
 //     if( GenCommentChkB->isChecked() ) {
-//         GenCommentCLE->setText( GenCommentCLE->text().upper() );
+    commentEdit->setText( commentEdit->text().toUpper() );
 //     }
-//     ignoreChange = false;
+    genreEdit->lineEdit()->setText( genreEdit->lineEdit()->text().toUpper() );
+    ignoreChange = false;
 
-    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
-        QList<QVariant> l;
+    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
 
 //         ti = (TreeItem *) list.at(i).internalPointer();
 // 		ti->setItemChanged( true );
 
-        l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString();
-        treeModel.setData( list.at(i), l );
+        treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
+        treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
     }
 
     QApplication::restoreOverrideCursor();
@@ -730,36 +735,35 @@ void mttMainWin::slotAllLower()
 
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
 
-//     ignoreChange = true; // It's needed because otherwise all the files would have this tag
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
-//         GenTitleCLE->setText( GenTitleCLE->text().lower() );
+    titleEdit->setText( titleEdit->text().toLower() );
 //     }
 //     if( GenArtistChkB->isChecked() ) {
-//         GenArtistCLE->setText( GenArtistCLE->text().lower() );
+    artistEdit->setText( artistEdit->text().toLower() );
 //     }
 //     if( GenAlbumChkB->isChecked() ) {
-//         GenAlbumCLE->setText( GenAlbumCLE->text().lower() );
+    albumEdit->setText( albumEdit->text().toLower() );
 //     }
 //     if( GenCommentChkB->isChecked() ) {
-//         GenCommentCLE->setText( GenCommentCLE->text().lower() );
+    commentEdit->setText( commentEdit->text().toLower() );
 //     }
-//     ignoreChange = false;
+    genreEdit->lineEdit()->setText( genreEdit->lineEdit()->text().toLower() );
+    ignoreChange = false;
 
-    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
-        QList<QVariant> l;
+    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
 
 //         ti = (TreeItem *) list.at(i).internalPointer();
 // 		ti->setItemChanged( true );
 
-        l << treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole )
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower()
-			<< treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString();
-        treeModel.setData( list.at(i), l );
+        treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
+        treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
     }
 
     QApplication::restoreOverrideCursor();
@@ -912,28 +916,6 @@ void mttMainWin::slotAllLower()
 //     return str;
 // }
 // 
-void mttMainWin::contextMenuEvent( QContextMenuEvent *e )
-{
-    QMenu menu, corCaseMenu;
-
-    corCaseMenu.setTitle( "Correct Case" );
-    corCaseMenu.addAction( tr( "First letter up (first word)" ), this, SLOT(slotFirstUpSentence()) );
-    corCaseMenu.addAction( tr( "First letter up (each word)" ), this, SLOT(slotFirstUpWords()) );
-    corCaseMenu.addAction( tr( "All uppercase" ), this, SLOT(slotAllUpper()) );
-    corCaseMenu.addAction( tr( "All lowercase" ), this, SLOT(slotAllLower()) );
-
-    menu.addAction( tr( "Open folder" ), this, SLOT(slotOpen()) );
-    menu.addAction( tr( "Add file(s)" ), this, SLOT(slotOpenFiles()) );
-    menu.addAction( tr( "Remove file(s)" ), this, SLOT(slotRemoveFiles()) );
-    menu.addSeparator();
-    menu.addAction( tr( "Write tags" ), this, SLOT(slotSaveTags()) );
-    menu.addAction( tr( "Write selected tags only" ), this, SLOT(slotSaveSelectedTags()) );
-    menu.addAction( tr( "Remove tag" ), this, SLOT(slotRemoveTags()) );
-    menu.addSeparator();
-    menu.addMenu( &corCaseMenu );
-    menu.addAction( tr( "Fix tag (iso->utf8)" ), this, SLOT(slotFixTags()) );
-    menu.exec( e->globalPos() );
-}
 
 // void mttMainWin::slotFixTags()
 // {
@@ -1161,8 +1143,14 @@ void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIn
 
 void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItemSelection &previous )
 {
-// 	renumModel.setData( current.indexes() ); //BUG? I doesn't return all the selected items. It leaves out the first of a set.
-	tableView->resizeColumnsToContents();
+	QModelIndexList l = treeView->selectionModel()->selectedIndexes();
+	renumModel.removeRows( 0, renumModel.rowCount() );
+	for ( int i=(l.size()/8); i < (l.size()/8*2); i++ ) {
+		QStandardItem *item = new QStandardItem( l[i].data().toString() );
+		item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
+		renumModel.invisibleRootItem()->appendRow( item );
+	}
+	//tableView->resizeColumnsToContents();
 }
 
 void mttMainWin::slotTitleChanged( const QString &title )
@@ -1667,24 +1655,26 @@ void mttMainWin::slotGenreChanged( const QString &genre )
 //         slotAdvTagValueChanged( 0, field_col );
 //     }
 // }
-// 
+//
+
 void mttMainWin::slotRemoveFiles()
 {
-/*    QList<QModelIndex> list;
-    TreeItem *ti;
+    QList<QModelIndex> list;
+    QStandardItem *ti;
     int i;
 
+    // A not so speedy method but surely an efficient one!
     list = treeView->selectionModel()->selectedIndexes();
-    for ( i = 0; i < list.size(); i+=8 ) { // 8 is the number of columns in TreeView
-        treeModel.removeRows( list.at(i).row(), 1, list.at(i).parent() );
+    while ( !list.empty() ) {
+        treeModel.removeRows( list.at(0).row(), 1, list.at(0).parent() );
+        list = treeView->selectionModel()->selectedIndexes();
     }
 
     //Remove parents with no children
     for ( i = 0; i<treeModel.rowCount(); i++ ) {
-        ti = (TreeItem*) treeModel.index( i, 0 ).internalPointer();
-        if ( ti->childCount() == 0 )
+        if ( !treeModel.hasChildren( treeModel.index( i, 0 ) ) )
             treeModel.removeRows( i, 1 );
-    }*/
+    }
 }
 
 // void mttMainWin::slotDroppedUris( QStringList qsl )

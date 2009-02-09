@@ -6,7 +6,7 @@ set(mttSRCS
 mediatagtools.cpp
 mttfile.cpp
 mttmainwin.cpp
-#mtttreeview.cpp
+mtttreeview.cpp
 #moc_mtttreeview.cpp
 #mttitemdelegate.cpp
 moc_mttmainwin.cpp

@@ -22,12 +22,12 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
 #include <QtGui/QSpinBox>
-#include <QtGui/QTableView>
+#include <QtGui/QListView>
 #include <QtGui/QLabel>
-#include <QtGui/QContextMenuEvent>
 #include <QtGui/QTreeView>
 
 #include "ui_mainform.h"
+#include "mtttreeview.h"
 
 class mttMainWin : public QMainWindow, private Ui::MainWindow
 {
@@ -40,7 +40,6 @@ public:
     void addDir( QString );
     void addFile( QString& );
     void updateAdvMp3TagTable( QStringList );
-    void contextMenuEvent( QContextMenuEvent * );
 
 public slots:
   /*$PUBLIC_SLOTS$*/
@@ -48,8 +47,8 @@ public slots:
 private:
     QStandardItemModel treeModel;
 	QStandardItemModel renumModel;
-	QTableView *tableView;
-    QTreeView *treeView;
+	QListView *listView;
+    mttTreeView *treeView;
 	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
 	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
 	QComboBox *genreEdit;
