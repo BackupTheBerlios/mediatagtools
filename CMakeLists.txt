@@ -8,6 +8,8 @@ IF (NOT QT4_FOUND)
 	message("Qt4 not found! Try setting QTDIR to where QT4 libs are installed...")
 ENDIF(NOT QT4_FOUND)
 
+INCLUDE(${QT_USE_FILE})
+
 SET(CMAKE_MODULE_PATH ${MTT_SOURCE_DIR})
 FIND_PACKAGE(Taglib REQUIRED)
 
