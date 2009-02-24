@@ -50,9 +50,18 @@ private:
 	QStandardItemModel renumModel;
 	QListView *listView;
     mttTreeView *treeView;
+
+    // Needed for dockEdit
 	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
-	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
 	QComboBox *genreEdit;
+
+    // Needed for dockRenum
+	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
+
+    // Needed for dockFormat
+    QComboBox *format;
+    QCheckBox *autoUpd;
+    QLabel *titleLabel, *artistLabel, *albumLabel, *commentLabel, *yearLabel, *trackLabel, *genreLabel;
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
@@ -71,7 +80,9 @@ protected:
     QString firstUp( QString );
     QString firstUpSentence( QString );
     bool isTextFrame( QString );
-    void saveTags( bool selectedOnly = false );
+    void saveTags( bool );
+    void changeColumnText( int, const QString & );
+    void setTagChanged( const QModelIndex &, bool changed = true );
 
     static const char x_col = 0;
     static const char field_col = 1;
@@ -82,16 +93,16 @@ protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotOpen();
     virtual void slotOpenFiles();
-/*    virtual void slotRemoveTags();
-    virtual void slotSaveTags();
+    virtual void slotRemoveTags();
+    /*virtual void slotSaveTags();
     virtual void slotSaveSelectedTags();
     virtual void slotCFormat();
     virtual void slotDisableUsingFormat( bool );
     virtual void slotRenameFiles();
     virtual void slotAbout();
     virtual void slotCorrectCase();*/
-    //virtual void slotFirstUpSentence();
-    //virtual void slotFirstUpWords();
+    virtual void slotFirstUpSentence();
+    virtual void slotFirstUpWords();
     virtual void slotAllUpper();
     virtual void slotAllLower();
     //virtual void slotEmptyFields();
@@ -121,6 +132,10 @@ protected slots:
     virtual void slotRemoveFiles();
 /*    virtual void slotDroppedUris( QStringList );
     virtual void slotXButtonClickedMP3( int, int );*/
+    virtual void slotUpButtonClicked();
+    virtual void slotDownButtonClicked();
+    virtual void slotRenumButtonClicked( bool );
+    virtual void slotFormatChanged( const QString& );
 };
 
 #endif

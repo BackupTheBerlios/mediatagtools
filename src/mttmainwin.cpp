@@ -172,7 +172,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	editFrame->setLayout( formLayout );
 	dockEdit->setWidget( editFrame );
 	this->addDockWidget( Qt::RightDockWidgetArea, dockEdit );
-	tabifyDockWidget( dockDetails, dockEdit );
+	//tabifyDockWidget( dockDetails, dockEdit );
 
 	// Renumber dock
 	QDockWidget *dockRenum;
@@ -195,6 +195,10 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	QPushButton *downButton = new QPushButton( tr( "Down" ) );
 	QPushButton *renumButton = new QPushButton( tr( "Renumber" ) );
 	QGridLayout *layout = new QGridLayout;
+    upButton->setAutoRepeat( true );
+    upButton->setAutoRepeatDelay( 600 );
+    downButton->setAutoRepeat( true );
+    downButton->setAutoRepeatDelay( 600 );
 	listView->setToolTip( QString( "<b>Track renumber:</b>\n<ol><li>Select the tracks from the main view<li>Use the up & down buttons or drag & drop to change track position<li>Press the renumber button.</ol>") );
 	layout->addWidget( listView, 0, 0, 4, 2 );
 	layout->addWidget( upButton, 1, 2 );
@@ -203,6 +207,58 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	miniwin->setLayout( layout );
 	dockRenum->setWidget( miniwin );
 	this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
+	tabifyDockWidget( dockRenum, dockDetails );
+
+    // Filename format dock
+    QDockWidget *dockFormat;
+    QFrame *formatFrame, *previewFrame;
+    QGridLayout *formatLayout;
+    QFormLayout *previewLayout;
+    QComboBox *formatType;
+
+    dockFormat = new QDockWidget( tr("Filename Format"), this );
+    formatFrame = new QFrame( dockFormat );
+    formatLayout = new QGridLayout( formatFrame );
+    previewFrame = new QFrame( formatFrame );
+    previewLayout = new QFormLayout( previewFrame );
+    titleLabel = new QLabel( previewFrame );
+    artistLabel = new QLabel( previewFrame );
+    albumLabel = new QLabel( previewFrame );
+    yearLabel = new QLabel( previewFrame );
+    genreLabel = new QLabel( previewFrame );
+    commentLabel = new QLabel( previewFrame );
+    trackLabel = new QLabel( previewFrame );
+
+    formatType = new QComboBox( formatFrame );
+    formatType->addItem( QString( tr( "Filename to Tag" ) ) );
+    formatType->addItem( QString( tr( "Tag to Filename" ) ) );
+    format = new QComboBox( formatFrame );
+    format->setDuplicatesEnabled( false );
+    format->setEditable( true );
+    format->lineEdit()->setText( QString( "%a - %tr - %t" ) );
+    formatLayout->addWidget( formatType, 0, 0, 1, 2 );
+    formatLayout->addWidget( new QLabel( tr("Format") ), 1, 0 );
+    formatLayout->addWidget( format, 1, 1 );
+    autoUpd = new QCheckBox( tr("Auto Update Preview"), formatFrame );
+    formatLayout->addWidget( autoUpd, 2, 0, 1, 2 );
+    formatLayout->addWidget( new QLabel( tr("<b><u>Preview</u></b>") ), 3, 0 );
+
+    previewLayout->addRow( QString( tr("Title:" ) ), titleLabel );
+    previewLayout->addRow( QString( tr("Artist:") ), artistLabel );
+    previewLayout->addRow( QString( tr("Album:") ), albumLabel );
+    previewLayout->addRow( QString( tr("Year:") ), yearLabel );
+    previewLayout->addRow( QString( tr("Genre:") ), genreLabel );
+    previewLayout->addRow( QString( tr("Comment:") ), commentLabel );
+    previewLayout->addRow( QString( tr("Track:") ), trackLabel );
+    previewFrame->setLayout( previewLayout );
+    previewFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+    formatLayout->addWidget( previewFrame, 4, 0, 7, 2 );
+
+    formatFrame->setLayout( formatLayout );
+    dockFormat->setWidget( formatFrame );
+    this->addDockWidget( Qt::RightDockWidgetArea, dockFormat );
+    tabifyDockWidget( dockFormat, dockEdit );
+
 
 	// Signal & Slot connections for dock widgets
 	connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
@@ -218,6 +274,12 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	connect( yearEdit, SIGNAL( returnPressed() ), this, SLOT( slotYearEnter() ) );
 	connect( commentEdit, SIGNAL( returnPressed() ), this, SLOT( slotCommentEnter() ) );
 	//connect( trackEdit, SIGNAL( returnPressed() ), this, SLOT( slotSaveTags() ) );
+
+    connect( upButton, SIGNAL( pressed() ), this, SLOT( slotUpButtonClicked() ) );
+    connect( downButton, SIGNAL( pressed() ), this, SLOT( slotDownButtonClicked() ) );
+    connect( renumButton, SIGNAL( clicked(bool) ), this, SLOT( slotRenumButtonClicked(bool) ) );
+
+    connect( format, SIGNAL( editTextChanged( const QString& ) ), this, SLOT( slotFormatChanged( const QString& ) ) );
 
     // Signal & Slot connections for menubar
     actionOpen_folder->setShortcut( tr( "Ctrl+O" ) );
@@ -412,9 +474,9 @@ void mttMainWin::populateList( QDir d )
 // {
 //     saveTags( true );
 // }
-// 
-// void mttMainWin::slotRemoveTags()
-// {
+
+void mttMainWin::slotRemoveTags()
+{
 //     int count, current, button;
 // 
 //     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
@@ -457,15 +519,13 @@ void mttMainWin::populateList( QDir d )
 //                 progress.setProgress( current++, count );
 //             }
 // 
-//             //GenListView->clear();
-//             //populateList();
 //             progress.hide();
 //             statusBar()->message( tr( QString( "Done" ) ) );
 //             QApplication::restoreOverrideCursor();
 //         }
 //     }
-// }
-// 
+}
+
 // void mttMainWin::slotCFormat()
 // {
 //     mttCFDialog cfdialog;
@@ -709,18 +769,15 @@ void mttMainWin::slotAllUpper()
     ignoreChange = false;
 
     for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
-
-//         ti = (TreeItem *) list.at(i).internalPointer();
-// 		ti->setItemChanged( true );
-
-        treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
+        //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
         treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper() );
         treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper() );
         treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper() );
-        treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        //treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
         treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper() );
         treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper() );
-        treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        //treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        setTagChanged( list.at(i) );
     }
 
     QApplication::restoreOverrideCursor();
@@ -753,132 +810,88 @@ void mttMainWin::slotAllLower()
     ignoreChange = false;
 
     for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
-
-//         ti = (TreeItem *) list.at(i).internalPointer();
-// 		ti->setItemChanged( true );
-
-        treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
+        //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
         treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() );
         treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() );
         treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() );
-        treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        //treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
         treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() );
         treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() );
-        treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        //treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        setTagChanged( list.at(i) );
     }
 
     QApplication::restoreOverrideCursor();
 }
 
-// void mttMainWin::slotFirstUpWords()
-// {
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-// 
-//     ignoreChange = true; // It's needed because otherwise all the files would have this tag
+void mttMainWin::slotFirstUpWords()
+{
+    QList<QModelIndex> list;
+
+    list = treeView->selectionModel()->selectedIndexes();
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
-//         GenTitleCLE->setText( firstUp( GenTitleCLE->text().lower() ) );
+        titleEdit->setText( firstUp( titleEdit->text().toLower() ) );
 //     }
 //     if( GenArtistChkB->isChecked() ) {
-//         GenArtistCLE->setText( firstUp( GenArtistCLE->text().lower() ) );
+        artistEdit->setText( firstUp( artistEdit->text().toLower() ) );
 //     }
 //     if( GenAlbumChkB->isChecked() ) {
-//         GenAlbumCLE->setText( firstUp( GenAlbumCLE->text().lower() ) );
+        albumEdit->setText( firstUp( albumEdit->text().toLower() ) );
 //     }
 //     if( GenCommentChkB->isChecked() ) {
-//         GenCommentCLE->setText( firstUp( GenCommentCLE->text().lower() ) );
+        commentEdit->setText( firstUp( commentEdit->text().toLower() ) );
 //     }
-//     ignoreChange = false;
+    ignoreChange = false;
 // 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//     while( it.current() ) {
-//         TagLib::Tag *t;
-// 
-//         // Show tag info
-//         t = (( mttFile *) it.current() )->getTag();
-//         if ( t ) {
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+
+    for ( int i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+        treeModel.setData( list.at(i + list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 2*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 3*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 5*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 6*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
+        setTagChanged( list.at(i) );
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
+void mttMainWin::slotFirstUpSentence() // Here is the change to get only the first letter uppercase (only track name)
+{
+    QList<QModelIndex> list;
+
+    list = treeView->selectionModel()->selectedIndexes();
+    ignoreChange = true; // It's needed because otherwise all the files would have this tag
 //     if( GenTitleChkB->isChecked() ) {
-//                 t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
-//                 it.current()->setText( 1, TStringToQString( t->title() ) );
-//     }
-// 
-//     if( GenArtistChkB->isChecked() ) {
-//                 t->setArtist( QStringToTString( firstUp( TStringToQString( t->artist() ).lower() ) ) );
-//                 it.current()->setText( 2, TStringToQString( t->artist() ) );
-//     }
-// 
-//     if( GenAlbumChkB->isChecked() ) {
-//                 t->setAlbum( QStringToTString( firstUp( TStringToQString( t->album() ).lower() ) ) );
-//                 it.current()->setText( 3, TStringToQString( t->album() ) );
-//     }
-// 
-//     if( GenCommentChkB->isChecked() ) {
-//                 t->setComment( QStringToTString( firstUp( TStringToQString( t->comment() ).lower() ) ) );
-//                 it.current()->setText( 6, TStringToQString( t->comment() ) );
-//     }
-// 
-//             ( (mttFile *) it.current() )->setTagChanged( true );
-//         }
-//         ++it;
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-// }
-// 
-// void mttMainWin::slotFirstUpSentence() // Here is the change to get only the first letter uppercase (only track name)
-// {
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-// 
-//     ignoreChange = true; // It's needed because otherwise all the files would have this tag
-//     if( GenTitleChkB->isChecked() ) {
-//         GenTitleCLE->setText( firstUpSentence( GenTitleCLE->text().lower() ) );
+        titleEdit->setText( firstUpSentence( titleEdit->text().toLower() ) );
 //     }
 //     if( GenArtistChkB->isChecked() ) {
-//         GenArtistCLE->setText( firstUpSentence( GenArtistCLE->text().lower() ) );
+        artistEdit->setText( firstUpSentence( artistEdit->text().toLower() ) );
 //     }
 //     if( GenAlbumChkB->isChecked() ) {
-//         GenAlbumCLE->setText( firstUpSentence( GenAlbumCLE->text().lower() ) );
+        albumEdit->setText( firstUpSentence( albumEdit->text().toLower() ) );
 //     }
 //     if( GenCommentChkB->isChecked() ) {
-//         GenCommentCLE->setText( firstUpSentence( GenCommentCLE->text().lower() ) );
+        commentEdit->setText( firstUpSentence( commentEdit->text().toLower() ) );
 //     }
-//     ignoreChange = false;
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//     while( it.current() ) {
-//         TagLib::Tag *t;
-// 
-//         // Show tag info
-//         t = (( mttFile *) it.current() )->getTag();
-//         if ( t ) {
-//             if( GenTitleChkB->isChecked() ) {
-//                 t->setTitle( QStringToTString( firstUpSentence( TStringToQString( t->title() ).lower() ) ) );
-//                 it.current()->setText( 1, TStringToQString( t->title() ) );
-//             }
-// 
-//             if( GenArtistChkB->isChecked() ) {
-//                 t->setArtist( QStringToTString( firstUpSentence( TStringToQString( t->artist() ).lower() ) ) );
-//                 it.current()->setText( 2, TStringToQString( t->artist() ) );
-//             }
-// 
-//             if( GenAlbumChkB->isChecked() ) {
-//                 t->setAlbum( QStringToTString( firstUpSentence( TStringToQString( t->album() ).lower() ) ) );
-//                 it.current()->setText( 3, TStringToQString( t->album() ) );
-//             }
-// 
-//             if( GenCommentChkB->isChecked() ) {
-//                 t->setComment( QStringToTString( firstUpSentence( TStringToQString( t->comment() ).lower() ) ) );
-//                 it.current()->setText( 6, TStringToQString( t->comment() ) );
-//             }
-// 
-//             ( (mttFile *) it.current() )->setTagChanged( true );
-//         }
-//         ++it;
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-// }
-// 
-// 
+    ignoreChange = false;
+
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+    for ( int i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+        treeModel.setData( list.at(i + list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 2*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 3*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 5*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 6*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
+        setTagChanged( list.at(i) );
+    }
+
+    QApplication::restoreOverrideCursor();
+}
+
+
 // void mttMainWin::slotEmptyFields()
 // {
 //     GenTitleCLE->clear();
@@ -889,34 +902,34 @@ void mttMainWin::slotAllLower()
 //     GenCommentCLE->clear();
 //     GenTrackCLE->clear();
 // }
-// 
-// QString mttMainWin::firstUpSentence( QString str )
-// {
-//     if ( str[0].isLetter() ) {
-//         str[0] = str[0].upper();
-//     }
-// 
-//     return str;
-// }
-// 
-// QString mttMainWin::firstUp( QString str )
-// {
-//     unsigned int i;
-// 
-//     i = 0;
-//     while ( i < str.length() ) {
-//         if ( i == 0 && str[i].isLetter() ) {
-//             str[i] = str[i].upper();
-//         }
-//         if ( str[i].isSpace() && ( ( i + 1 ) < str.length() ) && str[i+1].isLetter() ) {
-//             str[i+1] = str[i+1].upper();
-//         }
-//         i++;
-//     }
-// 
-//     return str;
-// }
-// 
+
+QString mttMainWin::firstUpSentence( QString str )
+{
+    if ( str[0].isLetter() ) {
+        str[0] = str[0].toUpper();
+    }
+
+    return str;
+}
+
+QString mttMainWin::firstUp( QString str )
+{
+    unsigned int i;
+
+    i = 0;
+    while ( i < str.length() ) {
+        if ( i == 0 && str[i].isLetter() ) {
+            str[i] = str[i].toUpper();
+        }
+        if ( str[i].isSpace() && ( ( i + 1 ) < str.length() ) && str[i+1].isLetter() ) {
+            str[i+1] = str[i+1].toUpper();
+        }
+        i++;
+    }
+
+    return str;
+}
+
 
 // void mttMainWin::slotFixTags()
 // {
@@ -1148,146 +1161,62 @@ void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItem
 	renumModel.removeRows( 0, renumModel.rowCount() );
 	for ( int i=(l.size()/8); i < (l.size()/8*2); i++ ) {
 		QStandardItem *item = new QStandardItem( l[i].data().toString() );
+        item->setData( l[i-l.size()/8].data().toString(), Qt::UserRole );
 		item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
 		renumModel.invisibleRootItem()->appendRow( item );
 	}
-	//tableView->resizeColumnsToContents();
 }
 
 void mttMainWin::slotTitleChanged( const QString &title )
 {
-    QModelIndexList list;
-//     TreeItem *ti;
-
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 1 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), title );
-		}
-	}
-}
-
-void mttMainWin::slotTrackChanged( const QString &track )
-{
-    QModelIndexList list;
-//     TreeItem *ti;
-
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 7 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), track );
-		}
-	}
-}
-
-void mttMainWin::slotCommentChanged( const QString &comment )
-{
-    QModelIndexList list;
-//     TreeItem *ti;
-
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 6 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), comment );
-		}
-	}
-}
-
-void mttMainWin::slotYearChanged( const QString &year )
-{
-    QModelIndexList list;
-//     TreeItem *ti;
-
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 4 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), year );
-		}
-	}
-}
-
-void mttMainWin::slotAlbumChanged( const QString &album )
-{
-    QModelIndexList list;
-//     TreeItem *ti;
-
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 3 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), album );
-		}
-	}
+    changeColumnText( 1, title );
 }
 
 void mttMainWin::slotArtistChanged( const QString &artist )
 {
-    QModelIndexList list;
-//     TreeItem *ti;
+    changeColumnText( 2, artist );
+}
 
-	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list += treeView->selectionModel()->selectedRows( 2 );
-	
-		for (int i=0;i<list.count();i++) {
-	/*		ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), artist );
-		}
-	}
+void mttMainWin::slotAlbumChanged( const QString &album )
+{
+    changeColumnText( 3, album );
+}
+
+void mttMainWin::slotYearChanged( const QString &year )
+{
+    changeColumnText( 4, year );
 }
 
 void mttMainWin::slotGenreChanged( const QString &genre )
 {
+    changeColumnText( 5, genre );
+}
+
+void mttMainWin::slotCommentChanged( const QString &comment )
+{
+    changeColumnText( 6, comment );
+}
+
+void mttMainWin::slotTrackChanged( const QString &track )
+{
+    changeColumnText( 7, track );
+}
+
+void mttMainWin::changeColumnText( int column, const QString &text )
+{
     QModelIndexList list;
-//     TreeItem *ti;
 
 	if ( !ignoreChange ) {
-		//qDebug("slotTitleChanged");
-		list = treeView->selectionModel()->selectedRows( 5 );
+		list = treeView->selectionModel()->selectedRows( column ); // Selected items that we want to change
 	
 		for (int i=0;i<list.count();i++) {
-/*			ti = (TreeItem *) list.at(i).internalPointer();
-			( (mttFile *) ti->getFile() )->checkEncodings();
-			// Save info from the various text fields
-			( (TreeItem *) list.at(i).internalPointer() )->setItemChanged( true );*/
-			treeModel.setData( list.at(i), genre );
+			treeModel.setData( list.at(i), text );
+            setTagChanged( list.at(i) );
 		}
 	}
 }
 // 
-// void mttMainWin::saveTags( bool selectedOnly )
+// void mttMainWin::saveTags( bool selectedOnly = false )
 // {
 //     int current, count;
 // 
@@ -1715,3 +1644,84 @@ void mttMainWin::slotRemoveFiles()
 //     }
 // }
 // 
+
+void mttMainWin::slotUpButtonClicked()
+{
+    QModelIndexList l;
+    QModelIndex mi;
+    QVariant tmp;
+
+    l = listView->selectionModel()->selectedIndexes();
+
+    if ( !l.empty() ) {
+        // There can be only one selected item so we use l[0] without any other checks
+        if ( l[0].row() ) {
+            mi = l[0].sibling( l[0].row() - 1, l[0].column() );
+            tmp = l[0].data( Qt::DisplayRole );
+            renumModel.setData( l[0], mi.data( Qt::DisplayRole ), Qt::DisplayRole );
+            renumModel.setData( mi, tmp, Qt::DisplayRole );
+            listView->selectionModel()->setCurrentIndex( mi, QItemSelectionModel::ClearAndSelect );
+        }
+    }
+}
+
+void mttMainWin::slotDownButtonClicked()
+{
+    QModelIndexList l;
+    QModelIndex mi;
+    QVariant tmp;
+
+    l = listView->selectionModel()->selectedIndexes();
+
+    if ( !l.empty() ) {
+        // There can be only one selected item so we use l[0] without any other checks
+        if ( l[0].row() < ( renumModel.rowCount() - 1 ) ) {
+            mi = l[0].sibling( l[0].row() + 1, l[0].column() );
+            tmp = l[0].data( Qt::DisplayRole );
+            renumModel.setData( l[0], mi.data( Qt::DisplayRole ), Qt::DisplayRole );
+            renumModel.setData( mi, tmp, Qt::DisplayRole );
+            listView->selectionModel()->setCurrentIndex( mi, QItemSelectionModel::ClearAndSelect );
+        }
+    }
+}
+
+void mttMainWin::slotRenumButtonClicked( bool checked )
+{
+    QModelIndexList l;
+    QList<QStandardItem*> li;
+    int items;
+
+    l = treeView->selectionModel()->selectedIndexes();
+
+    for( int i=0; i<renumModel.rowCount(); i++ ) {
+        li = renumModel.findItems( l.at(l.count()/8+i).data().toString() ); // Take renum model item that matches the filename of the selected treemodel item
+        treeModel.setData( l.at( 7*l.count()/8 + i ), QVariant( li[0]->row() + 1 ) );
+        qDebug( renumModel.data( renumModel.index( i, 0 ), Qt::UserRole ).toString().toUtf8().constData() );
+    }
+}
+
+void mttMainWin::setTagChanged( const QModelIndex &index, bool changed )
+{
+    treeModel.setData( index.sibling( index.row(), 0 ) , changed, Qt::UserRole ); // Modify changed flag
+    if ( changed ) {
+/*        QFont f;
+        f.setBold( true );
+        f.setUnderline( true );
+        treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
+        for ( int i=0; i<8; i++ )
+            treeModel.setData( index.sibling( index.row(), i ), Qt::red, Qt::BackgroundRole );
+    }
+    else {
+/*        QFont f;
+        f.setBold( false );
+        f.setUnderline( false );
+        treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
+        for ( int i=0; i<8; i++ )
+            treeModel.setData( index.sibling( index.row(), i ), QVariant(), Qt::BackgroundRole );
+    }
+}
+
+void mttMainWin::slotFormatChanged( const QString &str )
+{
+    qDebug( "Format Changed!" );
+}
