@@ -10,7 +10,7 @@
 //
 //
 
-#include <QtGui/QMenu>
+#include <QMenu>
 
 #include "mtttreeview.h"
 

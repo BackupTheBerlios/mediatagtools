@@ -12,7 +12,7 @@
 #ifndef MTTFILE_H
 #define MTTFILE_H
 
-#include <QtCore/QStringList>
+#include <QStringList>
 #include <fileref.h>
 
 #define COLUMNS 8

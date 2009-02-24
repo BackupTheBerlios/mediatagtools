@@ -10,18 +10,19 @@
 //
 //
 
-#include <QtGui/QFileDialog>
-#include <QtGui/QPixmap>
-#include <QtGui/QStandardItem>
-#include <QtGui/QStandardItemModel>
-#include <QtGui/QMessageBox>
-#include <QtGui/QCursor>
-#include <QtGui/QLineEdit>
-#include <QtGui/QLabel>
-#include <QtCore/QList>
-#include <QtGui/QFrame>
-#include <QtGui/QFormLayout>
-#include <QtGui/QPushButton>
+#include <QFileDialog>
+#include <QPixmap>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QMessageBox>
+#include <QCursor>
+#include <QLineEdit>
+#include <QLabel>
+#include <QList>
+#include <QFrame>
+#include <QFormLayout>
+#include <QPushButton>
+#include <QTime>
 
 #include <fileref.h>
 #include <tag.h>
@@ -795,25 +796,25 @@ void mttMainWin::slotAllLower()
 //         // Show tag info
 //         t = (( mttFile *) it.current() )->getTag();
 //         if ( t ) {
-//             if( GenTitleChkB->isChecked() ) {
+//     if( GenTitleChkB->isChecked() ) {
 //                 t->setTitle( QStringToTString( firstUp( TStringToQString( t->title() ).lower() ) ) );
 //                 it.current()->setText( 1, TStringToQString( t->title() ) );
-//             }
+//     }
 // 
-//             if( GenArtistChkB->isChecked() ) {
+//     if( GenArtistChkB->isChecked() ) {
 //                 t->setArtist( QStringToTString( firstUp( TStringToQString( t->artist() ).lower() ) ) );
 //                 it.current()->setText( 2, TStringToQString( t->artist() ) );
-//             }
+//     }
 // 
-//             if( GenAlbumChkB->isChecked() ) {
+//     if( GenAlbumChkB->isChecked() ) {
 //                 t->setAlbum( QStringToTString( firstUp( TStringToQString( t->album() ).lower() ) ) );
 //                 it.current()->setText( 3, TStringToQString( t->album() ) );
-//             }
+//     }
 // 
-//             if( GenCommentChkB->isChecked() ) {
+//     if( GenCommentChkB->isChecked() ) {
 //                 t->setComment( QStringToTString( firstUp( TStringToQString( t->comment() ).lower() ) ) );
 //                 it.current()->setText( 6, TStringToQString( t->comment() ) );
-//             }
+//     }
 // 
 //             ( (mttFile *) it.current() )->setTagChanged( true );
 //         }
@@ -1275,7 +1276,7 @@ void mttMainWin::slotGenreChanged( const QString &genre )
 	if ( !ignoreChange ) {
 		//qDebug("slotTitleChanged");
 		list = treeView->selectionModel()->selectedRows( 5 );
-
+	
 		for (int i=0;i<list.count();i++) {
 /*			ti = (TreeItem *) list.at(i).internalPointer();
 			( (mttFile *) ti->getFile() )->checkEncodings();

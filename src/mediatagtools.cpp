@@ -1,11 +1,11 @@
 #include "config.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
-#include <QtCore/QTextCodec>
-#include <QtCore/QDir>
-#include <QtCore/QTranslator>
+#include <QApplication>
+#include <QPixmap>
+#include <QImage>
+#include <QTextCodec>
+#include <QDir>
+#include <QTranslator>
 
 #include "mttmainwin.h"
 

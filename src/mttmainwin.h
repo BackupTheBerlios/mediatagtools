@@ -13,18 +13,19 @@
 #ifndef ATTMAINWIN_H
 #define ATTMAINWIN_H
 
-#include <QtCore/QDir>
-#include <QtCore/QStringList>
-#include <QtGui/QStandardItemModel>
-#include <QtGui/QMenuBar>
-#include <QtGui/QProgressBar>
-#include <QtGui/QDockWidget>
-#include <QtGui/QLineEdit>
-#include <QtGui/QComboBox>
-#include <QtGui/QSpinBox>
-#include <QtGui/QListView>
-#include <QtGui/QLabel>
-#include <QtGui/QTreeView>
+#include <QDir>
+#include <QStringList>
+#include <QStandardItemModel>
+#include <QMenuBar>
+#include <QProgressBar>
+#include <QDockWidget>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QListView>
+#include <QLabel>
+#include <QTreeView>
+#include <QCheckBox>
 
 #include "ui_mainform.h"
 #include "mtttreeview.h"

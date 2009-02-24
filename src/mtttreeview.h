@@ -12,8 +12,8 @@
 #ifndef MTTTREEVIEW_H
 #define MTTTREEVIEW_H
 
-#include <QtGui/QTreeView>
-#include <QtGui/QContextMenuEvent>
+#include <QTreeView>
+#include <QContextMenuEvent>
 
 /**
 	@author Theofilos Intzoglou

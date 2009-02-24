@@ -10,7 +10,7 @@
 //
 //
 
-#include <QtCore/QFile>
+#include <QFile>
 
 #include <mpegfile.h>
 #include <id3v1tag.h>
