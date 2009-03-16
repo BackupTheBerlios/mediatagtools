@@ -10,14 +10,14 @@ mtttreeview.cpp
 #moc_mtttreeview.cpp
 #mttitemdelegate.cpp
 moc_mttmainwin.cpp
-modeltest.cpp
-moc_modeltest.cpp
+#modeltest.cpp
+#moc_modeltest.cpp
 #mttaboutdialog.cpp
 #mttcfdialog.cpp
 #qclineedit.cpp
 )
 
-QT4_WRAP_UI( mttSRCS mainform.ui )
+#QT4_WRAP_UI( mttSRCS mainform.ui )
 
 ADD_EXECUTABLE(mediatagtools.exe ${mttSRCS})
 

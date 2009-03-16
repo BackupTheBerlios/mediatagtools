@@ -8,6 +8,4 @@ Qt4 Porting:
 * Add folders recursively
 * Add Music Brainz support
 * Convert tags from any iso charset to utf8
-* Autonumbering
-	* Almost done. Need to figure out how to move items around in model/view
 * Show an error message when a tag cannot be saved for some reason

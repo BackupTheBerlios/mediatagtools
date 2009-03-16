@@ -23,6 +23,8 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QTime>
+#include <QStatusBar>
+#include <QApplication>
 
 #include <fileref.h>
 #include <tag.h>
@@ -56,7 +58,7 @@
 
 mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 {
-    setupUi( this );
+//     setupUi( this );
     int i;
 
     /*QStringList strlst( "<Empty>" );*/
@@ -80,6 +82,9 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     AdvTagTable->setColumnWidth( field_id_col, 70 );
     AdvTagTable->setFocusStyle( Q3Table::FollowStyle );
     AdvTagTable->setSelectionMode( Q3Table::Single );*/
+
+    createActions();
+    createMenus();
 
     for ( i=0; i<5; i++ ) {
         separators << " - ";
@@ -116,11 +121,11 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	// Add Dock Widgets
 	// ----------------
 	// Detail Dock
-	QDockWidget *dockDetails;
 	QFrame *detailFrame;
 	QFormLayout *detailLayout;
 
 	dockDetails = new QDockWidget( tr("Details"), this );
+    menuView->addAction( dockDetails->toggleViewAction() );
 	detailFrame = new QFrame( dockDetails );
 	detailLayout = new QFormLayout( detailFrame );
 
@@ -137,10 +142,10 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	this->addDockWidget( Qt::RightDockWidgetArea, dockDetails );
 
 	// Edit Dock
-	QDockWidget *dockEdit;
 	QFrame *editFrame;
 	QFormLayout *formLayout;
 	dockEdit = new QDockWidget( tr("Edit"), this );
+    menuView->addAction( dockEdit->toggleViewAction() );
 	editFrame = new QFrame(dockEdit);
 	formLayout = new QFormLayout( editFrame );
 
@@ -175,8 +180,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	//tabifyDockWidget( dockDetails, dockEdit );
 
 	// Renumber dock
-	QDockWidget *dockRenum;
 	dockRenum = new QDockWidget( tr("Renumber"), this );
+    menuView->addAction( dockRenum->toggleViewAction() );
 	renumModel.setSupportedDragActions( Qt::MoveAction );
 
 	QWidget *miniwin = new QWidget( this );
@@ -210,13 +215,12 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	tabifyDockWidget( dockRenum, dockDetails );
 
     // Filename format dock
-    QDockWidget *dockFormat;
     QFrame *formatFrame, *previewFrame;
     QGridLayout *formatLayout;
     QFormLayout *previewLayout;
-    QComboBox *formatType;
 
     dockFormat = new QDockWidget( tr("Filename Format"), this );
+    menuView->addAction( dockFormat->toggleViewAction() );
     formatFrame = new QFrame( dockFormat );
     formatLayout = new QGridLayout( formatFrame );
     previewFrame = new QFrame( formatFrame );
@@ -232,15 +236,23 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     formatType = new QComboBox( formatFrame );
     formatType->addItem( QString( tr( "Filename to Tag" ) ) );
     formatType->addItem( QString( tr( "Tag to Filename" ) ) );
+    formatLayout->addWidget( formatType, 0, 0, 1, 5 );
     format = new QComboBox( formatFrame );
     format->setDuplicatesEnabled( false );
     format->setEditable( true );
     format->lineEdit()->setText( QString( "%a - %tr - %t" ) );
-    formatLayout->addWidget( formatType, 0, 0, 1, 2 );
-    formatLayout->addWidget( new QLabel( tr("Format") ), 1, 0 );
-    formatLayout->addWidget( format, 1, 1 );
+    legendButton = new QPushButton( tr( "Legend" ), dockFormat );
+    legendButton->setCheckable( true );
+    legendButton->setChecked( true );
+    formatLayout->addWidget( new QLabel( tr("Format:") ), 1, 0 );
+    formatLayout->addWidget( format, 1, 1, 1, 3 );
+    formatLayout->addWidget( legendButton, 1, 4 );
     autoUpd = new QCheckBox( tr("Auto Update Preview"), formatFrame );
-    formatLayout->addWidget( autoUpd, 2, 0, 1, 2 );
+    autoUpd->setToolTip( tr( "Click to enable automatic update of the preview" ) );
+    formatLayout->addWidget( autoUpd, 2, 0, 1, 3 );
+    updatePreviewButton = new QPushButton( tr( "Update Preview" ) , previewFrame );
+    updatePreviewButton->setToolTip( tr( "Press to manually update preview" ) );
+    formatLayout->addWidget( updatePreviewButton, 2, 3, 1, 2 );
     formatLayout->addWidget( new QLabel( tr("<b><u>Preview</u></b>") ), 3, 0 );
 
     previewLayout->addRow( QString( tr("Title:" ) ), titleLabel );
@@ -252,13 +264,32 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     previewLayout->addRow( QString( tr("Track:") ), trackLabel );
     previewFrame->setLayout( previewLayout );
     previewFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
-    formatLayout->addWidget( previewFrame, 4, 0, 7, 2 );
+    formatLayout->addWidget( previewFrame, 4, 0, 7, 5 );
 
     formatFrame->setLayout( formatLayout );
     dockFormat->setWidget( formatFrame );
     this->addDockWidget( Qt::RightDockWidgetArea, dockFormat );
     tabifyDockWidget( dockFormat, dockEdit );
 
+    // Filename Format Legend Dock-
+    QFrame *formatLegendFrame;
+    QFormLayout *formatLegendLayout;
+
+    dockFormatLegend = new QDockWidget( tr( "Format Legend" ), this );
+    menuView->addAction( dockFormatLegend->toggleViewAction() );
+    formatLegendFrame = new QFrame( dockFormatLegend );
+    formatLegendLayout = new QFormLayout( formatLegendFrame );
+    formatLegendLayout->addRow( new QLabel( tr( "%t - Title" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%a - Artist" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%A - Album" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%y - Year" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%g - Genre" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%c - Comment" ), dockFormatLegend ) );
+    formatLegendLayout->addRow( new QLabel( tr( "%T - Track number" ), dockFormatLegend ) );
+
+    formatLegendFrame->setLayout( formatLegendLayout );
+    dockFormatLegend->setWidget( formatLegendFrame );
+    this->addDockWidget( Qt::LeftDockWidgetArea, dockFormatLegend );
 
 	// Signal & Slot connections for dock widgets
 	connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
@@ -280,12 +311,17 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( renumButton, SIGNAL( clicked(bool) ), this, SLOT( slotRenumButtonClicked(bool) ) );
 
     connect( format, SIGNAL( editTextChanged( const QString& ) ), this, SLOT( slotFormatChanged( const QString& ) ) );
+    connect( autoUpd, SIGNAL( stateChanged( int ) ), this, SLOT( slotAutoPreviewChanged( int ) ) );
+    connect( autoUpd, SIGNAL( toggled( bool ) ), this, SLOT( slotFormatEnableAutoUpdate( bool ) ) );
+    connect( legendButton, SIGNAL( clicked( bool ) ), this, SLOT( slotLegendToggle( bool ) ) );
+    connect( dockFormatLegend, SIGNAL( visibilityChanged( bool ) ), this, SLOT( slotDockFormatLegendChanged( bool ) ) );
+    connect( updatePreviewButton, SIGNAL( clicked( bool ) ), this, SLOT( slotFormatUpdatePreview() ) );
+    connect( format->lineEdit(), SIGNAL( textEdited( const QString& ) ), this, SLOT( slotFormatEdited() ) );
 
     // Signal & Slot connections for menubar
-    actionOpen_folder->setShortcut( tr( "Ctrl+O" ) );
-    actionExit->setShortcut( tr( "Alt+X" ) );
-    connect(actionOpen_folder, SIGNAL(triggered()), this, SLOT(slotOpen()));
-    connect(actionOpen_files, SIGNAL(triggered()), this, SLOT(slotOpenFiles()));
+    connect( actExit, SIGNAL( triggered() ), this, SLOT( close() ) );
+    connect( actOpenFolder, SIGNAL( triggered() ), this, SLOT( slotOpen() ) );
+    connect( actOpenFiles, SIGNAL( triggered() ), this, SLOT( slotOpenFiles() ) );
 
     // Create list for taglib known filetypes
     TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
@@ -1153,6 +1189,9 @@ void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIn
 		delete mf;
 	}
 	ignoreChange = false;
+
+    if ( dockFormat->isVisible() && autoUpd->isChecked() )
+        slotFormatUpdatePreview();
 }
 
 void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItemSelection &previous )
@@ -1724,4 +1763,184 @@ void mttMainWin::setTagChanged( const QModelIndex &index, bool changed )
 void mttMainWin::slotFormatChanged( const QString &str )
 {
     qDebug( "Format Changed!" );
+}
+
+void mttMainWin::slotAutoPreviewChanged( int state )
+{
+    if ( state == Qt::Unchecked ) {
+        updatePreviewButton->setEnabled( true );
+        updatePreviewButton->setToolTip( tr( "Press to manually update preview" ) );
+    }
+    else {
+        updatePreviewButton->setEnabled( false );
+        updatePreviewButton->setToolTip( tr( "Press to manually update preview<br><br><b>Currently disabled!</b><br>Uncheck 'Automatic Update' to enable use of this button" ) );
+    }
+}
+
+void mttMainWin::slotLegendToggle( bool checked )
+{
+    QAction *a;
+
+    if ( dockFormatLegend ) {
+        a = dockFormatLegend->toggleViewAction();
+        if ( a->isChecked() )
+            removeDockWidget( dockFormatLegend );
+        else {
+            addDockWidget( Qt::LeftDockWidgetArea, dockFormatLegend );
+            dockFormatLegend->show();
+        }
+    }
+}
+
+void mttMainWin::createActions( void )
+{
+    actOpenFolder = new QAction( tr( "&Open Folder" ), this );
+    actOpenFolder->setShortcut( tr( "Ctrl+O" ) );
+    actOpenFiles = new QAction( tr( "Open &Files" ), this );
+    actExit = new QAction( tr( "E&xit" ), this );
+    actExit->setShortcut( tr( "Alt+X" ) );
+    actSaveAll = new QAction( tr( "&Save all changes" ), this );
+    actSaveSelected = new QAction( tr( "Save selected tags" ), this );
+    actRemoveTag = new QAction( tr( "Remove selected tags" ), this );
+    actHelp = new QAction( tr( "Help" ), this );
+    actAbout = new QAction( tr( "About" ), this );
+}
+
+void mttMainWin::createMenus( void )
+{
+    menuFile = menuBar()->addMenu( tr( "&File" ) );
+    menuFile->addAction( actOpenFolder );
+    menuFile->addAction( actOpenFiles );
+    menuFile->addSeparator();
+    menuFile->addAction( actExit );
+
+    menuTag = menuBar()->addMenu( tr( "&Tag" ) );
+    menuTag->addAction( actSaveAll );
+    menuTag->addAction( actSaveSelected );
+    menuTag->addSeparator();
+    menuTag->addAction( actRemoveTag );
+
+    menuView = menuBar()->addMenu( tr( "&View" ) );
+
+    menuHelp = menuBar()->addMenu( tr( "&Help" ) );
+    menuHelp->addAction( actHelp );
+    menuHelp->addSeparator();
+    menuHelp->addAction( actAbout );
+}
+
+void mttMainWin::slotDockFormatLegendChanged( bool visible )
+{
+    if ( visible && !legendButton->isChecked() )
+        legendButton->setChecked( true );
+    if ( !visible && legendButton->isChecked() )
+        legendButton->setChecked( false );
+}
+
+void mttMainWin::slotFormatEnableAutoUpdate( bool enabled )
+{
+    slotFormatUpdatePreview();
+}
+
+void mttMainWin::slotFormatUpdatePreview( void )
+{
+    if ( formatType->currentIndex() == 0 ) { // Filename to Tag
+        int i;
+        QString filename;
+        QStringList strList;
+
+        filename = ( treeView->currentIndex().sibling( treeView->currentIndex().row(), 0 ) ).data( Qt::DisplayRole ).toString();
+
+        // Remove the extension from the filename
+        for ( i = ( filename.length() - 1 ); i >= 0; i-- )
+            if ( filename[i] == '.' )
+                break;
+        if ( i )
+            filename = filename.left( i );
+
+        strList = getTagsFromFilename( filename );
+
+        artistLabel->setText( strList.at( 0 ) );
+        albumLabel->setText( strList.at( 1 ) );
+        titleLabel->setText( strList.at( 2 ) );
+        trackLabel->setText( strList.at( 3 ) );
+        commentLabel->setText( strList.at( 4 ) );
+        yearLabel->setText( strList.at( 5 ) );
+        genreLabel->setText( strList.at( 6 ) );
+    }
+    else { // Tag to filename
+    }
+}
+
+QStringList mttMainWin::getTagsFromFilename( QString filename )
+{
+        int idx = 0, offset = 0, previdx = 0;
+        QRegExp rx("%[aAtTcyg]\\b");
+        QString str;
+        QList<int> idxList;
+        QList<QString> strList;
+        bool done = false;
+        QString artist, album, track, title, year, comment, genre;
+
+        // Find the format fields in the format string
+        while ( ( idx = rx.indexIn( format->currentText(), offset ) ) != -1) {
+            idxList << idx;
+            str = rx.cap();
+            strList << str;
+            offset = idx + str.length();
+            //qDebug( QString::number( idx ).toUtf8().constData() );
+            //qDebug( QString::number( offset ).toUtf8().constData() );
+            //QMessageBox::information( this, "Match", str );
+        }
+
+        // Match the fields with part of the filename
+        for ( int i = 0; ( i < idxList.count() ) && !done; i++ ) {
+            QString seperator;
+
+            // Create the seperator
+            for ( int j = idxList.at( i ) + 2; j < ( ( i == ( idxList.count() - 1 ) ) ? format->currentText().length() : idxList.at( i + 1 ) ); j++ ) {
+                seperator[ j - idxList.at( i ) - 2 ] = format->currentText()[j];
+            }
+
+            //QMessageBox::information( this, "Seperator", seperator );
+            if ( ( ( seperator.length() == 0 ) && ( i != ( idxList.count() - 1 ) ) ) || ( ( idx = filename.indexOf( seperator, previdx, Qt::CaseSensitive ) ) == -1 ) )
+                done = true; // There is no reason to try to match the rest
+            else {
+                if ( idx == previdx ) // The only reason for this to happen is that we are at the last field of the format
+                    idx = filename.length();
+
+                QString s;
+                QString f = strList.at(i);
+
+                for ( int k = previdx; k < idx; k++ )
+                    s[ k - previdx ] = filename[k];
+
+                if ( f == "%a" )
+                    artist = s ;
+                else if ( f == "%A" )
+                    album = s;
+                else if ( f == "%t" )
+                    title = s;
+                else if ( f == "%T" )
+                    track = s;
+                else if ( f == "%c" )
+                    comment = s;
+                else if ( f == "%y" )
+                    year = s;
+                else if ( f == "%g" )
+                    genre = s;
+                else
+                    QMessageBox::critical( this, tr( "Invalid format field!" ), tr( "Invalid format field " ) + f + tr( ". Please check the format you typed." ) );
+            }
+            previdx = idx + seperator.length();
+        }
+
+        QStringList l;
+        l << artist << album << title << track << comment << year << genre;
+        return l;
+}
+
+void mttMainWin::slotFormatEdited()
+{
+    if ( dockFormat->isVisible() && autoUpd->isChecked() )
+        slotFormatUpdatePreview();
 }

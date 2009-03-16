@@ -16,7 +16,9 @@
 #include <QDir>
 #include <QStringList>
 #include <QStandardItemModel>
+#include <QAction>
 #include <QMenuBar>
+#include <QMenu>
 #include <QProgressBar>
 #include <QDockWidget>
 #include <QLineEdit>
@@ -26,11 +28,12 @@
 #include <QLabel>
 #include <QTreeView>
 #include <QCheckBox>
+#include <QPushButton>
+#include <QMainWindow>
 
-#include "ui_mainform.h"
 #include "mtttreeview.h"
 
-class mttMainWin : public QMainWindow, private Ui::MainWindow
+class mttMainWin : public QMainWindow
 {
   Q_OBJECT
 
@@ -50,6 +53,12 @@ private:
 	QStandardItemModel renumModel;
 	QListView *listView;
     mttTreeView *treeView;
+    QDockWidget *dockDetails, *dockEdit, *dockRenum, *dockFormat, *dockFormatLegend;
+
+    // Menubar
+    QAction *actOpenFolder, *actOpenFiles, *actExit, *actSaveAll, *actSaveSelected, *actRemoveTag,
+            *actHelp, *actAbout;
+    QMenu *menuFile, *menuTag, *menuView, *menuHelp;
 
     // Needed for dockEdit
 	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
@@ -59,9 +68,14 @@ private:
 	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
 
     // Needed for dockFormat
-    QComboBox *format;
+    QComboBox *format, *formatType;
     QCheckBox *autoUpd;
     QLabel *titleLabel, *artistLabel, *albumLabel, *commentLabel, *yearLabel, *trackLabel, *genreLabel;
+    QPushButton *updatePreviewButton, *legendButton;
+
+    void createActions();
+    void createMenus();
+    QStringList getTagsFromFilename( QString );
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
@@ -136,6 +150,12 @@ protected slots:
     virtual void slotDownButtonClicked();
     virtual void slotRenumButtonClicked( bool );
     virtual void slotFormatChanged( const QString& );
+    virtual void slotAutoPreviewChanged( int );
+    virtual void slotLegendToggle( bool );
+    virtual void slotDockFormatLegendChanged( bool );
+    virtual void slotFormatEnableAutoUpdate( bool );
+    virtual void slotFormatUpdatePreview();
+    virtual void slotFormatEdited();
 };
 
 #endif
