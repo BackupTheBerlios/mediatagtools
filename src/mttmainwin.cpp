@@ -25,6 +25,7 @@
 #include <QTime>
 #include <QStatusBar>
 #include <QApplication>
+#include <QStackedLayout>
 
 #include <fileref.h>
 #include <tag.h>
@@ -215,23 +216,27 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 	tabifyDockWidget( dockRenum, dockDetails );
 
     // Filename format dock
-    QFrame *formatFrame, *previewFrame;
+    QFrame *formatFrame, *previewTagFrame, *previewFnameFrame;
     QGridLayout *formatLayout;
-    QFormLayout *previewLayout;
+    QStackedLayout *stackedLayout;
+    QFormLayout *previewTagLayout;
+    QFrame *pFrame;
+    QBoxLayout *previewFnameLayout;
 
     dockFormat = new QDockWidget( tr("Filename Format"), this );
     menuView->addAction( dockFormat->toggleViewAction() );
     formatFrame = new QFrame( dockFormat );
     formatLayout = new QGridLayout( formatFrame );
-    previewFrame = new QFrame( formatFrame );
-    previewLayout = new QFormLayout( previewFrame );
-    titleLabel = new QLabel( previewFrame );
-    artistLabel = new QLabel( previewFrame );
-    albumLabel = new QLabel( previewFrame );
-    yearLabel = new QLabel( previewFrame );
-    genreLabel = new QLabel( previewFrame );
-    commentLabel = new QLabel( previewFrame );
-    trackLabel = new QLabel( previewFrame );
+    stackedLayout = new QStackedLayout( formatFrame );
+    previewTagFrame = new QFrame( formatFrame );
+    previewTagLayout = new QFormLayout( previewTagFrame );
+    titleLabel = new QLabel( previewTagFrame );
+    artistLabel = new QLabel( previewTagFrame );
+    albumLabel = new QLabel( previewTagFrame );
+    yearLabel = new QLabel( previewTagFrame );
+    genreLabel = new QLabel( previewTagFrame );
+    commentLabel = new QLabel( previewTagFrame );
+    trackLabel = new QLabel( previewTagFrame );
 
     formatType = new QComboBox( formatFrame );
     formatType->addItem( QString( tr( "Filename to Tag" ) ) );
@@ -250,21 +255,45 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     autoUpd = new QCheckBox( tr("Auto Update Preview"), formatFrame );
     autoUpd->setToolTip( tr( "Click to enable automatic update of the preview" ) );
     formatLayout->addWidget( autoUpd, 2, 0, 1, 3 );
-    updatePreviewButton = new QPushButton( tr( "Update Preview" ) , previewFrame );
+    updatePreviewButton = new QPushButton( tr( "Update Preview" ) , previewTagFrame );
     updatePreviewButton->setToolTip( tr( "Press to manually update preview" ) );
     formatLayout->addWidget( updatePreviewButton, 2, 3, 1, 2 );
     formatLayout->addWidget( new QLabel( tr("<b><u>Preview</u></b>") ), 3, 0 );
 
-    previewLayout->addRow( QString( tr("Title:" ) ), titleLabel );
-    previewLayout->addRow( QString( tr("Artist:") ), artistLabel );
-    previewLayout->addRow( QString( tr("Album:") ), albumLabel );
-    previewLayout->addRow( QString( tr("Year:") ), yearLabel );
-    previewLayout->addRow( QString( tr("Genre:") ), genreLabel );
-    previewLayout->addRow( QString( tr("Comment:") ), commentLabel );
-    previewLayout->addRow( QString( tr("Track:") ), trackLabel );
-    previewFrame->setLayout( previewLayout );
-    previewFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
-    formatLayout->addWidget( previewFrame, 4, 0, 7, 5 );
+    pFrame = new QFrame( formatFrame );
+
+    previewTagLayout->addRow( QString( tr("Title:" ) ), titleLabel );
+    previewTagLayout->addRow( QString( tr("Artist:") ), artistLabel );
+    previewTagLayout->addRow( QString( tr("Album:") ), albumLabel );
+    previewTagLayout->addRow( QString( tr("Year:") ), yearLabel );
+    previewTagLayout->addRow( QString( tr("Genre:") ), genreLabel );
+    previewTagLayout->addRow( QString( tr("Comment:") ), commentLabel );
+    previewTagLayout->addRow( QString( tr("Track:") ), trackLabel );
+    previewTagFrame->setLayout( previewTagLayout );
+    previewTagFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+
+    previewFnameLayout = new QBoxLayout( QBoxLayout::TopToBottom, formatFrame );
+    previewFnameFrame = new QFrame( formatFrame );
+
+    previewFnameLayout->addWidget( new QLabel( tr( "<u>Current</u>" ) ) );
+    curfnameLabel = new QLabel( formatFrame );
+    curfnameLabel->setText( tr( "Test filename" ) );
+    previewFnameLayout->addWidget( curfnameLabel );
+    previewFnameLayout->addWidget( new QLabel( tr( "<u>New</u>" ) ) );
+    newfnameLabel = new QLabel( formatFrame );
+    //newfnameLabel->setStyleSheet( QString( "border: 2px solid" ) );
+    newfnameLabel->setText( tr( "New Filename" ) );
+    previewFnameLayout->addWidget( newfnameLabel );
+
+    previewFnameFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+    previewFnameFrame->setLayout( previewFnameLayout );
+
+    stackedLayout->addWidget( previewTagFrame );
+    stackedLayout->addWidget( previewFnameFrame );
+
+    pFrame->setLayout( stackedLayout );
+
+    formatLayout->addWidget( pFrame, 4, 0, 7, 5 );
 
     formatFrame->setLayout( formatLayout );
     dockFormat->setWidget( formatFrame );
@@ -317,6 +346,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( dockFormatLegend, SIGNAL( visibilityChanged( bool ) ), this, SLOT( slotDockFormatLegendChanged( bool ) ) );
     connect( updatePreviewButton, SIGNAL( clicked( bool ) ), this, SLOT( slotFormatUpdatePreview() ) );
     connect( format->lineEdit(), SIGNAL( textEdited( const QString& ) ), this, SLOT( slotFormatEdited() ) );
+
+    connect( formatType, SIGNAL( activated( int ) ), stackedLayout, SLOT( setCurrentIndex( int ) ) );
 
     // Signal & Slot connections for menubar
     connect( actExit, SIGNAL( triggered() ), this, SLOT( close() ) );
@@ -1190,8 +1221,10 @@ void mttMainWin::slotSelectionChange( const QModelIndex &current, const QModelIn
 	}
 	ignoreChange = false;
 
-    if ( dockFormat->isVisible() && autoUpd->isChecked() )
+    if ( dockFormat->isVisible() && autoUpd->isChecked() ) {
         slotFormatUpdatePreview();
+        slotFormatUpdateFnamePreview( current );
+    }
 }
 
 void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItemSelection &previous )
@@ -1943,4 +1976,47 @@ void mttMainWin::slotFormatEdited()
 {
     if ( dockFormat->isVisible() && autoUpd->isChecked() )
         slotFormatUpdatePreview();
+}
+
+void mttMainWin::slotFormatUpdateFnamePreview( const QModelIndex &current )
+{
+    QString curfname, newfname, cformat;
+    bool done = false;
+
+    curfname = current.model()->data( current.sibling( current.row(), 0 ) ).toString();
+    curfnameLabel->setText( curfname );
+
+    cformat = format->currentText();
+    while ( !done ) {
+        if ( cformat.startsWith( "%a" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 2 ) ).toString();
+        if ( cformat.startsWith( "%A" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 3 ) ).toString();
+        if ( cformat.startsWith( "%t" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 1 ) ).toString();
+        if ( cformat.startsWith( "%T" ) ) {
+            if ( current.model()->data( current.sibling( current.row(), 7 ) ).toInt() < 10 )
+                newfname += '0';
+            newfname += current.model()->data( current.sibling( current.row(), 7 ) ).toString();
+        }
+        if ( cformat.startsWith( "%y" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 4 ) ).toString();
+        if ( cformat.startsWith( "%g" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 5 ) ).toString();
+        if ( cformat.startsWith( "%c" ) )
+            newfname += current.model()->data( current.sibling( current.row(), 6 ) ).toString();
+        cformat.remove( 0, 2 );
+
+        if ( cformat == "" )
+            done = true;
+        else {
+            newfname += cformat.left( cformat.indexOf( "%" ) );
+            cformat.remove( 0, cformat.indexOf( "%" ) );
+            if ( cformat == "" )
+                done = true;
+        }
+    }
+    newfname += curfname.right( curfname.length() - curfname.lastIndexOf( "." ) );
+
+    newfnameLabel->setText( newfname );
 }

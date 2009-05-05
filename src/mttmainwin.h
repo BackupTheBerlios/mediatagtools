@@ -71,6 +71,7 @@ private:
     QComboBox *format, *formatType;
     QCheckBox *autoUpd;
     QLabel *titleLabel, *artistLabel, *albumLabel, *commentLabel, *yearLabel, *trackLabel, *genreLabel;
+    QLabel *curfnameLabel, *newfnameLabel;
     QPushButton *updatePreviewButton, *legendButton;
 
     void createActions();
@@ -156,6 +157,7 @@ protected slots:
     virtual void slotFormatEnableAutoUpdate( bool );
     virtual void slotFormatUpdatePreview();
     virtual void slotFormatEdited();
+    virtual void slotFormatUpdateFnamePreview( const QModelIndex & );
 };
 
 #endif

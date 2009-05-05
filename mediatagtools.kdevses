@@ -3,10 +3,10 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="2" >
   <Doc0 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.h" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="159" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-   <View0 Encoding="" line="1768" Type="Source" />
+   <View0 Encoding="" line="2019" Type="Source" />
   </Doc1>
  </DocsAndViews>
  <pluginList>
@@ -21,12 +21,14 @@
   <kdevbookmarks>
    <bookmarks>
     <bookmark url="/home/oscar/Projects/mediatagtools/src/mttmainwin.cpp" >
-     <mark line="307" />
-     <mark line="174" />
-     <mark line="208" />
-     <mark line="1672" />
-     <mark line="263" />
-     <mark line="383" />
+     <mark line="426" />
+     <mark line="1876" />
+     <mark line="1980" />
+     <mark line="351" />
+     <mark line="182" />
+     <mark line="302" />
+     <mark line="217" />
+     <mark line="1172" />
     </bookmark>
    </bookmarks>
   </kdevbookmarks>
