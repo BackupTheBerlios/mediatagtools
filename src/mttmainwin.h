@@ -158,6 +158,10 @@ protected slots:
     virtual void slotFormatUpdatePreview();
     virtual void slotFormatEdited();
     virtual void slotFormatUpdateFnamePreview( const QModelIndex & );
+    virtual void slotNotImplemented( void );
+    virtual void slotItemChanged( QStandardItem * );
+    virtual void closeEvent(QCloseEvent *event);
+    virtual void readSettings( void );
 };
 
 #endif

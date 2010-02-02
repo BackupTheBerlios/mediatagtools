@@ -26,6 +26,8 @@
 #include <QStatusBar>
 #include <QApplication>
 #include <QStackedLayout>
+#include <QtDebug>
+#include <QSettings>
 
 #include <fileref.h>
 #include <tag.h>
@@ -111,109 +113,113 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     treeModel.setHorizontalHeaderLabels( header );
 
     // Signal & Slot connections for TreeView
-	connect( treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotSelectionChange(const QModelIndex&, const QModelIndex&)) );
-	connect( treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(slotSelectionChange(const QItemSelection&, const QItemSelection&)) );
+    connect( treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotSelectionChange(const QModelIndex&, const QModelIndex&)) );
+    connect( treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(slotSelectionChange(const QItemSelection&, const QItemSelection&)) );
+    connect( &treeModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(slotItemChanged(QStandardItem *)));
 
     // Progress bar & Status Bar
     progress.setRange( 0, 100 );
     progress.setValue( 100 );
     statusBar()->showMessage( tr( "Ready" ) );
 
-	// Add Dock Widgets
-	// ----------------
-	// Detail Dock
-	QFrame *detailFrame;
-	QFormLayout *detailLayout;
+    // Add Dock Widgets
+    // ----------------
+    // Detail Dock
+    QFrame *detailFrame;
+    QFormLayout *detailLayout;
 
-	dockDetails = new QDockWidget( tr("Details"), this );
+    dockDetails = new QDockWidget( tr("Details"), this );
     menuView->addAction( dockDetails->toggleViewAction() );
-	detailFrame = new QFrame( dockDetails );
-	detailLayout = new QFormLayout( detailFrame );
+    detailFrame = new QFrame( dockDetails );
+    detailLayout = new QFormLayout( detailFrame );
 
-	lengthLabel = new QLabel();
-	detailLayout->addRow( tr("Length:"), lengthLabel );
-	bitrateLabel = new QLabel();
-	detailLayout->addRow( tr("Bitrate:"), bitrateLabel );
-	sampleRateLabel = new QLabel();
-	detailLayout->addRow( tr("Sample Rate:"), sampleRateLabel );
-	channelLabel = new QLabel();
-	detailLayout->addRow( tr("Channels:"), channelLabel );
-	detailFrame->setLayout( detailLayout );
-	dockDetails->setWidget( detailFrame );
-	this->addDockWidget( Qt::RightDockWidgetArea, dockDetails );
+    lengthLabel = new QLabel();
+    detailLayout->addRow( tr("Length:"), lengthLabel );
+    bitrateLabel = new QLabel();
+    detailLayout->addRow( tr("Bitrate:"), bitrateLabel );
+    sampleRateLabel = new QLabel();
+    detailLayout->addRow( tr("Sample Rate:"), sampleRateLabel );
+    channelLabel = new QLabel();
+    detailLayout->addRow( tr("Channels:"), channelLabel );
+    detailFrame->setLayout( detailLayout );
+    dockDetails->setWidget( detailFrame );
+    dockDetails->setObjectName(QString("Details"));
+    this->addDockWidget( Qt::RightDockWidgetArea, dockDetails );
 
-	// Edit Dock
-	QFrame *editFrame;
-	QFormLayout *formLayout;
-	dockEdit = new QDockWidget( tr("Edit"), this );
+    // Edit Dock
+    QFrame *editFrame;
+    QFormLayout *formLayout;
+    dockEdit = new QDockWidget( tr("Edit"), this );
     menuView->addAction( dockEdit->toggleViewAction() );
-	editFrame = new QFrame(dockEdit);
-	formLayout = new QFormLayout( editFrame );
+    editFrame = new QFrame(dockEdit);
+    formLayout = new QFormLayout( editFrame );
 
-	titleEdit = new QLineEdit( editFrame );
-	formLayout->addRow( tr("Title"), titleEdit );
-	artistEdit = new QLineEdit( editFrame );
-	formLayout->addRow( tr("Artist"), artistEdit );
-	albumEdit = new QLineEdit( editFrame );
-	formLayout->addRow( tr("Album"), albumEdit );
-	yearEdit = new QLineEdit( editFrame );
-	yearEdit->setInputMask( "0000" );
-	formLayout->addRow( tr("Year"), yearEdit );
-	genreEdit = new QComboBox( editFrame );
-	genreEdit->setDuplicatesEnabled( false );
-	genreEdit->setEditable( true );
-	TagLib::StringList sl;
-	QStringList qsl;
-	sl = TagLib::ID3v1::genreList();
-	for (unsigned int i=0;i<sl.size();i++)
-		qsl << TStringToQString( sl[i] );
-	genreEdit->insertItems( 0, qsl );
-	formLayout->addRow( tr("Genre"), genreEdit );
-	commentEdit = new QLineEdit( editFrame );
-	formLayout->addRow( tr("Comment"), commentEdit );
-	trackEdit = new QLineEdit( editFrame );
-	trackEdit->setInputMask( "0000" );
-	formLayout->addRow( tr("Track"), trackEdit );
-	
-	editFrame->setLayout( formLayout );
-	dockEdit->setWidget( editFrame );
-	this->addDockWidget( Qt::RightDockWidgetArea, dockEdit );
-	//tabifyDockWidget( dockDetails, dockEdit );
+    titleEdit = new QLineEdit( editFrame );
+    formLayout->addRow( tr("Title"), titleEdit );
+    artistEdit = new QLineEdit( editFrame );
+    formLayout->addRow( tr("Artist"), artistEdit );
+    albumEdit = new QLineEdit( editFrame );
+    formLayout->addRow( tr("Album"), albumEdit );
+    yearEdit = new QLineEdit( editFrame );
+    yearEdit->setInputMask( "0000" );
+    formLayout->addRow( tr("Year"), yearEdit );
+    genreEdit = new QComboBox( editFrame );
+    genreEdit->setDuplicatesEnabled( false );
+    genreEdit->setEditable( true );
+    TagLib::StringList sl;
+    QStringList qsl;
+    sl = TagLib::ID3v1::genreList();
+    for (unsigned int i=0;i<sl.size();i++)
+	qsl << TStringToQString( sl[i] );
+    genreEdit->insertItems( 0, qsl );
+    formLayout->addRow( tr("Genre"), genreEdit );
+    commentEdit = new QLineEdit( editFrame );
+    formLayout->addRow( tr("Comment"), commentEdit );
+    trackEdit = new QLineEdit( editFrame );
+    trackEdit->setInputMask( "0000" );
+    formLayout->addRow( tr("Track"), trackEdit );
+    
+    editFrame->setLayout( formLayout );
+    dockEdit->setWidget( editFrame );
+    dockEdit->setObjectName(QString("Edit"));
+    this->addDockWidget( Qt::RightDockWidgetArea, dockEdit );
+    //tabifyDockWidget( dockDetails, dockEdit );
 
-	// Renumber dock
-	dockRenum = new QDockWidget( tr("Renumber"), this );
+    // Renumber dock
+    dockRenum = new QDockWidget( tr("Renumber"), this );
     menuView->addAction( dockRenum->toggleViewAction() );
-	renumModel.setSupportedDragActions( Qt::MoveAction );
+    renumModel.setSupportedDragActions( Qt::MoveAction );
 
-	QWidget *miniwin = new QWidget( this );
+    QWidget *miniwin = new QWidget( this );
 
-	listView = new QListView( this );
-	listView->setModel( &renumModel );
-	listView->setAlternatingRowColors( true );
-	listView->setSelectionMode( QAbstractItemView::SingleSelection );
-	listView->setDragEnabled( true );
-	listView->viewport()->setAcceptDrops( true );
-	listView->setDropIndicatorShown( true );
-	listView->setDragDropMode( QAbstractItemView::InternalMove );
-	listView->setSelectionBehavior( QAbstractItemView::SelectRows );
+    listView = new QListView( this );
+    listView->setModel( &renumModel );
+    listView->setAlternatingRowColors( true );
+    listView->setSelectionMode( QAbstractItemView::SingleSelection );
+    listView->setDragEnabled( true );
+    listView->viewport()->setAcceptDrops( true );
+    listView->setDropIndicatorShown( true );
+    listView->setDragDropMode( QAbstractItemView::InternalMove );
+    listView->setSelectionBehavior( QAbstractItemView::SelectRows );
 
-	QPushButton *upButton = new QPushButton( tr( "Up" ) );
-	QPushButton *downButton = new QPushButton( tr( "Down" ) );
-	QPushButton *renumButton = new QPushButton( tr( "Renumber" ) );
-	QGridLayout *layout = new QGridLayout;
+    QPushButton *upButton = new QPushButton( tr( "Up" ) );
+    QPushButton *downButton = new QPushButton( tr( "Down" ) );
+    QPushButton *renumButton = new QPushButton( tr( "Renumber" ) );
+    QGridLayout *layout = new QGridLayout;
     upButton->setAutoRepeat( true );
     upButton->setAutoRepeatDelay( 600 );
     downButton->setAutoRepeat( true );
     downButton->setAutoRepeatDelay( 600 );
-	listView->setToolTip( QString( "<b>Track renumber:</b>\n<ol><li>Select the tracks from the main view<li>Use the up & down buttons or drag & drop to change track position<li>Press the renumber button.</ol>") );
-	layout->addWidget( listView, 0, 0, 4, 2 );
-	layout->addWidget( upButton, 1, 2 );
-	layout->addWidget( downButton, 2, 2 );
-	layout->addWidget( renumButton, 4, 0, 1, 2 );
-	miniwin->setLayout( layout );
-	dockRenum->setWidget( miniwin );
-	this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
-	tabifyDockWidget( dockRenum, dockDetails );
+    listView->setToolTip( QString( "<b>Track renumber:</b>\n<ol><li>Select the tracks from the main view<li>Use the up & down buttons or drag & drop to change track position<li>Press the renumber button.</ol>") );
+    layout->addWidget( listView, 0, 0, 4, 2 );
+    layout->addWidget( upButton, 1, 2 );
+    layout->addWidget( downButton, 2, 2 );
+    layout->addWidget( renumButton, 4, 0, 1, 2 );
+    miniwin->setLayout( layout );
+    dockRenum->setWidget( miniwin );
+    dockRenum->setObjectName(QString("Renumber"));
+    this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
+    tabifyDockWidget( dockRenum, dockDetails );
 
     // Filename format dock
     QFrame *formatFrame, *previewTagFrame, *previewFnameFrame;
@@ -226,10 +232,10 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     dockFormat = new QDockWidget( tr("Filename Format"), this );
     menuView->addAction( dockFormat->toggleViewAction() );
     formatFrame = new QFrame( dockFormat );
-    formatLayout = new QGridLayout( formatFrame );
-    stackedLayout = new QStackedLayout( formatFrame );
+    formatLayout = new QGridLayout();
+    stackedLayout = new QStackedLayout();
     previewTagFrame = new QFrame( formatFrame );
-    previewTagLayout = new QFormLayout( previewTagFrame );
+    previewTagLayout = new QFormLayout();
     titleLabel = new QLabel( previewTagFrame );
     artistLabel = new QLabel( previewTagFrame );
     albumLabel = new QLabel( previewTagFrame );
@@ -245,7 +251,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     format = new QComboBox( formatFrame );
     format->setDuplicatesEnabled( false );
     format->setEditable( true );
-    format->lineEdit()->setText( QString( "%a - %tr - %t" ) );
+    format->lineEdit()->setText( QString( "%T - %a - %t" ) );
     legendButton = new QPushButton( tr( "Legend" ), dockFormat );
     legendButton->setCheckable( true );
     legendButton->setChecked( true );
@@ -297,6 +303,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     formatFrame->setLayout( formatLayout );
     dockFormat->setWidget( formatFrame );
+    dockFormat->setObjectName(QString("Filename Format"));
     this->addDockWidget( Qt::RightDockWidgetArea, dockFormat );
     tabifyDockWidget( dockFormat, dockEdit );
 
@@ -318,22 +325,23 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     formatLegendFrame->setLayout( formatLegendLayout );
     dockFormatLegend->setWidget( formatLegendFrame );
+    dockFormatLegend->setObjectName(QString("Format Legend"));
     this->addDockWidget( Qt::LeftDockWidgetArea, dockFormatLegend );
 
-	// Signal & Slot connections for dock widgets
-	connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
-	connect( artistEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotArtistChanged(const QString&) ) );
-	connect( albumEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotAlbumChanged(const QString&) ) );
-	connect( yearEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotYearChanged(const QString&) ) );
-	connect( trackEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTrackChanged(const QString&) ) );
-	connect( genreEdit, SIGNAL( editTextChanged(const QString&) ), this, SLOT( slotGenreChanged(const QString&) ) );
+    // Signal & Slot connections for dock widgets
+    connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
+    connect( artistEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotArtistChanged(const QString&) ) );
+    connect( albumEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotAlbumChanged(const QString&) ) );
+    connect( yearEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotYearChanged(const QString&) ) );
+    connect( trackEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTrackChanged(const QString&) ) );
+    connect( genreEdit, SIGNAL( editTextChanged(const QString&) ), this, SLOT( slotGenreChanged(const QString&) ) );
 
-	connect( titleEdit, SIGNAL( returnPressed() ), this, SLOT( slotTitleEnter() ) );
-	connect( artistEdit, SIGNAL( returnPressed() ), this, SLOT( slotArtistEnter() ) );
-	connect( albumEdit, SIGNAL( returnPressed() ), this, SLOT( slotAlbumEnter() ) );
-	connect( yearEdit, SIGNAL( returnPressed() ), this, SLOT( slotYearEnter() ) );
-	connect( commentEdit, SIGNAL( returnPressed() ), this, SLOT( slotCommentEnter() ) );
-	//connect( trackEdit, SIGNAL( returnPressed() ), this, SLOT( slotSaveTags() ) );
+    connect( titleEdit, SIGNAL( returnPressed() ), this, SLOT( slotTitleEnter() ) );
+    connect( artistEdit, SIGNAL( returnPressed() ), this, SLOT( slotArtistEnter() ) );
+    connect( albumEdit, SIGNAL( returnPressed() ), this, SLOT( slotAlbumEnter() ) );
+    connect( yearEdit, SIGNAL( returnPressed() ), this, SLOT( slotYearEnter() ) );
+    connect( commentEdit, SIGNAL( returnPressed() ), this, SLOT( slotCommentEnter() ) );
+    //connect( trackEdit, SIGNAL( returnPressed() ), this, SLOT( slotSaveTags() ) );
 
     connect( upButton, SIGNAL( pressed() ), this, SLOT( slotUpButtonClicked() ) );
     connect( downButton, SIGNAL( pressed() ), this, SLOT( slotDownButtonClicked() ) );
@@ -353,6 +361,11 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( actExit, SIGNAL( triggered() ), this, SLOT( close() ) );
     connect( actOpenFolder, SIGNAL( triggered() ), this, SLOT( slotOpen() ) );
     connect( actOpenFiles, SIGNAL( triggered() ), this, SLOT( slotOpenFiles() ) );
+    connect( actHelp, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actAbout, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actRemoveTag, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actSaveAll, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actSaveSelected, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
 
     // Create list for taglib known filetypes
     TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
@@ -361,6 +374,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     }
 
     //new ModelTest(&treeModel, this);
+    readSettings();
 }
 
 mttMainWin::~mttMainWin()
@@ -1768,7 +1782,7 @@ void mttMainWin::slotRenumButtonClicked( bool checked )
     for( int i=0; i<renumModel.rowCount(); i++ ) {
         li = renumModel.findItems( l.at(l.count()/8+i).data().toString() ); // Take renum model item that matches the filename of the selected treemodel item
         treeModel.setData( l.at( 7*l.count()/8 + i ), QVariant( li[0]->row() + 1 ) );
-        qDebug( renumModel.data( renumModel.index( i, 0 ), Qt::UserRole ).toString().toUtf8().constData() );
+        qDebug() << renumModel.data( renumModel.index( i, 0 ), Qt::UserRole ).toString();
     }
 }
 
@@ -1780,16 +1794,16 @@ void mttMainWin::setTagChanged( const QModelIndex &index, bool changed )
         f.setBold( true );
         f.setUnderline( true );
         treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
-        for ( int i=0; i<8; i++ )
-            treeModel.setData( index.sibling( index.row(), i ), Qt::red, Qt::BackgroundRole );
+        //for ( int i=0; i<8; i++ )
+            treeModel.setData( index.sibling( index.row(), 0 ), Qt::red, Qt::DecorationRole );
     }
     else {
 /*        QFont f;
         f.setBold( false );
         f.setUnderline( false );
         treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
-        for ( int i=0; i<8; i++ )
-            treeModel.setData( index.sibling( index.row(), i ), QVariant(), Qt::BackgroundRole );
+        //for ( int i=0; i<8; i++ )
+            treeModel.setData( index.sibling( index.row(), 0 ), QVariant(), Qt::DecorationRole );
     }
 }
 
@@ -2019,4 +2033,29 @@ void mttMainWin::slotFormatUpdateFnamePreview( const QModelIndex &current )
     newfname += curfname.right( curfname.length() - curfname.lastIndexOf( "." ) );
 
     newfnameLabel->setText( newfname );
+}
+
+void mttMainWin::slotNotImplemented( void )
+{
+    QMessageBox::information( this, "Information", "Not implemented yet!" );
+}
+
+void mttMainWin::slotItemChanged( QStandardItem *item )
+{
+    setTagChanged( item->index(), true );
+}
+
+void mttMainWin::closeEvent(QCloseEvent *event)
+{
+    QSettings settings("mediatagtools", "mtt");
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
+    QMainWindow::closeEvent(event);
+}
+
+void mttMainWin::readSettings()
+{
+    QSettings settings("mediatagtools", "mtt");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
 }

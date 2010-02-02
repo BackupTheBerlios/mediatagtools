@@ -1,7 +1,10 @@
 Qt4 Porting:
 * Window icon (get rid of that pink/purple X!)
 
-* Pressing Enter in QComboBox should send the focus to the LineEdit below it. Should I subclass it?
+Normal:
+* Complete Filename Format dock functionality
+* Save tags
+* Show album art if available
 * Make the color of changed items configurable
 * New name and old name shouldn't be the same while renaming...
 * Custom tags for mp3/ogg files
@@ -9,3 +12,6 @@ Qt4 Porting:
 * Add Music Brainz support
 * Convert tags from any iso charset to utf8
 * Show an error message when a tag cannot be saved for some reason
+
+Minor:
+* Pressing Enter in QComboBox should send the focus to the LineEdit below it. Should I subclass it?

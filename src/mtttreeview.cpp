@@ -40,11 +40,11 @@ void mttTreeView::contextMenuEvent( QContextMenuEvent *e )
     menu.addAction( tr( "Add file(s)" ), parent, SLOT(slotOpenFiles()) );
     menu.addAction( tr( "Remove file(s)" ), parent, SLOT(slotRemoveFiles()) );
     menu.addSeparator();
-    menu.addAction( tr( "Write tags" ), parent, SLOT(slotSaveTags()) );
-    menu.addAction( tr( "Write selected tags only" ), parent, SLOT(slotSaveSelectedTags()) );
+    menu.addAction( tr( "Write tags" ), parent, SLOT(slotNotImplemented()) );
+    menu.addAction( tr( "Write selected tags only" ), parent, SLOT(slotNotImplemented()) );
     menu.addAction( tr( "Remove tag" ), parent, SLOT(slotRemoveTags()) );
     menu.addSeparator();
     menu.addMenu( &corCaseMenu );
-    menu.addAction( tr( "Fix tag (iso->utf8)" ), parent, SLOT(slotFixTags()) );
+    menu.addAction( tr( "Fix tag (iso->utf8)" ), parent, SLOT(slotNotImplemented()) );
     menu.exec( e->globalPos() );
 }
