@@ -57,7 +57,7 @@ private:
 
     // Menubar
     QAction *actOpenFolder, *actOpenFiles, *actExit, *actSaveAll, *actSaveSelected, *actRemoveTag,
-            *actHelp, *actAbout;
+            *actHelp, *actAbout, *actAboutQt;
     QMenu *menuFile, *menuTag, *menuView, *menuHelp;
 
     // Needed for dockEdit
@@ -162,6 +162,8 @@ protected slots:
     virtual void slotItemChanged( QStandardItem * );
     virtual void closeEvent(QCloseEvent *event);
     virtual void readSettings( void );
+    virtual void slotAboutQt( void );
+    virtual void slotAbout( void );
 };
 
 #endif

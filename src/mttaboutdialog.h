@@ -10,28 +10,16 @@
 //
 //
 
+#include <QDialog>
+
 #ifndef MTTABOUTDIALOG_H
 #define MTTABOUTDIALOG_H
 
-#include "about.h"
-
-class mttAboutDialog : public AboutDialog
+class mttAboutDialog : public QDialog
 {
-  Q_OBJECT
 
 public:
-  mttAboutDialog(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
-  ~mttAboutDialog();
-  /*$PUBLIC_FUNCTIONS$*/
-
-public slots:
-  /*$PUBLIC_SLOTS$*/
-
-protected:
-  /*$PROTECTED_FUNCTIONS$*/
-
-protected slots:
-  /*$PROTECTED_SLOTS$*/
+  mttAboutDialog(QWidget* parent = 0, Qt::WindowFlags f = 0 );
 
 };
 

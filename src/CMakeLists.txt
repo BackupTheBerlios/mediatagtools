@@ -12,16 +12,26 @@ mtttreeview.cpp
 moc_mttmainwin.cpp
 #modeltest.cpp
 #moc_modeltest.cpp
-#mttaboutdialog.cpp
+mttaboutdialog.cpp
 #mttcfdialog.cpp
 #qclineedit.cpp
 )
 
-#QT4_WRAP_UI( mttSRCS mainform.ui )
+set(mttRCCS
+mttres.qrc
+forms/about.qrc
+)
 
-ADD_EXECUTABLE(mediatagtools.exe ${mttSRCS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+QT4_WRAP_UI( mttSRCS forms/about.ui )
+
+QT4_ADD_RESOURCES(mtt_RCC_SRCS ${mttRCCS})
+
+ADD_EXECUTABLE(mediatagtools.exe ${mttSRCS} ${mtt_RCC_SRCS})
 
 TARGET_LINK_LIBRARIES( mediatagtools.exe ${TAGLIB_LIBRARIES}
 ${QT_QTCORE_LIBRARY_DEBUG}
-${QT_QTGUI_LIBRARY_DEBUG})
+${QT_QTGUI_LIBRARY_DEBUG}
+${QT_QTUITOOLS_LIBRARY_DEBUG})
       

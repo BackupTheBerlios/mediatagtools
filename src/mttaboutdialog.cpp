@@ -10,9 +10,8 @@
 //
 //
 
-#include <qlabel.h>
-#include <qpainter.h>
-#include <qimage.h>
+#include <QtUiTools/QtUiTools>
+#include <QVBoxLayout>
 
 #include "mttaboutdialog.h"
 #include "config.h"
@@ -20,19 +19,16 @@
 #include "revision.h"
 #endif
 
-mttAboutDialog::mttAboutDialog(QWidget* parent, const char* name, bool modal, WFlags fl)
-: AboutDialog(parent,name, modal,fl)
+mttAboutDialog::mttAboutDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent,f)
 {
-    ProgNameLabel->setText( QString( "<p align=\"center\"><b><h3>Media Tag Tools v." ) + VERSION + "</h3></b></p>" );
-#ifndef RELEASE
-    ProgNameLabel->setText( QString( "<p align=\"center\"><b><h3>Media Tag Tools v." ) + VERSION + "-" + RV_SNAPSHOT_VERSION + "</h3></b></p>" );
-#endif
+    QUiLoader loader;
+
+    QFile file(":/forms/about.ui");
+    file.open(QFile::ReadOnly);
+    QWidget *formWidget = loader.load(&file, this);
+    file.close();
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(formWidget);
+    setLayout(layout);
 }
-
-mttAboutDialog::~mttAboutDialog()
-{
-}
-
-/*$SPECIALIZATION$*/
-
 

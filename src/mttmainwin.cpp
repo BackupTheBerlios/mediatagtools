@@ -41,6 +41,8 @@
 
 //#include "qclineedit.h"
 //#include "qdndlistview.h"
+#include "ui_about.h"
+#include "mttaboutdialog.h"
 #include "mttmainwin.h"
 #include "mttitemdelegate.h"
 #include "mttfile.h"
@@ -362,7 +364,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( actOpenFolder, SIGNAL( triggered() ), this, SLOT( slotOpen() ) );
     connect( actOpenFiles, SIGNAL( triggered() ), this, SLOT( slotOpenFiles() ) );
     connect( actHelp, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
-    connect( actAbout, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actAboutQt, SIGNAL( triggered() ), this, SLOT( slotAboutQt() ) );
+    connect( actAbout, SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
     connect( actRemoveTag, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actSaveAll, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actSaveSelected, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
@@ -1851,6 +1854,7 @@ void mttMainWin::createActions( void )
     actRemoveTag = new QAction( tr( "Remove selected tags" ), this );
     actHelp = new QAction( tr( "Help" ), this );
     actAbout = new QAction( tr( "About" ), this );
+    actAboutQt = new QAction( tr( "About Qt" ), this );
 }
 
 void mttMainWin::createMenus( void )
@@ -1872,6 +1876,7 @@ void mttMainWin::createMenus( void )
     menuHelp = menuBar()->addMenu( tr( "&Help" ) );
     menuHelp->addAction( actHelp );
     menuHelp->addSeparator();
+    menuHelp->addAction( actAboutQt );
     menuHelp->addAction( actAbout );
 }
 
@@ -2058,4 +2063,19 @@ void mttMainWin::readSettings()
     QSettings settings("mediatagtools", "mtt");
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
+}
+
+void mttMainWin::slotAboutQt()
+{
+    QMessageBox::aboutQt(this);
+}
+
+void mttMainWin::slotAbout()
+{
+    QDialog aboutd;
+    Ui::AboutDialog ui;
+    ui.setupUi(&aboutd);
+
+    ui.ProgNameLabel->setText(QString(ui.ProgNameLabel->text()).replace(QString("v."), QString("v.") + VERSION));
+    aboutd.exec();
 }
