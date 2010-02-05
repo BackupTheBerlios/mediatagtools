@@ -1,3 +1,5 @@
 #!/bin/sh
 scripts/version.sh
-ccmake -G "Unix Makefiles" .
+mkdir -p build
+cd build
+ccmake -G "Unix Makefiles" ..
