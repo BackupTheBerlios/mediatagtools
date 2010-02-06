@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Find out Media Tag Tools version
-echo "#define VERSION \"`cat VERSION`\"" > src/config.h
 if [ -e RELEASE ];then
 	if [ "`grep RELEASE src/config.h`" == "" ];then
 		echo
@@ -15,5 +14,6 @@ else
 	VERSION="`cat ../VERSION`-`cat SNAPSHOT_VERSION`"
 	cd ..
 fi
+echo "#define VERSION \"$VERSION\"" > src/config.h
 
 echo "MTT version	= $VERSION"

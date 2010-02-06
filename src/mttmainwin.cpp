@@ -28,6 +28,7 @@
 #include <QStackedLayout>
 #include <QtDebug>
 #include <QSettings>
+#include <QPointer>
 
 #include <fileref.h>
 #include <tag.h>
@@ -107,6 +108,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     treeView->setRootIsDecorated( true );
     //treeView->setItemDelegate( (QAbstractItemDelegate*) new mttItemDelegate() );
     treeView->setUniformRowHeights( true ); // Helps improve speed with large lists
+    treeView->setSortingEnabled( true );
     treeView->show();
 
     QStringList header;
@@ -366,7 +368,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( actHelp, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actAboutQt, SIGNAL( triggered() ), this, SLOT( slotAboutQt() ) );
     connect( actAbout, SIGNAL( triggered() ), this, SLOT( slotAbout() ) );
-    connect( actRemoveTag, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
+    connect( actRemoveTag, SIGNAL( triggered() ), this, SLOT( slotRemoveTags() ) );
     connect( actSaveAll, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actSaveSelected, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
 
@@ -403,31 +405,30 @@ void mttMainWin::addDir( QString str )
 
 void mttMainWin::addFile( QString &fname )
 {
-    mttFile *li;
+    mttFile li;
     TagLib::Tag *t;
     QList<QStandardItem *> fatherlist, newrow;
-	QStandardItem *father;
+    QStandardItem *father, *tmp;
     QList<QVariant> list;
     bool itemChanged;
 
-    li = new mttFile();
-    itemChanged = li->Open( fname );
+    itemChanged = li.Open( fname );
 
-	//qDebug( fname.toUtf8().constData() );
-	// Search if another file was opened from the same path
-	fatherlist = treeModel.findItems( curPath );
-	// If not then create a new branch
+    //qDebug( fname.toUtf8().constData() );
+    // Search if another file was opened from the same path
+    fatherlist = treeModel.findItems( curPath );
+    // If not then create a new branch
     if ( fatherlist.empty() ) {
-		father = treeModel.invisibleRootItem();
-		QStandardItem *item = new QStandardItem( curPath );
-		father->appendRow( item );
-		father = item;
+        father = treeModel.invisibleRootItem();
+        QStandardItem *item = new QStandardItem( curPath );
+        father->appendRow( item );
+        father = item;
     }
-	else
-		father = fatherlist[0];
+    else
+        father = fatherlist[0];
 
-	newrow << new QStandardItem( fname.right( fname.size() - curPath.size() -1 ) );
-    t = li->getTag();
+    newrow << new QStandardItem( fname.right( fname.size() - curPath.size() -1 ) );
+    t = li.getTag();
     if ( t ) {
        newrow << new QStandardItem( TStringToQString( t->title() ) )
             << new QStandardItem( TStringToQString( t->artist() ) )
@@ -438,15 +439,15 @@ void mttMainWin::addFile( QString &fname )
             << new QStandardItem( QString::number( t->track() ) );
     }
 
-	father->appendRow( newrow );
+    father->appendRow( newrow );
 
-	// If the file had id3v1 tag that was converted to id3v2 make it different from the others
-    if ( itemChanged ) {
-        QFont f;
-        f.setBold( true );
-        f.setUnderline( true );
-		newrow[0]->setFont( f );
-    }
+    // TODO: If the file had id3v1 tag that was converted to id3v2 make it different from the others
+//    if ( itemChanged ) {
+//        QFont f;
+//        f.setBold( true );
+//        f.setUnderline( true );
+//        newrow[0]->setFont( f );
+//    }
 }
 
 void mttMainWin::slotOpen()
@@ -561,53 +562,42 @@ void mttMainWin::populateList( QDir d )
 
 void mttMainWin::slotRemoveTags()
 {
-//     int count, current, button;
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     if ( it.current() ) {
-//         button = QMessageBox::question( this, tr( "Remove tags? -- Media Tag Tools" ), tr( "Are you sure you want to completely remove the tag(s)?" ), QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape );
-// 
-//         if ( button == QMessageBox::Yes ) {
-//             QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//             statusBar()->message( tr( QString( "Removing tags..." ) ) );
-//             count = GenListView->childCount();
-//             current = 1;
-//             progress.show();
-//             progress.setProgress( 0, count );
-//             while ( it.current() ) {
-//                 ( (mttFile *) it.current() )->removeTag();
-//                 TagLib::Tag *t;
-// 
-//                 // Show tag info
-//                 t = (( mttFile *) it.current() )->getTag();
-//                 if ( t ) {
-//                     it.current()->setText( 1, TStringToQString( t->title() ) );
-//                     it.current()->setText( 2, TStringToQString( t->artist() ) );
-//                     it.current()->setText( 3, TStringToQString( t->album() ) );
-//                     it.current()->setText( 4, QString::number( t->year() ) );
-//                     it.current()->setText( 5, TStringToQString( t->genre() ) );
-//                     it.current()->setText( 6, TStringToQString( t->comment() ) );
-//                     it.current()->setText( 7, QString::number( t->track() ) );
-//                 }
-//                 else {
-//                     it.current()->setText( 1, "" );
-//                     it.current()->setText( 2, "" );
-//                     it.current()->setText( 3, "" );
-//                     it.current()->setText( 4, "" );
-//                     it.current()->setText( 5, "" );
-//                     it.current()->setText( 6, "" );
-//                     it.current()->setText( 7, "" );
-//                 }
-// 
-//                 ++it;
-//                 progress.setProgress( current++, count );
-//             }
-// 
-//             progress.hide();
-//             statusBar()->message( tr( QString( "Done" ) ) );
-//             QApplication::restoreOverrideCursor();
-//         }
-//     }
+    QList<QModelIndex> list;
+    int i;
+    QString fullpath;
+
+    list = treeView->selectionModel()->selectedIndexes();
+
+    ignoreChange = true;
+    statusBar()->addWidget( &progress );
+    progress.setRange( 0, list.size() / 8 );
+    progress.setValue( 0 );
+    statusBar()->showMessage( tr( "Removing tags..." ) );
+
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+
+    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+        fullpath = treeModel.data( list.at(i).parent(), Qt::DisplayRole).toString() + "/" + treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ).toString();
+
+        mttFile f;
+        f.Open(fullpath);
+        f.removeTag();
+
+        //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
+        treeModel.setData( list.at(i + list.size()/8), QString() );
+        treeModel.setData( list.at(i + 2*list.size()/8), QString() );
+        treeModel.setData( list.at(i + 3*list.size()/8), QString() );
+        treeModel.setData( list.at(i + 4*list.size()/8), QString("0") );
+        treeModel.setData( list.at(i + 5*list.size()/8), QString() );
+        treeModel.setData( list.at(i + 6*list.size()/8), QString() );
+        treeModel.setData( list.at(i + 7*list.size()/8), QString("0") );
+        progress.setValue(i);
+    }
+
+    statusBar()->removeWidget( &progress );
+    statusBar()->showMessage( tr( "Done" ) );
+    QApplication::restoreOverrideCursor();
+    ignoreChange = false;
 }
 
 // void mttMainWin::slotCFormat()
@@ -1791,22 +1781,24 @@ void mttMainWin::slotRenumButtonClicked( bool checked )
 
 void mttMainWin::setTagChanged( const QModelIndex &index, bool changed )
 {
-    treeModel.setData( index.sibling( index.row(), 0 ) , changed, Qt::UserRole ); // Modify changed flag
-    if ( changed ) {
-/*        QFont f;
-        f.setBold( true );
-        f.setUnderline( true );
-        treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
-        //for ( int i=0; i<8; i++ )
-            treeModel.setData( index.sibling( index.row(), 0 ), Qt::red, Qt::DecorationRole );
-    }
-    else {
-/*        QFont f;
-        f.setBold( false );
-        f.setUnderline( false );
-        treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
-        //for ( int i=0; i<8; i++ )
-            treeModel.setData( index.sibling( index.row(), 0 ), QVariant(), Qt::DecorationRole );
+    if (!ignoreChange) {
+        treeModel.setData( index.sibling( index.row(), 0 ) , changed, Qt::UserRole ); // Modify changed flag
+        if ( changed ) {
+    /*        QFont f;
+            f.setBold( true );
+            f.setUnderline( true );
+            treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
+            //for ( int i=0; i<8; i++ )
+                treeModel.setData( index.sibling( index.row(), 0 ), Qt::red, Qt::DecorationRole );
+        }
+        else {
+    /*        QFont f;
+            f.setBold( false );
+            f.setUnderline( false );
+            treeModel.setData( index.sibling( index.row(), 0 ), f, Qt::FontRole );*/
+            //for ( int i=0; i<8; i++ )
+                treeModel.setData( index.sibling( index.row(), 0 ), QVariant(), Qt::DecorationRole );
+        }
     }
 }
 
@@ -2075,7 +2067,6 @@ void mttMainWin::slotAbout()
     QDialog aboutd;
     Ui::AboutDialog ui;
     ui.setupUi(&aboutd);
-
-    ui.ProgNameLabel->setText(QString(ui.ProgNameLabel->text()).replace(QString("v."), QString("v.") + VERSION));
+    ui.ProgNameLabel->setText(QString(ui.ProgNameLabel->text()).replace(QString("v."), QString("v.") + QString(VERSION)));
     aboutd.exec();
 }
