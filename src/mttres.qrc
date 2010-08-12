@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>forms/about.ui</file>
+        <file>icons/mediatagtools.svg</file>
+	<file>icons/media-optical-audio.png</file>
     </qresource>
 </RCC>

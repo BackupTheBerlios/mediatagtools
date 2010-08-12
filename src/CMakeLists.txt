@@ -1,13 +1,12 @@
 QT4_GENERATE_MOC( mttmainwin.h ${MTT_SOURCE_DIR}/src/moc_mttmainwin.cpp )
 QT4_GENERATE_MOC( modeltest.h ${MTT_SOURCE_DIR}/src/moc_modeltest.cpp )
-#QT4_GENERATE_MOC( mtttreeview.h ${MTT_SOURCE_DIR}/src/moc_mtttreeview.cpp )
+QT4_GENERATE_MOC( mtttablewidget.h ${MTT_SOURCE_DIR}/src/moc_mtttablewidget.cpp )
 
 set(mttSRCS 
 mediatagtools.cpp
 mttfile.cpp
 mttmainwin.cpp
 mtttreeview.cpp
-#moc_mtttreeview.cpp
 #mttitemdelegate.cpp
 moc_mttmainwin.cpp
 #modeltest.cpp
@@ -15,6 +14,9 @@ moc_mttmainwin.cpp
 mttaboutdialog.cpp
 #mttcfdialog.cpp
 #qclineedit.cpp
+mttadvtagdelegate.cpp
+mtttablewidget.cpp
+moc_mtttablewidget.cpp
 )
 
 set(mttRCCS

@@ -30,8 +30,10 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QMainWindow>
+#include <QTableWidget>
 
 #include "mtttreeview.h"
+#include "mtttablewidget.h"
 
 class mttMainWin : public QMainWindow
 {
@@ -50,10 +52,11 @@ public slots:
 
 private:
     QStandardItemModel treeModel;
-	QStandardItemModel renumModel;
-	QListView *listView;
+    QStandardItemModel renumModel;
+    QListView *listView;
+    mttTableWidget *advTable;
     mttTreeView *treeView;
-    QDockWidget *dockDetails, *dockEdit, *dockRenum, *dockFormat, *dockFormatLegend;
+    QDockWidget *dockDetails, *dockEdit, *dockRenum, *dockFormat, *dockFormatLegend, *dockAdvancedTags;
 
     // Menubar
     QAction *actOpenFolder, *actOpenFiles, *actExit, *actSaveAll, *actSaveSelected, *actRemoveTag,
@@ -61,11 +64,11 @@ private:
     QMenu *menuFile, *menuTag, *menuView, *menuHelp;
 
     // Needed for dockEdit
-	QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
-	QComboBox *genreEdit;
+    QLineEdit *titleEdit,*artistEdit,*albumEdit,*commentEdit,*yearEdit,*trackEdit;
+    QComboBox *genreEdit;
 
     // Needed for dockRenum
-	QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
+    QLabel *lengthLabel, *bitrateLabel, *sampleRateLabel, *channelLabel;
 
     // Needed for dockFormat
     QComboBox *format, *formatType;
@@ -77,6 +80,7 @@ private:
     void createActions();
     void createMenus();
     QStringList getTagsFromFilename( QString );
+    QString getFilenameFromTags(const QModelIndex &);
 
 protected:
   /*$PROTECTED_FUNCTIONS$*/
@@ -98,24 +102,21 @@ protected:
     void saveTags( bool );
     void changeColumnText( int, const QString & );
     void setTagChanged( const QModelIndex &, bool changed = true );
+    bool isTagChanged( const QModelIndex & );
 
     static const char x_col = 0;
     static const char field_col = 1;
     static const char field_id_col = 2;
     static const char value_col = 3;
+    static const char num_col = 9;
 
 protected slots:
   /*$PROTECTED_SLOTS$*/
     virtual void slotOpen();
     virtual void slotOpenFiles();
     virtual void slotRemoveTags();
-    /*virtual void slotSaveTags();
+    virtual void slotSaveTags();
     virtual void slotSaveSelectedTags();
-    virtual void slotCFormat();
-    virtual void slotDisableUsingFormat( bool );
-    virtual void slotRenameFiles();
-    virtual void slotAbout();
-    virtual void slotCorrectCase();*/
     virtual void slotFirstUpSentence();
     virtual void slotFirstUpWords();
     virtual void slotAllUpper();
@@ -141,8 +142,7 @@ protected slots:
     virtual void slotYearChanged( const QString& );
     virtual void slotAlbumChanged( const QString& );
     virtual void slotArtistChanged( const QString& );
-/*    virtual void slotCreateTags();
-    virtual void slotAdvTagValueChanged( int, int );
+/*    virtual void slotAdvTagValueChanged( int, int );
     virtual void slotRemoveAdvTags();*/
     virtual void slotRemoveFiles();
 /*    virtual void slotDroppedUris( QStringList );
@@ -164,6 +164,9 @@ protected slots:
     virtual void readSettings( void );
     virtual void slotAboutQt( void );
     virtual void slotAbout( void );
+    virtual void slotFormatApplyToTags( void );
+    virtual void slotFormatApplyToFilenames( void );
+    virtual void slotEditAdvTagTableItem( QTableWidgetItem * );
 };
 
 #endif

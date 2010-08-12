@@ -31,7 +31,7 @@ public:
     bool Open( QString filename ); // Returns true if tag has changed
     void removeTag( void );
     TagLib::Tag *getTag( bool create = false );
-    void saveTag( void );
+    bool saveTag( void );
     QString getFName( void );
     void setFName( QString );
     //TagLib::ID3v2::Tag *getID3Tag( bool create = false );

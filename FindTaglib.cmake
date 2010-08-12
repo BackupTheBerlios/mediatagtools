@@ -9,15 +9,12 @@
 #  TAGLIB_LIBRARY, where to find the Taglib library.
 
 FIND_PATH(TAGLIB_INCLUDE_DIR taglib.h
-  /usr/local/include/taglib
-  /usr/include/taglib
-  $ENV{TAGLIB_DIR}/include/taglib
+  PATHS /usr/local/include/taglib /usr/include/taglib $ENV{TAGLIB_DIR}/include/taglib
 )
 
-FIND_PATH(TAGLIB_LIBRARY_DIR tag.lib
-  /usr/local/lib
-  /usr/lib
-  $ENV{TAGLIB_DIR}/lib
+FIND_PATH(TAGLIB_LIBRARY_DIR
+  NAMES tag.lib
+  PATHS /usr/local/lib /usr/lib $ENV{TAGLIB_DIR}/lib
 )
 
 FIND_LIBRARY(TAGLIB_LIBRARY

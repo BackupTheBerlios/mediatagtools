@@ -169,9 +169,9 @@ TagLib::Tag *mttFile::getTag( bool create )
         return tag;
 }
 
-void mttFile::saveTag( void )
+bool mttFile::saveTag( void )
 {
-	fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
+    fileref = new TagLib::FileRef( QFile::encodeName( fname ).constData() );
 
     if ( ismpeg ) {
         TagLib::MPEG::File *f = dynamic_cast<TagLib::MPEG::File *>(fileref->file());
@@ -195,17 +195,18 @@ void mttFile::saveTag( void )
             mytag->addFrame( myframe );
         }
 
-        // TODO: Handle save errors
-        //if ( !f->save( TagLib::MPEG::File::ID3v2, true ) );
-            //qDebug( "Error" );
+        
+	delete fileref;
+	fileref = NULL;
+	return f->save( TagLib::MPEG::File::ID3v2, true );
     }
     else {
         TagLib::Tag::duplicate( tag, fileref->tag(), true );
-        fileref->save();
+	delete fileref;
+	fileref = NULL;
+        return fileref->save();
     }
 
-    delete fileref;
-    fileref = NULL;
 }
 
 void mttFile::removeTag( void )

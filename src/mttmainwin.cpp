@@ -52,6 +52,7 @@
 #include "config.h"
 //#include "x.xpm"
 #include "tools.h"
+#include "mttadvtagdelegate.h"
 
 #ifndef RELEASE
 #include "revision.h"
@@ -96,7 +97,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
         separators << " - ";
     }
 #ifndef RELEASE
-    setWindowTitle( windowTitle() + " - " + RV_SNAPSHOT_VERSION );
+    setWindowTitle( QString("MediaTagTools") + " - " + RV_SNAPSHOT_VERSION );
 #endif
 
     // Initialization of TreeView
@@ -113,7 +114,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     QStringList header;
     header << tr( "Filename" ) << tr( "Title" ) << tr( "Artist" ) << tr( "Album" )
-           << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" );
+           << tr( "Year" ) << tr( "Genre" ) << tr( "Comment" ) << tr( "Track" ) << tr("File Type");
     treeModel.setHorizontalHeaderLabels( header );
 
     // Signal & Slot connections for TreeView
@@ -138,13 +139,13 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     detailLayout = new QFormLayout( detailFrame );
 
     lengthLabel = new QLabel();
-    detailLayout->addRow( tr("Length:"), lengthLabel );
+    detailLayout->addRow( tr("<b>Length:</b>"), lengthLabel );
     bitrateLabel = new QLabel();
-    detailLayout->addRow( tr("Bitrate:"), bitrateLabel );
+    detailLayout->addRow( tr("<b>Bitrate:</b>"), bitrateLabel );
     sampleRateLabel = new QLabel();
-    detailLayout->addRow( tr("Sample Rate:"), sampleRateLabel );
+    detailLayout->addRow( tr("<b>Sample Rate:</b>"), sampleRateLabel );
     channelLabel = new QLabel();
-    detailLayout->addRow( tr("Channels:"), channelLabel );
+    detailLayout->addRow( tr("<b>Channels:</b>"), channelLabel );
     detailFrame->setLayout( detailLayout );
     dockDetails->setWidget( detailFrame );
     dockDetails->setObjectName(QString("Details"));
@@ -187,7 +188,6 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     dockEdit->setWidget( editFrame );
     dockEdit->setObjectName(QString("Edit"));
     this->addDockWidget( Qt::RightDockWidgetArea, dockEdit );
-    //tabifyDockWidget( dockDetails, dockEdit );
 
     // Renumber dock
     dockRenum = new QDockWidget( tr("Renumber"), this );
@@ -223,7 +223,6 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     dockRenum->setWidget( miniwin );
     dockRenum->setObjectName(QString("Renumber"));
     this->addDockWidget( Qt::RightDockWidgetArea, dockRenum );
-    tabifyDockWidget( dockRenum, dockDetails );
 
     // Filename format dock
     QFrame *formatFrame, *previewTagFrame, *previewFnameFrame;
@@ -231,7 +230,11 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     QStackedLayout *stackedLayout;
     QFormLayout *previewTagLayout;
     QFrame *pFrame;
-    QBoxLayout *previewFnameLayout;
+    //QBoxLayout *previewFnameLayout;
+    QFrame *applyButtonF2TFrame, *applyButtonT2FFrame;
+    QBoxLayout *applyButtonF2TLayout, *applyButtonT2FLayout;
+    QPushButton *applyF2T, *applyT2F;
+    QFormLayout *previewFnameLayout;
 
     dockFormat = new QDockWidget( tr("Filename Format"), this );
     menuView->addAction( dockFormat->toggleViewAction() );
@@ -272,28 +275,46 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     pFrame = new QFrame( formatFrame );
 
-    previewTagLayout->addRow( QString( tr("Title:" ) ), titleLabel );
-    previewTagLayout->addRow( QString( tr("Artist:") ), artistLabel );
-    previewTagLayout->addRow( QString( tr("Album:") ), albumLabel );
-    previewTagLayout->addRow( QString( tr("Year:") ), yearLabel );
-    previewTagLayout->addRow( QString( tr("Genre:") ), genreLabel );
-    previewTagLayout->addRow( QString( tr("Comment:") ), commentLabel );
-    previewTagLayout->addRow( QString( tr("Track:") ), trackLabel );
+    applyButtonF2TLayout = new QBoxLayout( QBoxLayout::LeftToRight, formatFrame );
+    applyButtonF2TLayout->addStretch();
+    applyF2T = new QPushButton(QString("Apply"));
+    applyButtonF2TLayout->addWidget( applyF2T );
+    applyButtonF2TFrame = new QFrame( formatFrame );
+    applyButtonF2TFrame->setLayout(applyButtonF2TLayout);
+
+    previewTagLayout->addRow( QString( tr("<b>Title:</b>" ) ), titleLabel );
+    previewTagLayout->addRow( QString( tr("<b>Artist:</b>") ), artistLabel );
+    previewTagLayout->addRow( QString( tr("<b>Album:</b>") ), albumLabel );
+    previewTagLayout->addRow( QString( tr("<b>Year:</b>") ), yearLabel );
+    previewTagLayout->addRow( QString( tr("<b>Genre:</b>") ), genreLabel );
+    previewTagLayout->addRow( QString( tr("<b>Comment:</b>") ), commentLabel );
+    previewTagLayout->addRow( QString( tr("<b>Track:</b>") ), trackLabel );
+    previewTagLayout->addRow( applyButtonF2TFrame );
     previewTagFrame->setLayout( previewTagLayout );
     previewTagFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
 
-    previewFnameLayout = new QBoxLayout( QBoxLayout::TopToBottom, formatFrame );
+    //previewFnameLayout = new QBoxLayout( QBoxLayout::TopToBottom, formatFrame );
+    previewFnameLayout = new QFormLayout();
     previewFnameFrame = new QFrame( formatFrame );
-
-    previewFnameLayout->addWidget( new QLabel( tr( "<u>Current</u>" ) ) );
+    
+    applyButtonT2FLayout = new QBoxLayout( QBoxLayout::LeftToRight, formatFrame );
+    applyButtonT2FLayout->addStretch();
+    applyT2F = new QPushButton(QString("Apply"));
+    applyButtonT2FLayout->addWidget( applyT2F );
+    applyButtonT2FFrame = new QFrame( formatFrame );
+    applyButtonT2FFrame->setLayout(applyButtonT2FLayout);
+    
+    previewFnameLayout->addWidget( new QLabel( tr( "<b><u>Current</u></b>" ) ) );
     curfnameLabel = new QLabel( formatFrame );
-    curfnameLabel->setText( tr( "Test filename" ) );
+    curfnameLabel->setText( "" );
     previewFnameLayout->addWidget( curfnameLabel );
-    previewFnameLayout->addWidget( new QLabel( tr( "<u>New</u>" ) ) );
+    previewFnameLayout->addWidget( new QLabel( tr( "<b><u>New</u></b>" ) ) );
     newfnameLabel = new QLabel( formatFrame );
     //newfnameLabel->setStyleSheet( QString( "border: 2px solid" ) );
-    newfnameLabel->setText( tr( "New Filename" ) );
+    newfnameLabel->setText( "" );
     previewFnameLayout->addWidget( newfnameLabel );
+    previewFnameLayout->addWidget( applyButtonT2FFrame );
+    
 
     previewFnameFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     previewFnameFrame->setLayout( previewFnameLayout );
@@ -309,7 +330,6 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     dockFormat->setWidget( formatFrame );
     dockFormat->setObjectName(QString("Filename Format"));
     this->addDockWidget( Qt::RightDockWidgetArea, dockFormat );
-    tabifyDockWidget( dockFormat, dockEdit );
 
     // Filename Format Legend Dock-
     QFrame *formatLegendFrame;
@@ -331,6 +351,38 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     dockFormatLegend->setWidget( formatLegendFrame );
     dockFormatLegend->setObjectName(QString("Format Legend"));
     this->addDockWidget( Qt::LeftDockWidgetArea, dockFormatLegend );
+
+    // Advanced Tag Dock
+    QFrame *advFrame;
+    //QLayout *advLayout;
+    QStringList strl;
+    QGridLayout *advLayout;
+
+    dockAdvancedTags = new QDockWidget( tr( "Advanced Tags" ), this );
+    dockAdvancedTags->setObjectName(QString("Advanced Tags"));
+    advFrame = new QFrame( dockAdvancedTags );
+    advFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    advTable = new mttTableWidget(advFrame);
+    advTable->setColumnCount(2);
+    advTable->insertRow(0);
+    strl << tr("Tag") << tr("Value");
+    advTable->setHorizontalHeaderLabels(strl);
+    advTable->horizontalHeader()->setStretchLastSection(true);
+    advTable->verticalHeader()->setVisible(false);
+    //advTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    advLayout = new QGridLayout(advFrame);
+    advLayout->addWidget(advTable);
+    advTable->setItemDelegate(new mttAdvTagDelegate());
+
+    advFrame->setLayout(advLayout);
+    dockAdvancedTags->setWidget(advFrame);
+    this->addDockWidget( Qt::RightDockWidgetArea, dockAdvancedTags);
+
+    // Tabify docks for first time
+    tabifyDockWidget( dockRenum, dockFormat );
+    tabifyDockWidget( dockRenum, dockDetails );
+    tabifyDockWidget( dockAdvancedTags, dockEdit );
+    setTabPosition( Qt::RightDockWidgetArea, QTabWidget::West );
 
     // Signal & Slot connections for dock widgets
     connect( titleEdit, SIGNAL( textEdited(const QString&) ), this, SLOT( slotTitleChanged(const QString&) ) );
@@ -358,8 +410,11 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( dockFormatLegend, SIGNAL( visibilityChanged( bool ) ), this, SLOT( slotDockFormatLegendChanged( bool ) ) );
     connect( updatePreviewButton, SIGNAL( clicked( bool ) ), this, SLOT( slotFormatUpdatePreview() ) );
     connect( format->lineEdit(), SIGNAL( textEdited( const QString& ) ), this, SLOT( slotFormatEdited() ) );
+    connect( applyF2T, SIGNAL( clicked( bool ) ), this, SLOT( slotFormatApplyToTags() ) );
+    connect( applyT2F, SIGNAL( clicked( bool ) ), this, SLOT( slotFormatApplyToFilenames() ) );
 
     connect( formatType, SIGNAL( activated( int ) ), stackedLayout, SLOT( setCurrentIndex( int ) ) );
+    connect( formatType, SIGNAL( activated( int ) ), this, SLOT( slotFormatUpdatePreview() ) );
 
     // Signal & Slot connections for menubar
     connect( actExit, SIGNAL( triggered() ), this, SLOT( close() ) );
@@ -372,6 +427,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( actSaveAll, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actSaveSelected, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
 
+    connect( advTable, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT( slotEditAdvTagTableItem(QTableWidgetItem*)));
+
     // Create list for taglib known filetypes
     TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
     for ( unsigned int i=0; i<tl.size(); i++ ) {
@@ -380,6 +437,7 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     //new ModelTest(&treeModel, this);
     readSettings();
+    setWindowIcon( QIcon( QString(":/icons/mediatagtools.svg") ) );
 }
 
 mttMainWin::~mttMainWin()
@@ -421,13 +479,19 @@ void mttMainWin::addFile( QString &fname )
     if ( fatherlist.empty() ) {
         father = treeModel.invisibleRootItem();
         QStandardItem *item = new QStandardItem( curPath );
+	// TODO: Show artwork instead of just the audio cd icon
+	item->setIcon(QIcon(QString(":/icons/media-optical-audio.png")));
         father->appendRow( item );
         father = item;
     }
     else
         father = fatherlist[0];
 
-    newrow << new QStandardItem( fname.right( fname.size() - curPath.size() -1 ) );
+    QStandardItem *tmp_std_item;
+    tmp_std_item = new QStandardItem( fname.right( fname.size() - curPath.size() -1 ) );
+    // TODO: Show per file artwork
+    //     tmp_std_item->setIcon(QIcon(QString(":/icons/media-optical-audio.png")));
+    newrow << tmp_std_item;
     t = li.getTag();
     if ( t ) {
        newrow << new QStandardItem( TStringToQString( t->title() ) )
@@ -550,15 +614,15 @@ void mttMainWin::populateList( QDir d )
     statusBar()->showMessage( tr( "Done" ) );
 }
 
-// void mttMainWin::slotSaveTags()
-// {
-//     saveTags( false );
-// }
-// 
-// void mttMainWin::slotSaveSelectedTags()
-// {
-//     saveTags( true );
-// }
+void mttMainWin::slotSaveTags()
+{
+    saveTags( false );
+}
+
+void mttMainWin::slotSaveSelectedTags()
+{
+    saveTags( true );
+}
 
 void mttMainWin::slotRemoveTags()
 {
@@ -570,13 +634,13 @@ void mttMainWin::slotRemoveTags()
 
     ignoreChange = true;
     statusBar()->addWidget( &progress );
-    progress.setRange( 0, list.size() / 8 );
+    progress.setRange( 0, list.size() / num_col );
     progress.setValue( 0 );
     statusBar()->showMessage( tr( "Removing tags..." ) );
 
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
 
-    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+    for ( i = 0; i < (list.size()/num_col); i++ ) { // num_col is the number of columns in TreeView
         fullpath = treeModel.data( list.at(i).parent(), Qt::DisplayRole).toString() + "/" + treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ).toString();
 
         mttFile f;
@@ -584,13 +648,13 @@ void mttMainWin::slotRemoveTags()
         f.removeTag();
 
         //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
-        treeModel.setData( list.at(i + list.size()/8), QString() );
-        treeModel.setData( list.at(i + 2*list.size()/8), QString() );
-        treeModel.setData( list.at(i + 3*list.size()/8), QString() );
-        treeModel.setData( list.at(i + 4*list.size()/8), QString("0") );
-        treeModel.setData( list.at(i + 5*list.size()/8), QString() );
-        treeModel.setData( list.at(i + 6*list.size()/8), QString() );
-        treeModel.setData( list.at(i + 7*list.size()/8), QString("0") );
+        treeModel.setData( list.at(i + list.size()/num_col), QString() );
+        treeModel.setData( list.at(i + 2*list.size()/num_col), QString() );
+        treeModel.setData( list.at(i + 3*list.size()/num_col), QString() );
+        treeModel.setData( list.at(i + 4*list.size()/num_col), QString("0") );
+        treeModel.setData( list.at(i + 5*list.size()/num_col), QString() );
+        treeModel.setData( list.at(i + 6*list.size()/num_col), QString() );
+        treeModel.setData( list.at(i + 7*list.size()/num_col), QString("0") );
         progress.setValue(i);
     }
 
@@ -599,223 +663,6 @@ void mttMainWin::slotRemoveTags()
     QApplication::restoreOverrideCursor();
     ignoreChange = false;
 }
-
-// void mttMainWin::slotCFormat()
-// {
-//     mttCFDialog cfdialog;
-// 
-//     cfdialog.setFormat( MCFormatLE->text() );
-//     cfdialog.setSeparators( separators );
-//     if ( cfdialog.exec() == QDialog::Accepted ) {
-//         MCFormatLE->setText( cfdialog.getFormat() );
-//         separators = cfdialog.getSeparators();
-//     }
-//     if ( UseCFChkB->isChecked() ) {
-//         slotDisableUsingFormat( false ); // Reset state of fields
-//         slotDisableUsingFormat( true ); // and set new state according to format string
-//     }
-// }
-// 
-// void mttMainWin::slotDisableUsingFormat( bool cond )
-// {
-//     if ( cond ) {
-//         QString formatstr = MCFormatLE->text();
-// 
-//         if ( formatstr.find( "<artist>" ) != -1 ) {
-//             GenArtistChkB->setChecked( false );
-//             GenArtistChkB->setDisabled( true );
-//         }
-//         if ( formatstr.find( "<album>" ) != -1 ) {
-//             GenAlbumChkB->setChecked( false );
-//             GenAlbumChkB->setDisabled( true );
-//         }
-//         if ( formatstr.find( "<title>" ) != -1 ) {
-//             GenTitleChkB->setChecked( false );
-//             GenTitleChkB->setDisabled( true );
-//         }
-//         if ( formatstr.find( "<year>" ) != -1 ) {
-//             GenYearChkB->setChecked( false );
-//             GenYearChkB->setDisabled( true );
-//         }
-//         if ( formatstr.find( "<comment>" ) != -1 ) {
-//             GenCommentChkB->setChecked( false );
-//             GenCommentChkB->setDisabled( true );
-//         }
-//         if ( formatstr.find( "<track>" ) != -1 ) {
-//             GenTrackChkB->setChecked( false );
-//             GenTrackChkB->setDisabled( true );
-//         }
-//     }
-//     else {
-//             if ( !GenArtistChkB->isEnabled() ) {
-//                 GenArtistChkB->setDisabled( false );
-//                 GenArtistChkB->setChecked( true );
-//             }
-//             if ( !GenAlbumChkB->isEnabled() ) {
-//                 GenAlbumChkB->setDisabled( false );
-//                 GenAlbumChkB->setChecked( true );
-//             }
-//             if ( !GenTitleChkB->isEnabled() ) {
-//                 GenTitleChkB->setDisabled( false );
-//                 GenTitleChkB->setChecked( true );
-//             }
-//             if ( !GenYearChkB->isEnabled() ) {
-//                 GenYearChkB->setDisabled( false );
-//                 GenYearChkB->setChecked( true );
-//             }
-//             if ( !GenCommentChkB->isEnabled() ) {
-//                 GenCommentChkB->setDisabled( false );
-//                 GenCommentChkB->setChecked( true );
-//             }
-//             if ( !GenTrackChkB->isEnabled() ) {
-//                 GenTrackChkB->setDisabled( false );
-//                 GenTrackChkB->setChecked( true );
-//             }
-//     }
-// }
-// 
-// void mttMainWin::slotRenameFiles()
-// {
-//     int count, current;
-//     int noall = false, abort = false;
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//     statusBar()->message( tr( QString( "Renaming Files..." ) ) );
-//     count = GenListView->childCount();
-//     current = 1;
-//     progress.show();
-//     progress.setProgress( 0, count );
-// 
-//     Q3ListViewItemIterator it( GenListView, Q3ListViewItemIterator::Selected );
-//     while ( !abort && it.current() ) {
-//         QString newfname, path, ext, cformat;
-//         TagLib::Tag *t;
-// 
-//         t = ( (mttFile *) it.current() )->getTag();
-//         path = ( (mttFile *) it.current() )->getFName();
-//         ext = path;
-//         //qDebug( "filename:" + path );
-//         path.truncate( path.findRev( "/" ) );
-//         ext = ext.right( ext.length() - ext.findRev( "." ) );
-//         cformat = MCFormatLE->text();
-// 
-//         if ( t && ( cformat != "" ) ) {
-//             newfname = "";
-//             bool done = false;
-//             while ( !done ) {
-//                 if ( cformat.startsWith( "<artist>" ) )
-//                     newfname += TStringToQString( t->artist() );
-//                 if ( cformat.startsWith( "<album>" ) )
-//                     newfname += TStringToQString( t->album() );
-//                 if ( cformat.startsWith( "<title>" ) )
-//                     newfname += TStringToQString( t->title() );
-//                 if ( cformat.startsWith( "<track>" ) ) {
-//                     if ( t->track() < 10 )
-//                         newfname += '0';
-//                     newfname += QString::number( t->track() );
-//                 }
-//                 if ( cformat.startsWith( "<year>" ) )
-//                     newfname += QString::number( t->year() );
-//                 if ( cformat.startsWith( "<comment>" ) )
-//                     newfname += TStringToQString( t->comment() );
-//                 cformat.remove( 0, cformat.find( ">" ) + 1 );
-// 
-//                 if ( cformat == "" )
-//                     done = true;
-//                 else {
-//                     newfname += cformat.left( cformat.find( "<" ) );
-//                     cformat.remove( 0, cformat.find( "<" ) );
-//                     if ( cformat == "" )
-//                         done = true;
-//                 }
-//             }
-// /*            qDebug( "path:" + path );
-//             qDebug( "ext:" + ext );
-//             qDebug( "new filename:" + path + "/" + newfname + ext );*/
-//             QDir dir;
-//             QFile f( path + "/" + newfname + ext );
-//             if ( !noall ) {
-//                 if ( f.exists() ) { // File with that name already exists
-//                     switch( QMessageBox::question(
-//                                 this,
-//                                 tr("Overwrite File? -- Media Tag Tools"),
-//                                 tr("A file called %1 already exists. "
-//                                 "Do you want to overwrite it?")
-//                                 .arg( f.name() ),
-//                                 tr("&Yes"), tr("&No"),
-//                                 tr("No to &All"), 0, 1 ) ) {
-//                         case 0:
-//                             if ( dir.rename( ( (mttFile *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
-//                                 it.current()->setText( 0, newfname + ext );
-//                                 ( (mttFile *) it.current() )->setFName( path + "/" + newfname + ext );
-//                             }
-//                             else {
-//                                 QApplication::restoreOverrideCursor();
-//     
-//                                 switch( QMessageBox::warning(
-//                                     this,
-//                                     tr("Rename File"),
-//                                     tr("Rename failed for file %1!").arg( ( (mttFile *) it.current() )->getFName() ),
-//                                     QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
-//                                     case QMessageBox::Ok:
-//                                         break;
-//                                     case QMessageBox::Abort:
-//                                         abort = true;
-//                                 }
-//     
-//                                 QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//                             }
-//                         case 1:
-//                             break;
-//                         case 2:
-//                             noall = true;
-//                             break;
-//                     }
-//                 }
-//                 else
-//                     if ( dir.rename( ( (mttFile *) it.current() )->getFName() , path + "/" + newfname + ext ) ) {
-//                         it.current()->setText( 0, newfname + ext );
-//                         ( (mttFile *) it.current() )->setFName( path + "/" + newfname + ext );
-//                     }
-//                     else {
-//                         QApplication::restoreOverrideCursor();
-// 
-//                         switch( QMessageBox::warning(
-//                             this,
-//                             tr("Rename File"),
-//                             tr("Rename failed for file %1!").arg( ( (mttFile *) it.current() )->getFName() ),
-//                             QMessageBox::Ok, QMessageBox::Abort, QMessageBox::NoButton ) ) {
-//                             case QMessageBox::Ok:
-//                                 break;
-//                             case QMessageBox::Abort:
-//                                 abort = true;
-//                         }
-// 
-//                         QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//                     }
-//             }
-//         }
-//         ++it;
-//         progress.setProgress( current++, count );
-//     }
-// 
-//     //GenListView->clear();
-//     //populateList();
-// 
-//     progress.hide();
-//     statusBar()->message( tr( QString( "Done" ) ) );
-//     QApplication::restoreOverrideCursor();
-// }
-// 
-// void mttMainWin::slotAbout()
-// {
-//     mttAboutDialog about;
-//     about.exec();
-// }
-// 
-// void mttMainWin::slotCorrectCase()
-// {
-// }
 
 void mttMainWin::slotAllUpper()
 {
@@ -842,15 +689,15 @@ void mttMainWin::slotAllUpper()
     genreEdit->lineEdit()->setText( genreEdit->lineEdit()->text().toUpper() );
     ignoreChange = false;
 
-    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+    for ( i = 0; i < (list.size()/num_col); i++ ) { // num_col is the number of columns in TreeView
         //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
-        treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper() );
-        treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper() );
-        treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper() );
-        //treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
-        treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper() );
-        treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper() );
-        //treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 2*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 3*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toUpper() );
+        //treeModel.setData( list.at(i + 4*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + 5*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toUpper() );
+        treeModel.setData( list.at(i + 6*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toUpper() );
+        //treeModel.setData( list.at(i + 7*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
         setTagChanged( list.at(i) );
     }
 
@@ -883,15 +730,15 @@ void mttMainWin::slotAllLower()
     genreEdit->lineEdit()->setText( genreEdit->lineEdit()->text().toLower() );
     ignoreChange = false;
 
-    for ( i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
+    for ( i = 0; i < (list.size()/num_col); i++ ) { // num_col is the number of columns in TreeView
         //treeModel.setData( list.at(i), treeModel.data( treeModel.index( list.at(i).row(), 0, list.at(i).parent() ), Qt::DisplayRole ) );
-        treeModel.setData( list.at(i + list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() );
-        treeModel.setData( list.at(i + 2*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() );
-        treeModel.setData( list.at(i + 3*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() );
-        //treeModel.setData( list.at(i + 4*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
-        treeModel.setData( list.at(i + 5*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() );
-        treeModel.setData( list.at(i + 6*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() );
-        //treeModel.setData( list.at(i + 7*list.size()/8), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 2*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 3*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() );
+        //treeModel.setData( list.at(i + 4*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 4 ), Qt::DisplayRole ).toString() );
+        treeModel.setData( list.at(i + 5*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() );
+        treeModel.setData( list.at(i + 6*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() );
+        //treeModel.setData( list.at(i + 7*list.size()/num_col), treeModel.data( list.at(i).sibling( list.at(i).row(), 7 ), Qt::DisplayRole ).toString() );
         setTagChanged( list.at(i) );
     }
 
@@ -920,12 +767,12 @@ void mttMainWin::slotFirstUpWords()
 // 
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
 
-    for ( int i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
-        treeModel.setData( list.at(i + list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 2*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 3*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 5*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 6*list.size()/8), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
+    for ( int i = 0; i < (list.size()/num_col); i++ ) { // num_col is the number of columns in TreeView
+        treeModel.setData( list.at(i + list.size()/num_col), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 2*list.size()/num_col), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 3*list.size()/num_col), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 5*list.size()/num_col), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 6*list.size()/num_col), firstUp( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
         setTagChanged( list.at(i) );
     }
 
@@ -953,12 +800,12 @@ void mttMainWin::slotFirstUpSentence() // Here is the change to get only the fir
     ignoreChange = false;
 
     QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
-    for ( int i = 0; i < (list.size()/8); i++ ) { // 8 is the number of columns in TreeView
-        treeModel.setData( list.at(i + list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 2*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 3*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 5*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
-        treeModel.setData( list.at(i + 6*list.size()/8), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
+    for ( int i = 0; i < (list.size()/num_col); i++ ) { // num_col is the number of columns in TreeView
+        treeModel.setData( list.at(i + list.size()/num_col), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 1 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 2*list.size()/num_col), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 2 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 3*list.size()/num_col), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 3 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 5*list.size()/num_col), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 5 ), Qt::DisplayRole ).toString().toLower() ) );
+        treeModel.setData( list.at(i + 6*list.size()/num_col), firstUpSentence( treeModel.data( list.at(i).sibling( list.at(i).row(), 6 ), Qt::DisplayRole ).toString().toLower() ) );
         setTagChanged( list.at(i) );
     }
 
@@ -1058,8 +905,8 @@ QString mttMainWin::firstUp( QString str )
 
 void mttMainWin::slotTitleEnter()
 {
-	if ( artistEdit->isEnabled() )
-		artistEdit->setFocus();
+    if ( artistEdit->isEnabled() )
+	artistEdit->setFocus();
     else if ( albumEdit->isEnabled() )
         albumEdit->setFocus();
     else if ( yearEdit->isEnabled() )
@@ -1238,9 +1085,9 @@ void mttMainWin::slotSelectionChange( const QItemSelection &current, const QItem
 {
 	QModelIndexList l = treeView->selectionModel()->selectedIndexes();
 	renumModel.removeRows( 0, renumModel.rowCount() );
-	for ( int i=(l.size()/8); i < (l.size()/8*2); i++ ) {
+	for ( int i=(l.size()/num_col); i < (l.size()/num_col*2); i++ ) {
 		QStandardItem *item = new QStandardItem( l[i].data().toString() );
-        item->setData( l[i-l.size()/8].data().toString(), Qt::UserRole );
+        item->setData( l[i-l.size()/num_col].data().toString(), Qt::UserRole );
 		item->setFlags( Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
 		renumModel.invisibleRootItem()->appendRow( item );
 	}
@@ -1290,184 +1137,116 @@ void mttMainWin::changeColumnText( int column, const QString &text )
 	
 		for (int i=0;i<list.count();i++) {
 			treeModel.setData( list.at(i), text );
-            setTagChanged( list.at(i) );
+			setTagChanged( list.at(i) );
 		}
 	}
 }
-// 
-// void mttMainWin::saveTags( bool selectedOnly = false )
-// {
-//     int current, count;
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//     statusBar()->message( tr( QString( "Writing tags..." ) ) );
-//     count = GenListView->childCount();
-//     current = 1;
-//     progress.show();
-//     progress.setProgress( 0, count );
-//     TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
-//     Q3ListViewItemIterator it;
-//     if ( selectedOnly ) {
-//         Q3ListViewItemIterator tmp( GenListView, Q3ListViewItemIterator::Selected );
-//         it = tmp;
-//         }
-//     else {
-//         Q3ListViewItemIterator tmp( GenListView );
-//         it = tmp;
-//         }
-//     while ( it.current() ) {
-//         if ( ( (mttFile *) it.current() )->tagChanged() ) {
-//             ( (mttFile *) it.current() )->checkEncodings();
-// 
-//             ( (mttFile *) it.current() )->saveTag();
-//             ( (mttFile *) it.current() )->setTagChanged( false );
-// 
-//             // Update the ListView too
-//             ( (mttFile *) it.current() )->repaint();
-//         }
-//         ++it;
-// 
-//         progress.setProgress( current++, count );
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-//     progress.hide();
-//     statusBar()->message( tr( QString( "Done" ) ) );
-// }
-// 
-// void mttMainWin::slotCreateTags()
-// {
-//     TagLib::Tag *t;
-//     int current, count;
-// 
-//     QApplication::setOverrideCursor( QCursor( Qt::waitCursor ) );
-//     statusBar()->message( tr( QString( "Writing tags..." ) ) );
-//     count = GenListView->childCount();
-//     current = 1;
-//     progress.show();
-//     progress.setProgress( 0, count );
-//     TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding(TagLib::String::UTF8);
-//     Q3ListViewItemIterator it;
-//     Q3ListViewItemIterator tmp( GenListView, Q3ListViewItemIterator::Selected );
-//     it = tmp;
-//     while ( it.current() ) {
-//         t = ( (mttFile *) it.current() )->getTag( true );
-//         ( (mttFile *) it.current() )->checkEncodings();
-// 
-//         // Save info using the filename and the custom format string
-//         if ( UseCFChkB->isChecked() && ( MCFormatLE->text() != "" ) ) { // Custom format is enabled
-//             QString formatstr = MCFormatLE->text();
-//             QStringList::Iterator slit = separators.begin();
-//             QString filename = ( (mttFile *) it.current() )->getFName();
-//             int curpos, pos1, pos2;
-//             bool done;
-//     
-//             // Remove path from filename
-//             curpos = filename.findRev( "/" );
-//             if ( curpos != -1 )
-//                 filename.remove( 0, curpos + 1 );
-//             // Remove extension too
-//             curpos = filename.findRev( "." );
-//             if ( curpos != -1 )
-//                 filename.truncate( curpos );
-//     
-//             done = false;
-//             while ( !done ) {
-//                 pos1 = formatstr.find( ">" );
-//                 pos2 = formatstr.find( "<", 1 );
-//                 if ( pos1 == -1 ) // No more <> tags
-//                     done = true;
-//                 else if ( pos2 == -1 ) { // Last <> tag
-//                     if ( formatstr.startsWith( QString( "<artist>" ) ) )
-//                         t->setArtist( QStringToTString( filename ) );
-//                     if ( formatstr.startsWith( QString( "<album>" ) ) )
-//                         t->setAlbum( QStringToTString( filename ) );
-//                     if ( formatstr.startsWith( QString( "<year>" ) ) )
-//                         t->setYear( filename.toInt() );
-//                     if ( formatstr.startsWith( QString( "<title>" ) ) )
-//                         t->setTitle( QStringToTString( filename ) );
-//                     if ( formatstr.startsWith( QString( "<comment>" ) ) )
-//                         t->setComment( QStringToTString( filename ) );
-//                     if ( formatstr.startsWith( QString( "<genre>" ) ) )
-//                         t->setGenre( QStringToTString( filename ) );
-//                     if ( formatstr.startsWith( QString( "<track>" ) ) )
-//                         t->setTrack( filename.toInt() );
-//                     done = true;
-//                 }
-//                 else { // <> tag & separator exist
-//                     int pos = filename.find( formatstr.mid( pos1 + 1, pos2 - pos1 -1 ) );
-//                     if ( pos != -1 ) {
-//                         QString data = filename.left( pos );
-// 
-//                         if ( formatstr.startsWith( QString( "<artist>" ) ) )
-//                             t->setArtist( QStringToTString( data ) );
-//                         if ( formatstr.startsWith( QString( "<album>" ) ) )
-//                             t->setAlbum( QStringToTString( data ) );
-//                         if ( formatstr.startsWith( QString( "<year>" ) ) )
-//                             t->setYear( data.toInt() );
-//                         if ( formatstr.startsWith( QString( "<title>" ) ) )
-//                             t->setTitle( QStringToTString( data ) );
-//                         if ( formatstr.startsWith( QString( "<comment>" ) ) )
-//                             t->setComment( QStringToTString( data ) );
-//                         if ( formatstr.startsWith( QString( "<genre>" ) ) )
-//                             t->setGenre( QStringToTString( data ) );
-//                         if ( formatstr.startsWith( QString( "<track>" ) ) )
-//                             t->setTrack( data.toInt() );
-// 
-//                         //qDebug( "filename:" + filename );
-//                         //qDebug( "formatstr:" + formatstr );
-//                         //qDebug( "data:" + data );
-//                         //qDebug( "mid:" + formatstr.mid( pos1 + 1, pos2 - pos1 - 1 ) );
-//                         filename.remove( 0, pos + pos2 - pos1 - 1 );
-//                         formatstr.remove( 0, pos2 );
-//                         //qDebug( "filename:" + filename );
-//                         //qDebug( "formatstr:" + formatstr );
-//                     }
-//                     else
-//                          done = true;
-//                 }
-//             }
-//  
-//             ( (mttFile *) it.current() )->setTagChanged( true );
-// 
-//             // Update the ListView too
-//             ( (mttFile *) it.current() )->repaint();
-//             ( (mttFile *) it.current() )->setText( 1, TStringToQString( t->title() ) );
-//             ( (mttFile *) it.current() )->setText( 2, TStringToQString( t->artist() ) );
-//             ( (mttFile *) it.current() )->setText( 3, TStringToQString( t->album() ) );
-//             ( (mttFile *) it.current() )->setText( 4, QString::number( t->year() ) );
-//             ( (mttFile *) it.current() )->setText( 5, TStringToQString( t->genre() ) );
-//             ( (mttFile *) it.current() )->setText( 6, TStringToQString( t->comment() ) );
-//             ( (mttFile *) it.current() )->setText( 7, QString::number( t->track() ) );
-// 
-//             // TODO: Use path & filename instead of just the name for the check
-//             filename = ( (mttFile *) it.current() )->getFName();
-//             curpos = filename.findRev( "/" );
-//             if ( curpos != -1 )
-//                 filename.remove( 0, curpos + 1 );
-// 
-//             // Update current file info
-//             ignoreChange = true; // Ignore the following change to the line edits
-//             if ( filename ==  selectedFname ) {
-//                 GenTitleCLE->setText( TStringToQString( t->title() ) );
-//                 GenArtistCLE->setText( TStringToQString( t->artist() ) );
-//                 GenAlbumCLE->setText( TStringToQString( t->album() ) );
-//                 GenYearCLE->setText( QString::number( t->year() ) );
-//                 GenGenreCB->setCurrentText( TStringToQString( t->genre() ) );
-//                 GenCommentCLE->setText( TStringToQString( t->comment() ) );
-//                 GenTrackCLE->setText( QString::number( t->track() ) );
-//             }
-//             ignoreChange = false;
-//         }
-//         ++it;
-// 
-//         progress.setProgress( current++, count );
-//     }
-// 
-//     QApplication::restoreOverrideCursor();
-//     progress.hide();
-//     statusBar()->message( tr( QString( "Done" ) ) );
-// }
+
+void mttMainWin::saveTags( bool selectedOnly = false )
+{
+    QString fname, title, artist, album, year, genre, comment, track;
+    int current, count;
+
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+    statusBar()->showMessage( tr( "Writing tags..." ) );
+    if ( selectedOnly ) {
+	QModelIndexList l;
+	l = treeView->selectionModel()->selectedIndexes();
+	count = l.count() / num_col;
+	current = 0;
+	progress.setRange(0,100);
+	progress.setValue(0);
+	progress.show();
+	
+	int i =0;
+	bool abort = false;
+	while ( !abort && i<count ) {
+	    if ( l.at(i).parent() != treeView->rootIndex() ) { // If it is a file entry...
+		fname = l.at(i).parent().data().toString() + "/" + l.at(i).data().toString();
+		title = l.at(count + i).data().toString();
+		artist = l.at(2*count + i).data().toString();
+		album = l.at(3*count + i).data().toString();
+		year = l.at(4*count + i).data().toString();
+		genre = l.at(5*count + i).data().toString();
+		comment = l.at(6*count + i).data().toString();
+		track = l.at(7*count + i).data().toString();
+		
+		mttFile f;
+		TagLib::Tag *t;
+		bool changed = false;
+		f.Open(fname);
+		t = f.getTag();
+		if ( isTagChanged(l.at(i)) ) {
+		    t->setTitle(Q4StringToTString(title));
+		    t->setArtist(Q4StringToTString(artist));
+		    t->setAlbum(Q4StringToTString(album));
+		    t->setYear(year.toUInt());
+		    t->setGenre(Q4StringToTString(genre));
+		    t->setComment(Q4StringToTString(comment));
+		    t->setTrack(track.toUInt());
+		    if (!f.saveTag()) {
+			if ( QMessageBox::critical( this, QString( tr( "Save Error" ) ), QString("Error saving tags of file ") + fname +"!", QMessageBox::Ok, QMessageBox::Abort ) == QMessageBox::Abort ) {
+			    abort = true;
+			}
+		    }
+		}
+		current++;
+		progress.setValue((float) current/count);
+	    }
+	    i++;
+	}
+    }
+    else {
+	QModelIndex ci, ii, fi;
+	fi = treeView->rootIndex();
+	int children;
+	children = treeModel.rowCount();
+	while (children > 0) {
+	    ci = fi.child(children, 0);
+	    count = treeModel.rowCount(ci);
+	    current = 0;
+	    progress.setRange(0,100);
+	    progress.setValue(0);
+	    progress.show();
+	    
+	    for (int i=0; i<count; i++) {
+		ii = ci.child(i,0);
+		fname = ii.parent().data().toString() + "/" + ii.data().toString();
+		title = ii.sibling(ii.row(),1).data().toString();
+		artist = ii.sibling(ii.row(),2).data().toString();
+		album = ii.sibling(ii.row(),3).data().toString();
+		year = ii.sibling(ii.row(),4).data().toString();
+		genre = ii.sibling(ii.row(),5).data().toString();
+		comment = ii.sibling(ii.row(),6).data().toString();
+		track = ii.sibling(ii.row(),7).data().toString();
+		
+		mttFile f;
+		TagLib::Tag *t;
+		bool changed = false;
+		f.Open(fname);
+		t = f.getTag();
+		if ( isTagChanged(ii) ) {
+		    t->setTitle(Q4StringToTString(title));
+		    t->setArtist(Q4StringToTString(artist));
+		    t->setAlbum(Q4StringToTString(album));
+		    t->setYear(year.toUInt());
+		    t->setGenre(Q4StringToTString(genre));
+		    t->setComment(Q4StringToTString(comment));
+		    t->setTrack(track.toUInt());
+		    f.saveTag();
+		}
+		current++;
+		progress.setValue((float) current/count);
+	    }
+	    children--;
+	}
+    }
+
+    QApplication::restoreOverrideCursor();
+    progress.hide();
+    statusBar()->showMessage( tr( "Done" ) );
+}
+
 // 
 // void mttMainWin::slotAdvTagValueChanged( int row, int column )
 // {
@@ -1773,8 +1552,8 @@ void mttMainWin::slotRenumButtonClicked( bool checked )
     l = treeView->selectionModel()->selectedIndexes();
 
     for( int i=0; i<renumModel.rowCount(); i++ ) {
-        li = renumModel.findItems( l.at(l.count()/8+i).data().toString() ); // Take renum model item that matches the filename of the selected treemodel item
-        treeModel.setData( l.at( 7*l.count()/8 + i ), QVariant( li[0]->row() + 1 ) );
+        li = renumModel.findItems( l.at(l.count()/num_col+i).data().toString() ); // Take renum model item that matches the filename of the selected treemodel item
+        treeModel.setData( l.at( (num_col-1)*l.count()/num_col + i ), QVariant( li[0]->row() + 1 ) );
         qDebug() << renumModel.data( renumModel.index( i, 0 ), Qt::UserRole ).toString();
     }
 }
@@ -1800,6 +1579,14 @@ void mttMainWin::setTagChanged( const QModelIndex &index, bool changed )
                 treeModel.setData( index.sibling( index.row(), 0 ), QVariant(), Qt::DecorationRole );
         }
     }
+}
+
+bool mttMainWin::isTagChanged(const QModelIndex& index)
+{
+    if ( index.data( Qt::DecorationRole ) != QVariant() )
+	return true;
+    else
+	return false;
 }
 
 void mttMainWin::slotFormatChanged( const QString &str )
@@ -1903,15 +1690,16 @@ void mttMainWin::slotFormatUpdatePreview( void )
 
         strList = getTagsFromFilename( filename );
 
-        artistLabel->setText( strList.at( 0 ) );
-        albumLabel->setText( strList.at( 1 ) );
-        titleLabel->setText( strList.at( 2 ) );
-        trackLabel->setText( strList.at( 3 ) );
-        commentLabel->setText( strList.at( 4 ) );
-        yearLabel->setText( strList.at( 5 ) );
-        genreLabel->setText( strList.at( 6 ) );
+        titleLabel->setText( strList.at( 0 ) );
+        artistLabel->setText( strList.at( 1 ) );
+        albumLabel->setText( strList.at( 2 ) );
+        yearLabel->setText( strList.at( 3 ) );
+        genreLabel->setText( strList.at( 4 ) );
+        commentLabel->setText( strList.at( 5 ) );
+        trackLabel->setText( strList.at( 6 ) );
     }
     else { // Tag to filename
+	slotFormatUpdateFnamePreview(treeView->currentIndex());
     }
 }
 
@@ -1979,7 +1767,7 @@ QStringList mttMainWin::getTagsFromFilename( QString filename )
         }
 
         QStringList l;
-        l << artist << album << title << track << comment << year << genre;
+        l << title << artist << album << year << genre << comment << track;
         return l;
 }
 
@@ -1991,45 +1779,9 @@ void mttMainWin::slotFormatEdited()
 
 void mttMainWin::slotFormatUpdateFnamePreview( const QModelIndex &current )
 {
-    QString curfname, newfname, cformat;
-    bool done = false;
-
-    curfname = current.model()->data( current.sibling( current.row(), 0 ) ).toString();
-    curfnameLabel->setText( curfname );
-
-    cformat = format->currentText();
-    while ( !done ) {
-        if ( cformat.startsWith( "%a" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 2 ) ).toString();
-        if ( cformat.startsWith( "%A" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 3 ) ).toString();
-        if ( cformat.startsWith( "%t" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 1 ) ).toString();
-        if ( cformat.startsWith( "%T" ) ) {
-            if ( current.model()->data( current.sibling( current.row(), 7 ) ).toInt() < 10 )
-                newfname += '0';
-            newfname += current.model()->data( current.sibling( current.row(), 7 ) ).toString();
-        }
-        if ( cformat.startsWith( "%y" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 4 ) ).toString();
-        if ( cformat.startsWith( "%g" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 5 ) ).toString();
-        if ( cformat.startsWith( "%c" ) )
-            newfname += current.model()->data( current.sibling( current.row(), 6 ) ).toString();
-        cformat.remove( 0, 2 );
-
-        if ( cformat == "" )
-            done = true;
-        else {
-            newfname += cformat.left( cformat.indexOf( "%" ) );
-            cformat.remove( 0, cformat.indexOf( "%" ) );
-            if ( cformat == "" )
-                done = true;
-        }
+    if (current != QModelIndex()) {
+	newfnameLabel->setText( getFilenameFromTags(current) );
     }
-    newfname += curfname.right( curfname.length() - curfname.lastIndexOf( "." ) );
-
-    newfnameLabel->setText( newfname );
 }
 
 void mttMainWin::slotNotImplemented( void )
@@ -2069,4 +1821,143 @@ void mttMainWin::slotAbout()
     ui.setupUi(&aboutd);
     ui.ProgNameLabel->setText(QString(ui.ProgNameLabel->text()).replace(QString("v."), QString("v.") + QString(VERSION)));
     aboutd.exec();
+}
+
+void mttMainWin::slotFormatApplyToTags ( void )
+{
+    QModelIndexList l = treeView->selectionModel()->selectedIndexes();
+    QStringList strList, titles, artists, albums, years, genres, comments, tracks;
+    QString filename;
+    int count = l.count() / num_col;
+    
+    
+    for (int i=0; i<count; i++) {
+	filename = ( l.at(i).sibling( l.at(i).row(), 0 ) ).data( Qt::DisplayRole ).toString();
+        // Remove the extension from the filename
+	int j;
+        for ( j = ( filename.length() - 1 ); j >= 0; j-- )
+            if ( filename[j] == '.' )
+                break;
+        if ( j )
+            filename = filename.left( j );
+	
+	strList = getTagsFromFilename( filename );
+	titles << strList.at(0);
+	artists << strList.at(1);
+	albums << strList.at(2);
+	years << strList.at(3);
+	genres << strList.at(4);
+	comments << strList.at(5);
+	tracks << strList.at(6);
+	setTagChanged( l.at(i) );
+    }
+    for (int i=0; i<count; i++) {
+	treeModel.setData( l.at(count+i), titles.at(i) );
+	treeModel.setData( l.at(2*count+i), artists.at(i) );
+	treeModel.setData( l.at(3*count+i), albums.at(i) );
+	treeModel.setData( l.at(4*count+i), years.at(i) );
+	treeModel.setData( l.at(5*count+i), genres.at(i) );
+	treeModel.setData( l.at(6*count+i), comments.at(i) );
+	treeModel.setData( l.at(7*count+i), tracks.at(i) );
+    }
+}
+
+void mttMainWin::slotFormatApplyToFilenames ( void )
+{
+    QModelIndexList l;
+    QString curfname, curfnamepath, newfname;
+    QStringList curl, newl;
+    int count;
+    float prog, step;
+    
+    QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
+    statusBar()->showMessage( tr("Renaming...") );
+    progress.setRange(0,100);
+    l = treeView->selectionModel()->selectedIndexes();
+    count = l.count()/num_col;
+    prog = 0;
+    step = (float) 100 / count;
+    for (int i=0; i<count; i++) {
+	curfname = l.at(i).model()->data( l.at(i).sibling( l.at(i).row(), 0 ) ).toString();
+	curfnamepath = l.at(i).model()->data( l.at(i).parent() ).toString();
+	newfname = getFilenameFromTags(l.at(i));
+	curl << curfnamepath + "/" + curfname;
+	newl << curfnamepath + "/" + newfname;
+	//QMessageBox::warning( this, QString("Warning"), QString("Renaming ") + curfnamepath + "/" + curfname + " to " + curfnamepath + "/" + newfname );
+    }
+    // If there are files that will have the same name after applying the filter...
+    if (newl.removeDuplicates()) {
+	QMessageBox::critical( this, QString( tr("Error!") ), QString( tr("Two or more files will have the same filename. Please check the filter and tags before trying again.") ) );
+    }
+    else {
+	int i=0;
+	while (!abort && i<count) {
+	    bool abort = false;
+	    progress.setValue(prog);
+	    if (QFile::rename( curl.at(i), newl.at(i) ) != true) { // Error while renaming
+		if (QFile::exists(newl.at(i))) {
+		    if (QMessageBox::critical(this, QString("Error!"), QString("File ")+newl.at(i)+" already exists!", QMessageBox::Ok, QMessageBox::Abort) == QMessageBox::Abort)
+			abort = true;
+		}
+		else
+		    if (QMessageBox::critical(this, QString("Error!"), QString("Renaming ")+curl.at(i)+" to "+newl.at(i)+" failed!", QMessageBox::Ok, QMessageBox::Abort) == QMessageBox::Abort)
+			abort = true;
+	    }
+	    prog += step;
+	    i++;
+	}
+    }
+    progress.setValue(100);
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage( tr( "Done" ) );
+}
+
+QString mttMainWin::getFilenameFromTags(const QModelIndex& current)
+{
+    QString curfname, newfname, cformat;
+    bool done = false;
+
+    curfname = current.model()->data( current.sibling( current.row(), 0 ) ).toString();
+    curfnameLabel->setText( curfname );
+
+    cformat = format->currentText();
+    while ( !done ) {
+	if ( cformat.startsWith( "%a" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 2 ) ).toString();
+	if ( cformat.startsWith( "%A" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 3 ) ).toString();
+	if ( cformat.startsWith( "%t" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 1 ) ).toString();
+	if ( cformat.startsWith( "%T" ) ) {
+	    if ( current.model()->data( current.sibling( current.row(), 7 ) ).toInt() < 10 )
+		newfname += '0';
+	    newfname += current.model()->data( current.sibling( current.row(), 7 ) ).toString();
+	}
+	if ( cformat.startsWith( "%y" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 4 ) ).toString();
+	if ( cformat.startsWith( "%g" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 5 ) ).toString();
+	if ( cformat.startsWith( "%c" ) )
+	    newfname += current.model()->data( current.sibling( current.row(), 6 ) ).toString();
+	cformat.remove( 0, 2 );
+
+	if ( cformat == "" )
+	    done = true;
+	else {
+	    newfname += cformat.left( cformat.indexOf( "%" ) );
+	    cformat.remove( 0, cformat.indexOf( "%" ) );
+	    if ( cformat == "" )
+		done = true;
+	}
+    }
+    // Add file extension
+    newfname += curfname.right( curfname.length() - curfname.lastIndexOf( "." ) );
+    
+    return newfname;
+}
+
+void mttMainWin::slotEditAdvTagTableItem(QTableWidgetItem* item)
+{
+    if (item->column() == 0)
+	item->tableWidget()->editItem(item);
 }
