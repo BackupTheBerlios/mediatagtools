@@ -53,6 +53,7 @@
 //#include "x.xpm"
 #include "tools.h"
 #include "mttadvtagdelegate.h"
+#include "mp3extraframes.h"
 
 #ifndef RELEASE
 #include "revision.h"
@@ -99,6 +100,15 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 #ifndef RELEASE
     setWindowTitle( QString("MediaTagTools") + " - " + RV_SNAPSHOT_VERSION );
 #endif
+
+    // Initialize mp3frame Model
+    mp3frameModel.setColumnCount(2);
+    for (int row = 0; row < EF_NUM; ++row) {
+	for (int column = 0; column < 2; ++column) {
+	    QStandardItem *item = new QStandardItem(QString(extraFrames[row][column]));
+	    mp3frameModel.setItem(row, column, item);
+	}
+    }
 
     // Initialization of TreeView
     treeView = new mttTreeView( this );
@@ -354,25 +364,38 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
 
     // Advanced Tag Dock
     QFrame *advFrame;
-    //QLayout *advLayout;
-    QStringList strl;
     QGridLayout *advLayout;
 
+    sizeAdvItem.setHeight(QFontInfo(QApplication::font()).pixelSize()*2);
+    if (sizeAdvItem.height() < 32)
+	sizeAdvItem.setHeight(32);
     dockAdvancedTags = new QDockWidget( tr( "Advanced Tags" ), this );
     dockAdvancedTags->setObjectName(QString("Advanced Tags"));
     advFrame = new QFrame( dockAdvancedTags );
     advFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-    advTable = new mttTableWidget(advFrame);
-    advTable->setColumnCount(2);
-    advTable->insertRow(0);
-    strl << tr("Tag") << tr("Value");
-    advTable->setHorizontalHeaderLabels(strl);
-    advTable->horizontalHeader()->setStretchLastSection(true);
-    advTable->verticalHeader()->setVisible(false);
-    //advTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    advTree = new QTreeView(advFrame);
+    //advTree->setRootIsDecorated(false);
+    advTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    advTree->setModel(&advModel);
+    QList<QStandardItem*> tmprow;
+    QStandardItem *tmp;
+    tmp = new QStandardItem();
+    tmp->setData(QIcon(":/icons/plus.png"), Qt::DecorationRole);
+    tmp->setFlags(tmp->flags() | Qt::ItemIsEditable);
+    tmp->setSizeHint(sizeAdvItem);
+    tmprow << tmp;
+    tmp = new QStandardItem();
+    tmp->setEditable(false);
+    tmp->setSelectable(false);
+    tmprow << tmp;
+    advModel.setHorizontalHeaderLabels(QStringList(tr("Tag")) << tr("Value"));
+    advModel.appendRow(tmprow);
+    advTree->setIconSize(QSize(32,32));
+    advTree->setItemDelegate(new mttAdvTagDelegate());
+    advTree->setWordWrap(true);
+    advTree->setColumnWidth(0,150);
     advLayout = new QGridLayout(advFrame);
-    advLayout->addWidget(advTable);
-    advTable->setItemDelegate(new mttAdvTagDelegate());
+    advLayout->addWidget(advTree);
 
     advFrame->setLayout(advLayout);
     dockAdvancedTags->setWidget(advFrame);
@@ -427,7 +450,8 @@ mttMainWin::mttMainWin(QWidget* parent) : QMainWindow( parent )
     connect( actSaveAll, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
     connect( actSaveSelected, SIGNAL( triggered() ), this, SLOT( slotNotImplemented() ) );
 
-    connect( advTable, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT( slotEditAdvTagTableItem(QTableWidgetItem*)));
+    connect( advTree, SIGNAL(clicked(QModelIndex)), this, SLOT(slotEditAdvTagTreeItem(QModelIndex)) );
+    connect( &advModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(slotAdvTreeItemChanged(QStandardItem*)));
 
     // Create list for taglib known filetypes
     TagLib::StringList tl = TagLib::FileRef::defaultFileExtensions();
@@ -1960,4 +1984,129 @@ void mttMainWin::slotEditAdvTagTableItem(QTableWidgetItem* item)
 {
     if (item->column() == 0)
 	item->tableWidget()->editItem(item);
+}
+
+QStandardItemModel* mttMainWin::getMp3FrameModel(void )
+{
+    return &mp3frameModel;
+}
+
+void mttMainWin::slotEditAdvTagTreeItem(QModelIndex index)
+{
+    if ((index.column() == 0) && (advModel.itemFromIndex(index)->isEditable() == false))
+	advTree->edit(index.sibling(index.row(),1));
+    else if ((index.column() == 1) && (advModel.itemFromIndex(index)->isEditable() == false))
+	advTree->edit(index.sibling(index.row(),0));
+    else
+	advTree->edit(index);
+}
+
+void mttMainWin::slotAdvTreeItemChanged(QStandardItem* item)
+{
+    if (item->column() == 0) { // If tag category changed
+	advModel.blockSignals(true);
+
+	QList<QStandardItem*> result;
+	QModelIndex res;
+	bool lastItem = false;
+	if ((advModel.rowCount()-1) == item->row()) // Then this is the last item on the tree
+	    lastItem = true;
+	result = mp3frameModel.findItems(item->data(Qt::DisplayRole).toString(), Qt::MatchExactly, 1);
+	res = mp3frameModel.indexFromItem(result.at(0));
+	
+	advModel.blockSignals(false);
+	if (item->child(0) != 0) { // There are already children, kill them first
+	    item->removeRows(0,item->rowCount());
+	}
+	advModel.blockSignals(true);
+	
+	if ( res.sibling(res.row(),0).data(Qt::DisplayRole).toString().startsWith("T") ) { // Text Tag
+	    item->setData(QIcon(":/icons/ABC.png"), Qt::DecorationRole);
+	    item->setToolTip(item->data(Qt::DisplayRole).toString());
+
+	    // Create a new leaf that will contain the data of the tag
+	    QList<QStandardItem*> tmprow;
+	    QStandardItem *tmp;
+	    tmp = new QStandardItem(tr("Value:"));
+	    QFont f(QApplication::font());
+	    f.setBold(true);
+	    tmp->setFont(f);
+	    tmp->setEditable(false);
+	    tmp->setSelectable(false);
+	    tmprow << tmp;
+	    tmp = new QStandardItem();
+	    tmp->setEditable(true);
+	    tmp->setSizeHint(sizeAdvItem);
+	    tmprow << tmp;
+
+	    advModel.blockSignals(false);
+	    item->appendRow(tmprow);
+	    advTree->setCurrentIndex(item->index().child(0,1));
+	    advTree->setExpanded(item->index(),true);
+	    advModel.blockSignals(true);
+	}
+	else if ( res.sibling(res.row(),0).data(Qt::DisplayRole).toString().startsWith("UFID") ) { // UFID Tag
+	    item->setData(QIcon(":/icons/ABC.png"), Qt::DecorationRole);
+	    item->setToolTip(item->data(Qt::DisplayRole).toString());
+	    
+	    // Create a new leaf that will contain the data of the tag
+	    QList<QStandardItem*> tmprow,tmprow2;
+	    QStandardItem *tmp;
+	    tmp = new QStandardItem(tr("Owner Identifier:"));
+	    QFont f(QApplication::font());
+	    f.setBold(true);
+	    tmp->setFont(f);
+	    tmp->setEditable(false);
+	    tmp->setSelectable(false);
+	    tmprow << tmp;
+	    tmp = new QStandardItem();
+	    tmp->setEditable(true);
+	    tmp->setSizeHint(sizeAdvItem);
+	    tmprow << tmp;
+
+	    advModel.blockSignals(false);
+	    item->appendRow(tmprow);
+	    advTree->setCurrentIndex(item->index().child(0,1));
+	    advModel.blockSignals(true);
+
+	    tmp = new QStandardItem(tr("Identifier:"));
+	    tmp->setFont(f);
+	    tmp->setEditable(false);
+	    tmp->setSelectable(false);
+	    tmprow2 << tmp;
+	    tmp = new QStandardItem();
+	    tmp->setEditable(true);
+	    tmp->setSizeHint(sizeAdvItem);
+	    tmprow2 << tmp;
+
+	    advModel.blockSignals(false);
+	    item->appendRow(tmprow2);
+	    advModel.blockSignals(true);
+	}
+
+	if (lastItem) { // Add a new item below
+	    QList<QStandardItem*> tmprow;
+	    QStandardItem *tmp;
+	    tmp = new QStandardItem();
+	    tmp->setData(QIcon(":/icons/plus.png"), Qt::DecorationRole);
+	    tmp->setFlags(tmp->flags() | Qt::ItemIsEditable);
+	    tmp->setSizeHint(sizeAdvItem);
+	    tmprow << tmp;
+	    tmp = new QStandardItem();
+	    tmp->setEditable(false);
+	    tmp->setSelectable(false);
+	    tmprow << tmp;
+
+	    advModel.blockSignals(false);
+	    advModel.appendRow(tmprow);
+	}
+	else {
+	    advModel.blockSignals(false);
+	}
+    }
+    else { // If data value changed
+	advModel.blockSignals(true);
+	item->setToolTip(item->data(Qt::DisplayRole).toString());
+	advModel.blockSignals(false);
+    }
 }

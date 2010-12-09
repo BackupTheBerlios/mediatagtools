@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QMainWindow>
 #include <QTableWidget>
+#include <QTreeWidget>
 
 #include "mtttreeview.h"
 #include "mtttablewidget.h"
@@ -46,6 +47,7 @@ public:
     void addDir( QString );
     void addFile( QString& );
     void updateAdvMp3TagTable( QStringList );
+    QStandardItemModel* getMp3FrameModel(void);
 
 public slots:
   /*$PUBLIC_SLOTS$*/
@@ -53,8 +55,12 @@ public slots:
 private:
     QStandardItemModel treeModel;
     QStandardItemModel renumModel;
+    QStandardItemModel mp3frameModel;
+    QStandardItemModel advModel;
     QListView *listView;
     mttTableWidget *advTable;
+    QTreeView *advTree;
+    QSize sizeAdvItem;
     mttTreeView *treeView;
     QDockWidget *dockDetails, *dockEdit, *dockRenum, *dockFormat, *dockFormatLegend, *dockAdvancedTags;
 
@@ -167,6 +173,8 @@ protected slots:
     virtual void slotFormatApplyToTags( void );
     virtual void slotFormatApplyToFilenames( void );
     virtual void slotEditAdvTagTableItem( QTableWidgetItem * );
+    virtual void slotAdvTreeItemChanged(QStandardItem*);
+    virtual void slotEditAdvTagTreeItem(QModelIndex);
 };
 
 #endif

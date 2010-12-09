@@ -18,11 +18,15 @@
 
 */
 
+#include <QComboBox>
+#include <QMessageBox>
+#include <QListView>
+#include <QHeaderView>
+#include "mttmainwin.h"
 #include "mttadvtagdelegate.h"
 #include "mp3extraframes.h"
-#include <QComboBox>
 
-mttAdvTagDelegate::mttAdvTagDelegate(QObject* parent): QItemDelegate(parent)
+mttAdvTagDelegate::mttAdvTagDelegate(QObject* parent): QStyledItemDelegate(parent)
 {
 }
 
@@ -37,13 +41,31 @@ QWidget* mttAdvTagDelegate::createEditor(QWidget* parent, const QStyleOptionView
 	
 	combo = new QComboBox(parent);
 	combo->setEditable(true);
+	combo->setModel(((mttMainWin*)parent->parent()->parent()->parent()->parent())->getMp3FrameModel());
+	combo->setModelColumn(1);
 	combo->setDuplicatesEnabled(false);
-	combo->addItems(list);
+	//combo->addItems(list);
+	combo->setFrame(true);
+	combo->setAutoFillBackground(true);
+	QTableView *tv;
+	tv = new QTableView(combo);
+	tv->horizontalHeader()->setHidden(true);
+	tv->verticalHeader()->setHidden(true);
+	tv->horizontalHeader()->setStretchLastSection(true);
+	tv->setSelectionBehavior(QAbstractItemView::SelectRows);
+	tv->setMinimumWidth(parent->width());
+	combo->setView(tv);
+	tv->resizeColumnToContents(0);
 	// TODO: Add Validator for invalid texts
 	return combo;
     }
     else
-	return QItemDelegate::createEditor(parent, option, index);
+	if (index.sibling(index.row(),0).data().toString().compare(tr("Add tag")) == 0) {
+	    QMessageBox::information(0,tr("Information"),tr("Please try to select a type of tag from the first column and then add its value!"));
+	    return 0;
+	}
+	else
+	    return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
 void mttAdvTagDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
@@ -58,7 +80,7 @@ void mttAdvTagDelegate::setEditorData(QWidget* editor, const QModelIndex& index)
 	    combo->setCurrentIndex(0);
     }
     else
-	QItemDelegate::setEditorData(editor, index);
+	QStyledItemDelegate::setEditorData(editor, index);
 }
 
 void mttAdvTagDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
@@ -68,7 +90,7 @@ void mttAdvTagDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
 	model->setData( index, combo->currentText(), Qt::EditRole );
     }
     else
-	QItemDelegate::setModelData(editor, model, index);
+	QStyledItemDelegate::setModelData(editor, model, index);
 }
 
 void mttAdvTagDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -77,6 +99,6 @@ void mttAdvTagDelegate::updateEditorGeometry(QWidget* editor, const QStyleOption
 	editor->setGeometry(option.rect);
     }
     else
-	QItemDelegate::updateEditorGeometry(editor, option, index);
+	QStyledItemDelegate::updateEditorGeometry(editor, option, index);
 }
 

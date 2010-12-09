@@ -1,7 +1,7 @@
 #ifndef MP3EXTRAFRAMES_H
 #define MP3EXTRAFRAMES_H
 
-#define EF_NUM 39
+#define EF_NUM 41
 
 static const char* extraFrames[EF_NUM][2] = {   /*{ "TALB", "Album/Movie/Show title" },*/
                                             { "TBPM", "BPM (beats per minute)" },
@@ -11,7 +11,7 @@ static const char* extraFrames[EF_NUM][2] = {   /*{ "TALB", "Album/Movie/Show ti
                                             { "TDEN", "Encoding time" },
                                             { "TDLY", "Playlist delay" },
                                             { "TDOR", "Original release time" },
-//                                             { "TDRC", "Recording time" },
+                                            { "TDRC", "Recording time" },
                                             { "TDRL", "Release time" },
                                             { "TDTG", "Tagging time" },
                                             { "TENC", "Encoded by" },
@@ -47,6 +47,7 @@ static const char* extraFrames[EF_NUM][2] = {   /*{ "TALB", "Album/Movie/Show ti
                                             { "TSOT", "Title sort order" },
                                             { "TSRC", "ISRC (international standard recording code)" },
                                             { "TSSE", "Software/Hardware and settings used for encoding" },
-                                            { "TSST", "Set subtitle" } };
+                                            { "TSST", "Set subtitle" },
+					    { "UFID", "Unique file identifier" } };
 
 #endif

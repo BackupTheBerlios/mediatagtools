@@ -21,10 +21,10 @@
 #ifndef MTTADVTAGDELEGATE_H
 #define MTTADVTAGDELEGATE_H
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 
-
-class mttAdvTagDelegate : public QItemDelegate
+    
+class mttAdvTagDelegate : public QStyledItemDelegate
 {
 
 public:

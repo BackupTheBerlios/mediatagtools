@@ -56,13 +56,16 @@ void mttTableWidget::slotItemChanged(QTableWidgetItem *item)
 {
     if ((item->column() == 0) && (item->row() == (rowCount() - 1)) &&
 	item->data(Qt::DisplayRole).toString().compare(tr("Add tag")) != 0) {
-	...
 	insertRow(rowCount());
+	item->setData(Qt::DecorationRole, QIcon(QString(":/icons/ABC.png")));
     }
     if (item->data(Qt::DisplayRole).toString().isEmpty())
-	item->setData(Qt::BackgroundColorRole, Qt::red);
-    else if (item->data(Qt::BackgroundColorRole) != Qt::blue)
-	item->setData(Qt::BackgroundColorRole, Qt::green);
+	item->setData(Qt::BackgroundColorRole, Qt::gray);
+    else if (item->data(Qt::UserRole).toString().compare(QString("+")) != 0)
+	item->setData(Qt::BackgroundColorRole, QColor("#f1e4f2"));
+    // TODO: Create a custom QComboBox for the first column that would show a popup with maximum size
+    if (item->column()!=0 && !item->text().isEmpty())
+	this->resizeColumnToContents(item->column());
 }
 
 void mttTableWidget::insertColumn(int column)
@@ -73,8 +76,9 @@ void mttTableWidget::insertColumn(int column)
     rows = rowCount();
     for (int i=0; i<rows; i++) {
 	setItem(i, column, new QTableWidgetItem(QString()));
-	item(i, column)->setData(Qt::BackgroundColorRole, Qt::red);
+	item(i, column)->setData(Qt::BackgroundColorRole, Qt::gray);
     }
+    this->setHorizontalHeaderItem(column, new QTableWidgetItem(tr("Value ")));
 }
 
 void mttTableWidget::insertRow(int row)
@@ -82,18 +86,19 @@ void mttTableWidget::insertRow(int row)
     int columns;
     
     QTableWidget::insertRow(row);
+    //this->setRowHeight(row,this->rowHeight(row)*2);
     columns = columnCount();
     for (int i=0; i<columns; i++) {
 	QTableWidgetItem *item;
 	item = new QTableWidgetItem(QString());
-	item->setData(Qt::BackgroundColorRole, Qt::red);
-	if (i == 0)
-	    if (row == (rowCount()-1)) {
+	if (i == 0) {
+	    if (row == (rowCount()-1))
 		item->setData(Qt::DisplayRole, tr("Add tag"));
-		item->setData(Qt::BackgroundColorRole, Qt::blue);
-		item->setData(Qt::ForegroundRole, Qt::white);
-	    }
+	    item->setData(Qt::DecorationRole, QIcon(QString(":/icons/plus.png")));
 	    item->setData(Qt::UserRole, QString("+"));
+	}
+	else
+	    item->setData(Qt::BackgroundColorRole, Qt::gray);
 	setItem(row, i, item);
     }
 }

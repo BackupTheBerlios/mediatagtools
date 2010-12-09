@@ -1,4 +1,31 @@
 Normal:
+* mttAdvTagDelegate:
+	TSRC - Accept input of just 12 characters
+	TBPM, TLEN, TDLY - Numerical string (integer)
+	TKEY - Max 3 chars
+	TLAN - 3 chars according to ISO-639-2
+	TFLT - List. See line 410
+	TMED - List. See line 429
+	TCOP, TPRO - Must begin with a year and a space char (5 chars)
+	TDEN, TDOR, TDRC, TDRL, TDTG,  - Timestamp see [ID3v2-strct]
+
+* Each T* can appear only one time except TXXX
+* Each W* can appear only one time except WCOM, WOAR, WXXX
+* WXXX URL should be in iso-8859-1
+* WXXX (see line 689)
+* TXXX (see line 619)
+* USLT (see line 859)
+* SYLT (see line 877)
+* APIC (see line 1083)
+* GEOB (see line 1131)
+* There may be several pictures attached to one file, each in their individual "APIC" frame, but only one with the same content descriptor.
+* There may be more than one "GEOB" frame in each tag, but only one with the same content descriptor.
+* There may be more than one "WXXX" frame in each tag, but only one with the same description.
+* There may be more than one "TXXX" frame in each tag, but only one with the same description.
+* There may be more than one "UFID" frame in a tag, but only one with the same 'Owner identifier'.
+* What about COMM extra frames (comments)
+* Are comboboxes created through delegate freed after use automatically?
+* Cleanup advtable widget files (unneeded???)
 * Show artwork instead of just the audio cd icon
 * Show album art if available per file
 * Make the color of changed items configurable
@@ -11,3 +38,4 @@ Normal:
 
 Minor:
 * Pressing Enter in QComboBox should send the focus to the LineEdit below it. Should I subclass it?
+* Create a custom QComboBox for the first column of advtag table that would show a popup with the maximum size of string available

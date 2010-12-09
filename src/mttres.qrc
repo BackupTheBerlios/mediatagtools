@@ -3,5 +3,7 @@
         <file>forms/about.ui</file>
         <file>icons/mediatagtools.svg</file>
 	<file>icons/media-optical-audio.png</file>
+	<file>icons/ABC.png</file>
+	<file>icons/plus.png</file>
     </qresource>
 </RCC>
